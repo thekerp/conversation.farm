@@ -15,7 +15,8 @@ published, and eventually composted into later ones. Same object throughout, gai
 | [`docs/convo-v1-spec.md`](docs/convo-v1-spec.md) | The unit, the object, the pipeline, the checks block, definition of done |
 | [`docs/tech-stack.md`](docs/tech-stack.md) | Three planes, performance budget, characters and consent, the production skill |
 | [`docs/research-pass.md`](docs/research-pass.md) | Stage 4 — the queue, the Slack loop, the anti-slop rules |
-| [`docs/slack-protocol.md`](docs/slack-protocol.md) | The harvest thread — drop contract, roles, every message, the gates. **Draft with 22 blocking holes, see §12** |
+| [`docs/slack-protocol.md`](docs/slack-protocol.md) | The harvest thread — drop contract, roles, every message, the gates. **Draft, 22 blocking holes, see §12** |
+| [`ROADMAP.md`](ROADMAP.md) | Where E098 is, the next three things, the open decisions, the debt |
 | [`CLAUDE.md`](CLAUDE.md) | How agents should work in here |
 
 ## v1
@@ -46,11 +47,14 @@ Its current show notes are four links. That's the bar.
 - [x] Music-bed licence — called fair use by Adam 2026-08-13, revisit if the project earns
 - [x] Beat segmentation — 9 beats, `beats.v1.json`. Judge panel of 4 proposals, 3 judges, then 3
       adversarial passes that all returned FAIL; 39 findings repaired against the transcript.
+- [x] Slack protocol drafted (`docs/slack-protocol.md`) — draft only, 22 blocking holes recorded
 - [ ] Re-verify the repaired beats before stage 4
 - [ ] Research pass
 - [ ] Character sheets for adam + tbj
 - [ ] Fallback renderer
 - [ ] Deploy
+
+Full picture, open decisions and known debt: [`ROADMAP.md`](ROADMAP.md).
 
 ## What the archive turned out to be
 

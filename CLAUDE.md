@@ -55,6 +55,42 @@ back to mono when tracks don't exist, and mark `speaker_confidence: "inferred"` 
 
 ## Current state
 
-`convos/zengineering-098/` is the v1 target. It has a mono transcript (`transcript.v0.md`) produced
-before per-track audio was available. **Per-track audio exists for the back catalog** — when the
-tracks for 098 land, re-run stage 2 against them and supersede v0.
+`convos/zengineering-098/` is the v1 target. The full production archive landed on 2026-08-13 —
+isolated per-speaker tracks, the Adobe Audition session, and an ElevenLabs Scribe pass with
+word-level timings. Stages 1–3 are done. See `ROADMAP.md` for what is next and what is blocked.
+
+What that archive changed, and what you must not re-derive:
+
+- **A published master is an EDIT of the session.** E098's is 8 clips with 6 internal cuts, 87.1 s
+  of conversation removed, and a cold open lifted from 20:41 and *moved* to the front. Master and
+  session timelines diverge by up to 83.4 s and no single offset relates them. Every published
+  timestamp is on the master timeline. The map is `source.json → edit_map`.
+- **Attribution is `confirmed`,** earned from per-track audio ownership, not from the transcript.
+  Stage 2c arbitrates every turn against the isolated tracks.
+- **Never read a duration from `ffprobe format.duration`.** It reads 5.510 s short on E098's master.
+- **Never derive timings from the archive `.srt`.** 37.8% of its cues are off by more than a second.
+- **Scribe's `logprob` finds none of the entity errors.** Diffing against the older Whisper pass
+  (`transcript.v0.md`) finds all of them. That is why v0 is retained despite being lossier — but it
+  has a 600 s duplicated block at `segments.v0.jsonl` indices 850–1035 that readers must drop.
+- **Corrections live in data, never in the transcript.** `corrections.json` holds music windows,
+  the ASR lexicon, and misspoken referents; the stage applies them. When Adam says "Riot" he means
+  Epic Games — that ships as an annotation and a check, not as a repair.
+
+## Stages that exist
+
+```
+skill/stages/stage2_transcript.py         ASR -> transcript.v1.md + segments.v1.jsonl
+skill/stages/stage2b_cut_material.py      transcribes what the edit removed, off the raw tracks
+skill/stages/stage2c_arbitrate_speakers.py  per-track energy overrides the diarizer
+```
+
+Stage 2 is the only writer of the transcript. Stage 2c emits overrides that stage 2 consumes, so
+re-running stage 2 cannot silently undo the arbitration. Every stage is idempotent — verify it by
+running twice and diffing hashes.
+
+## Verify before you ship
+
+Anything generated — beats, claims, tendrils, checks — gets walked adversarially before it lands.
+The first beat set failed all three passes with 39 findings, two of them quotes that changed meaning
+when trimmed. On a page whose premise is self-fact-checking, that is the whole failure mode. Assume
+your first draft has the same defects and go looking for them.
