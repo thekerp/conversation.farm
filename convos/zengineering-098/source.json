@@ -38,7 +38,7 @@
     "provenance_check": "XMP ModifyDate on the master is 2020-09-03T11:58:16-07:00, 52 s after the .sesx was saved, and all 8 voice clips verify against the session at r 0.99-1.00 at one constant lag. This local master is the render of this archived session. Not verified against the file currently served at media.transistor.fm."
   },
   "external_dependency": {
-    "asset": "Who Knows (suonho raw-dub) Copy.wav",
+    "asset": "Who Knows (suonho raw-dub)",
     "referenced_from": "../032 - On Why We Didnt March/032 - On Why We Didnt March/Imported Files/",
     "in_archive": false,
     "placements": {
@@ -55,7 +55,20 @@
         ]
       }
     },
-    "licensing": "UNRESOLVED. A same-length sibling copy is named 'Jimi Hendrix Band of Gypsys - Who Knows (suonho raw-dub)' and the transcribed lyrics match. Answer this before any page hosts or clips master 0-33 s or 3634-3683 s."
+    "licensing": "No licence document exists. The underlying master and composition are controlled by Experience Hendrix LLC, and a remixer cannot license a derivative of a master he does not own, so a Creative Commons tag on the rework would not clear the sample underneath.",
+    "identified": "A \"subtractive rework\" by suonho (Italian DJ/producer) of \"Who Knows\" as performed live by Jimi Hendrix & the Band of Gypsys, Fillmore East, 1969-12-31, from the Band of Gypsys album.",
+    "scope": "Not specific to 098. The same asset appears in episodes 001, 003, 006, 013, 021, 029, 031, 032, 098 and 101. Oldest copy is Pre UVA Episodes/001 - Legos/Conformed Files/, file dated 2015-07-05, under its original download name. It is the show theme for the entire pre-Season-2 catalogue.",
+    "impact_on_this_pipeline": "Master 0.000-12.084 (the cold open) sits entirely inside the intro music 0.000-32.731, and the music is audibly under the voice — master RMS -29.0 dB vs -42.3/-33.9 dB for the same words on the isolated tracks. Every other beat is in the music-free program region 19.493-3663.320.",
+    "resolution": "Cut the cold-open clip from the raw tracks at session 1241.603-1253.765 instead of from the master. The tracks are voice-only, so the clip ships clean with no music and no rights question. This is the first case where a published clip must NOT come from the published master.",
+    "going_forward": "Episodes 103+ use \"Zengineering Intro Tune w-Fade.mp3\" (see Dropbox/Zengineering/Claude/stitcher). New episodes are unaffected.",
+    "decision": {
+      "call": "fair use",
+      "by": "adam",
+      "date": "2026-08-13",
+      "revisit_when": "the project makes money",
+      "note": "Adam is a lawyer and made this call with the facts above in hand. Not a blocker. The pipeline ships clips from the music windows on this basis until the revenue trigger."
+    },
+    "clip_option": "The cold-open clip can still be cut from the raw tracks at session 1241.603-1253.765 for a voice-only version. Now an audio-quality choice, not a rights one."
   },
   "tracks": {
     "available": true,

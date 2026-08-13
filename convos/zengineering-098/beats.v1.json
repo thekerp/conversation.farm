@@ -1,0 +1,183 @@
+{
+  "convo": "zengineering-098",
+  "stage": 3,
+  "timeline": "master seconds, from segments.v1.jsonl",
+  "hook": "Adam says open source only bites where the plans are the product, then defends Apple nine days after Fortnite was pulled. Brian's answer: the winner isn't the best code, it's whatever got used the most, incidentally.",
+  "beats": [
+    {
+      "id": "b1",
+      "t": 0.36,
+      "t_end": 11.94,
+      "speaker": "tbj",
+      "speaker_confidence": "confirmed",
+      "segment_ids": [
+        "s0001",
+        "s0002",
+        "s0003"
+      ],
+      "claim": "Two hosts who had recorded 97 episodes together both started a sentence at once, both yielded, and both lost the thought — and Adam's cause is that a year of video calls trained him to defer: \"I have a thing to say, but it's not helpful for the conversation.\"",
+      "context": "Brian: \"That's never happened before. In 100 episodes, I don't think we've ever done what we just did.\" Only 12.1 s shipped. The remaining 44.8 s was cut and survives only on the isolated tracks, where Adam gives the cause and Brian answers \"I never have that thought either\" — said into a laugh, so read it as a joke at his own expense, not a rebuttal. Brian's \"let me start that over\" in that cut material is exactly where the master resumes at 20:53, so the seam is invisible only because he narrated the restart out loud in the part that was then deleted.",
+      "source_timeline_note": "Master 0.000–12.084 is the shipped fragment. The moment continues in cut-material.v1.md, Cut 2, at SESSION time 1253.765–1297.5 — not addressable on the master timeline, so print no master timestamp for those quotes. The cold open itself is session 1241.681–1253.765.",
+      "research_potential": "`verify`: \"in 100 episodes\" is a claim of fact about the show's own history, made in an episode Adam numbers on tape as 98 (s0008). Check against the published feed; expect `off` if numbering diverges from count. `since`: the deference Adam describes became a measured phenomenon after 2020 — chase post-recording work on videoconference latency and turn-taking collapse. A `since` must cite something published after 2020-08-22.",
+      "clip_window": [
+        0.0,
+        12.084
+      ],
+      "t_end_intended": 12.084
+    },
+    {
+      "id": "b2",
+      "t": 555.37,
+      "t_end": 608.16,
+      "speaker": "adam",
+      "speaker_confidence": "confirmed",
+      "segment_ids": [
+        "s0062"
+      ],
+      "claim": "\"Tesla has open sourced all of their patents. It's no help to me unless I'm gonna go start a competing car company\" — software differs because \"I have everything I need to do it on the device that is the computer,\" so \"giving away software is to give away the entire value.\"",
+      "context": "Adam has just said he could get Honda's plans for a Civic and still not build one, and Brian has conceded \"certainly not easily.\" Tesla is his example of an open-sourcing gesture that hands an ordinary person nothing. Brian extends rather than contests it: software is \"fungible,\" and \"the value of buying software is like entirely artificial.\"",
+      "research_potential": "`verify` → expect `off`. Tesla's 2014 action was a unilateral patent pledge — a conditional non-assertion covenant — not a licence grant and not \"all\" the patents. Source the pledge text and a patent-law reading of what a non-assertion covenant binds a successor to, not a news recap. `since`: Tesla published the NACS connector spec in 2022 and it was standardised as SAE J3400 — the pledge finally mattering, and mattering only to competing car companies, exactly as Adam framed it. `contradict`: open-hardware people who say the digital/physical line is a 2020 artifact.",
+      "t_end_intended": 608.6
+    },
+    {
+      "id": "b3",
+      "t": 1408.92,
+      "t_end": 1468.81,
+      "speaker": "adam",
+      "speaker_confidence": "confirmed",
+      "segment_ids": [
+        "s0132",
+        "s0134",
+        "s0135",
+        "s0136",
+        "s0138",
+        "s0142",
+        "s0144",
+        "s0146"
+      ],
+      "claim": "Epic — whom Adam twice calls \"Riot\" before correcting himself, then calls Riot again — was not retaliated against: \"They broke a rule, and then Apple automatically did the thing that the store does when you break that rule,\" which is \"exactly the mechanism that has protected us\" from money scams.",
+      "context": "Adam offers to \"kill 10 minutes on Riot versus Apple,\" Brian asks \"Wait, what's Riot? Oh, is that the, the gaming port?\", and Adam corrects himself inside this clip — \"I think it's Epic\" (1430.97) and \"the company that makes Fortnite\" (1438.1) — then relapses. Fortnite was pulled from the App Store on 2020-08-13, nine days before this recording. About a minute earlier Brian had said Apple's limitations \"actually are really bad. They hold back innovation\" (1339.17). Half a minute after this clip ends Adam concedes the other half: \"I think it's time for Apple to probably rethink its App Store dynamics.\"",
+      "research_potential": "`verify` → `wrong` on the named party, with a host_note. corrections.json flags this as a speaker error, not an ASR error — both ASRs hear \"Riot\" clearly — so the slip ships rather than being repaired. Research Epic, never Riot. Second `verify` on \"automatically\": the direct-payment hotfix, the same-day manual removal, Epic's pre-filed complaint and pre-produced ad — nothing in that sequence was automatic on either side. `since` is the deepest well here: the 2021 ruling vindicates \"they broke a rule,\" while the anti-steering injunction and later contempt findings invert \"the store just does what the store does.\""
+    },
+    {
+      "id": "b4",
+      "t": 1626.07,
+      "t_end": 1647.79,
+      "speaker": "adam",
+      "speaker_confidence": "confirmed",
+      "segment_ids": [
+        "s0164",
+        "s0166",
+        "s0168",
+        "s0170",
+        "s0172"
+      ],
+      "claim": "\"The encryption protocols that run the internet work because they're maintained by a nonprofit who's not allowed to make money off of that thing\" — and the evidence is \"the 36 hours banks spent thinking they were just completely fucked.\"",
+      "context": "Brian has just said the entire world would stop working if open source were pulled out. Adam's answer is Heartbleed: \"literally go Google heartbeat, Heartbleed bug\" — he says heartbeat and corrects to Heartbleed in the same breath, and \"Google\" there is the verb. Brian does not soften it afterward, he doubles down: \"There's no hyperbole in those comments.\"",
+      "research_potential": "`verify` on the funding claim → likely `off`. Name the actual maintainer and its actual funding model rather than \"a nonprofit\"; \"not allowed to make money\" is a strong legal characterisation of a structure that is usually more mundane. `verify` the 36 hours as stated. `since`: the entire funding-the-commons apparatus stood up after Heartbleed, and the 2024 xz-utils backdoor is the same argument with the opposite ending — a maintainer nobody was paying, exploited precisely because nobody was watching. Do not let stage 4 extract \"heartbeat\" as an entity; corrections.json marks it as a self-repair.",
+      "t_end_intended": 1651.0
+    },
+    {
+      "id": "b5",
+      "t": 1746.77,
+      "t_end": 1796.3,
+      "speaker": "tbj",
+      "speaker_confidence": "confirmed",
+      "segment_ids": [
+        "s0182",
+        "s0189"
+      ],
+      "claim": "Adam: \"it allows for a system where the optimal solution emerges.\" Brian half-concedes, then complicates it: \"what really ends up winning is popularity again, even in software... it just is the one that got used the most, uh, incidentally.\"",
+      "context": "This is the closest the two of them come to disagreeing on mechanism, and neither presses it. Brian is explicit that he does not mean popularity as preference — \"I don't mean popularity in the sense that like, 'Ooh, everyone loves this one the most'\" — but as path dependence. He then changes the subject to Git, and the thread is dropped.",
+      "research_potential": "`contradict`: this is lock-in and increasing returns under another name, and there is a large economics literature that would either sharpen or embarrass the claim. `verify`: pick one widely-used component that demonstrably won on adoption rather than merit and one that won on merit, and see whether the generalisation survives contact. Avoid the trap of researching \"popularity\" as a term.",
+      "t_end_intended": 1796.23
+    },
+    {
+      "id": "b6",
+      "t": 1861.91,
+      "t_end": 1907.37,
+      "speaker": "adam",
+      "speaker_confidence": "confirmed",
+      "segment_ids": [
+        "s0198",
+        "s0202",
+        "s0206"
+      ],
+      "claim": "Apple has \"a limited team there, I don't know, 1,000 people in Cupertino,\" against \"an open source project with 500,000 contributors\" where a dangerous bug is \"squashed\" in eight hours. Brian: \"if you look at numbers, it kind of scales similarly.\"",
+      "context": "The many-eyes argument, stated at full strength and then immediately deflated by the other host. Adam flags his own numbers as invented — \"I don't know, 1,000 people\" — so they are illustration, not assertion. Brian's reply is the interesting half: the ratio of maintainers to code may be roughly the same on both sides, which would make the whole comparison a wash.",
+      "research_potential": "Do NOT fact-check the headcounts — Adam announces them as made up, and research-pass.md rule 7 forbids checking a claim the speaker does not assert. Check the PRINCIPLE instead. `verify`: is Linus's Law supported by evidence? `since`: Heartbleed, Shellshock, Log4Shell and xz-utils all sat in widely-read code for years, and the empirical security literature since 2020 has largely moved against the strong form. `contradict`: the strongest case that contributor count is the wrong variable and maintainer attention is the right one.",
+      "t_end_intended": 1905.5
+    },
+    {
+      "id": "b7",
+      "t": 2292.31,
+      "t_end": 2346.83,
+      "speaker": "adam",
+      "speaker_confidence": "confirmed",
+      "segment_ids": [
+        "s0266"
+      ],
+      "claim": "Git's real achievement is an append-only canonical record — \"it just keeps a record of every change that was ever made\" — and Adam's claim is that this is a way of thinking that \"we need to roll out in some capacity to every other version of life.\"",
+      "context": "This is the thesis Adam keeps returning to across the hour and the one that connects the episode to his day job. He reaches it via a media-theory framing rather than an engineering one, and Brian answers on physics — the universe keeps track of changes too. It is also the closest the episode comes to explaining why a legal-tech founder cares about version control at all.",
+      "research_potential": "`contradict` is the strongest queue item in the episode: the best good-faith argument against append-only records in domains where forgetting is a right, not a bug. `since`: erasure rights, retention law, and the collision between immutable ledgers and data-protection regimes have all moved since 2020. `verify`: whether Git's record is in fact canonical and immutable in practice — history rewriting, force pushes, and rebases all cut against the claim as stated."
+    },
+    {
+      "id": "b8",
+      "t": 2738.51,
+      "t_end": 2786.65,
+      "speaker": "tbj",
+      "speaker_confidence": "confirmed",
+      "segment_ids": [
+        "s0295"
+      ],
+      "claim": "\"It feels like almost everything has an open source counterpart\" — name a popular piece of software \"and there's an open source version. Like Photoshop, yep, open source version. Microsoft Office, all of them have open source versions.\"",
+      "context": "Brian is careful to separate two things the claim could mean: the free-as-in-price versions \"that, like, Google makes available to you,\" and genuine open source rebuilds \"that have large communities.\" He concedes the second is \"a little different. It does things differently, sometimes doesn't interop.\" He then connects it to his own history — \"I was a manufacturing engineer. I constantly was frustrated by having to reinvent things that I knew had been solved hundreds or thousands of times all around the world\" — which is the frustration that drove his first startup.",
+      "research_potential": "The single best `since` in the episode. In 2020 the trend line pointed one way. Since then a run of major projects moved off open source licences to source-available terms, and separately open-weight AI models arrived and changed what the claim even means. The 2020 take is half-vindicated and half-inverted, which is far more interesting than either. `verify` the specific pairs he names, which have aged unevenly. Keep the free/open-source distinction he drew — collapsing it destroys the check.",
+      "t_end_intended": 2790.0
+    },
+    {
+      "id": "b9",
+      "t": 3428.52,
+      "t_end": 3453.54,
+      "speaker": "adam",
+      "speaker_confidence": "confirmed",
+      "segment_ids": [
+        "s0370",
+        "s0372",
+        "s0378",
+        "s0382"
+      ],
+      "claim": "\"It's coming for knowledge work, like sometime soon. And it's not because AI is gonna think like a lawyer. It's because people with legal training like me can identify everything a lawyer does that no one should ever have to do again.\"",
+      "context": "The episode's most falsifiable forward claim, made in August 2020, before any of the current model generation existed. Adam's mechanism is deliberately not intelligence — it is that a trained insider can enumerate the drudgery. Brian's objection is that this is easy to be excited about from the inside: \"it's easy to be excited about this stuff when you're involved in making it... and probably horrifying if you're not.\" Adam concedes it — \"That's true\" — and then argues the jobs survive in changed form: \"It's still gonna take people to tend it.\"",
+      "research_potential": "`since` only. Six years of legal-AI deployment against a 2020 prediction about mechanism, not capability — did the value arrive from enumerating drudgery, or from the general models Adam explicitly said it would not come from? Do NOT queue a `verify` on \"there'll probably be two for every lawyer that used to exist\": research-pass.md rule 7 forbids checking a prediction. It can be a seed instead.",
+      "t_end_intended": 3480.0,
+      "t_intended": 3428.57
+    }
+  ],
+  "seeds": [
+    "Brian asks it at 40:20 and the conversation moves on: should books be open source and forever changing? Where outside software does a canonical, append-only record of every change actually earn its cost — and who ever reads it?",
+    "Adam's append-only rule is that no entry is ever deleted, only invalidated by reference. In a jurisdiction that grants a person the right to have a record erased, which rule gives way, and who decides what gets invalidated?",
+    "Both of them agree that progress now requires trusting the layer beneath you. Neither ever says who is responsible for that layer — so who is, and who pays for it when nobody owns it?"
+  ],
+  "verification": {
+    "method": "Four independent proposals from different lenses, scored by three judges, synthesized, then three adversarial passes against the transcript.",
+    "outcome": "All three adversarial passes returned FAIL on the synthesized set — 39 findings, 2 blocking. Repaired here against segments.v1.jsonl. This file is the repaired set and has NOT yet been re-verified.",
+    "repairs": [
+      "b4 BLOCKING: the headline quote was truncated at 'not allowed to make money', dropping 'off of that thing' (s0168). That changes a claim about one nonprofit's relationship to one protocol into a claim about nonprofits generally. Restored.",
+      "b9 BLOCKING: context asserted Adam does not answer Brian's objection. He answers inside the beat window — 'That's true' at 3477.16. Rewritten.",
+      "hook: said Brian's winner is 'whatever got used first'. He says 'the one that got used the most, uh, incidentally' (s0189). Path dependence, not primacy. Fixed.",
+      "b8: context quoted Brian as 'constantly frustrated by having to reinvent things'. He says 'I constantly was frustrated'. Now verbatim. The claim also substituted 'free version' for 'open source version' in a beat about open source, collapsing a distinction Brian draws explicitly.",
+      "b6: the claim dropped Adam's own 'I don't know' before the headcounts, and the research plan then pointed stage 4 at numbers the speaker announces as invented. Retargeted to the principle.",
+      "b5: framed Brian as arguing against Adam. He half-concedes first — 'that's usually actually where it ends up' — then complicates. Softened to match.",
+      "b2: the claim asserted a mechanism Adam never states ('a car's plans are useless without the factory'). Replaced with his own words.",
+      "b3: 'throughout' overstated — he corrects himself twice inside the clip before relapsing. 'Ninety seconds earlier' was wrong by a third; measured 62 s. Both fixed.",
+      "b1: the claim carried no proposition anyone could disagree with. Rewritten around the deference mechanism. 'Brian flatly disagrees' mischaracterised a laugh line. The source_timeline_note cited a clip instruction superseded by the 2026-08-13 fair-use decision; removed.",
+      "seed 3 was two declarative sentences, not a question. Rewritten as one.",
+      "Structural pass after repair caught four more: b1's t was 0.0 where the first segment starts at 0.36 (clip window 0-12.084 kept separately); b5 and b7 carried segment_ids that did not contain their own quotes, and b7's speaker contradicted its segments; three claims ran 302-305 chars against the 300 limit.",
+      "All t_end values snapped to real word ends from the word-level ASR, keeping 0.25 s clear of the next word start so stage 7's mandated pad cannot pull the next voice into the clip. Beats whose window is a sub-range of one long turn (b2, b8) end mid-turn by design. Original intended bounds kept as t_end_intended."
+    ],
+    "known_remaining": [
+      "b1 is the only beat whose material is not fully addressable on the master timeline. Until beats carry a source-timeline field, its cut-material quotes cannot be linked to audio on the page."
+    ]
+  }
+}

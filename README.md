@@ -42,8 +42,10 @@ Its current show notes are four links. That's the bar.
       the per-track audio corrected 5 turns the diarizer got wrong
 - [ ] Decide: beats from the released audio only, or clips cut from the raw tracks so the 87.1 s
       of cut conversation becomes addressable
-- [ ] Music-bed licence answered before any page hosts master 0–33 s or 3634–3683 s
-- [ ] Beat segmentation
+- [x] Music-bed licence — called fair use by Adam 2026-08-13, revisit if the project earns
+- [x] Beat segmentation — 9 beats, `beats.v1.json`. Judge panel of 4 proposals, 3 judges, then 3
+      adversarial passes that all returned FAIL; 39 findings repaired against the transcript.
+- [ ] Re-verify the repaired beats before stage 4
 - [ ] Research pass
 - [ ] Character sheets for adam + tbj
 - [ ] Fallback renderer
