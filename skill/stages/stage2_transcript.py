@@ -35,11 +35,18 @@ speaker_confidence follows docs/convo-v1-spec.md §9:
     confirmed   attribution comes from per-track audio ownership
     inferred    attribution comes from a diarization model
 
-Diarization is `inferred` no matter how well it agrees with a human pass, so
-that is what this stage writes unless --confidence is given explicitly. A
-cross-check file (--check, e.g. the hand-labelled speakers.md) does not upgrade
-the confidence; it only reports disagreements, which are recorded per turn in
-the `disputed` field and summarised on stderr.
+Diarization alone is `inferred` no matter how well it agrees with another text
+pass. Only per-track audio ownership earns `confirmed`, and `--confidence
+confirmed` therefore requires `--confidence-method` describing how it was
+established.
+
+`--overrides` takes stage 2c's output, where the per-track audio disagreed with
+the diarizer. Stage 2c never writes the transcript itself: this stage stays the
+only writer, so re-running it cannot silently undo the arbitration.
+
+`--check` cross-checks against another labelled transcript. It does not upgrade
+confidence — a second text pass derived from the same diarization corroborates
+nothing. Disagreements land in the per-turn `disputed` field.
 """
 
 from __future__ import annotations
@@ -58,8 +65,9 @@ PROVENANCE = (
     "transcript: 'I'm Adam' (21.2s), 'I'm Brian' (22.3s), 'Juris is "
     "increasingly' (130.4s), 'I was a manufacturing engineer' (2892.3s), "
     "'people with legal training like me' (3437.1s). Five anchors, no "
-    "contradictions. The mapping is evidenced; the turn boundaries are still a "
-    "model's, so confidence stays `inferred` until per-track audio is used."
+    "contradictions. This establishes which id is which person; it does not "
+    "establish that the model drew the turn boundaries correctly. Only stage 2c "
+    "does that, from the per-track audio."
 )
 
 
@@ -262,6 +270,11 @@ def write_transcript(
         lines.append(
             f"> {meta['repaired']} ASR error(s) repaired from `corrections.json`."
         )
+    if meta.get("overridden"):
+        lines.append(
+            f"> {meta['overridden']} turn(s) reassigned by per-track audio over the diarizer's "
+            f"label. See `speaker-arbitration.v1.json`."
+        )
     if disputes:
         lines.append(
             f"> {disputes} turn(s) disagree with the hand-labelled pass and are "
@@ -289,6 +302,7 @@ def main() -> int:
     p.add_argument("--check", default=None, help="hand-labelled transcript to cross-check against")
     p.add_argument("--check-alias", default="adam=adam,tbj=tbj,brian=tbj")
     p.add_argument("--corrections", default=None, help="corrections.json: music windows, lexicon, annotations")
+    p.add_argument("--overrides", default=None, help="speaker-overrides.v1.json from stage 2c")
     p.add_argument("--confidence", default="inferred", choices=["confirmed", "inferred"])
     p.add_argument("--confidence-method", default="", help="required when --confidence confirmed")
     p.add_argument("--title", default="")
@@ -318,6 +332,21 @@ def main() -> int:
     )
     annotated = attach_annotations(turns, corr.get("annotations", []))
 
+    overridden = 0
+    for t in turns:
+        t["speaker_source"] = "diarization"
+    if args.overrides:
+        with open(args.overrides, encoding="utf-8") as fh:
+            ov = json.load(fh)
+        by_t = {round(float(o["t"]), 2): o for o in ov.get("overrides", [])}
+        for t in turns:
+            o = by_t.get(round(t["start"], 2))
+            if o and o["speaker"] != t["speaker"]:
+                t["speaker"] = o["speaker"]
+                t["speaker_source"] = "per_track_audio"
+                t["audio_margin_db"] = o.get("margin_db")
+                overridden += 1
+
     disputes = 0
     if args.check:
         disputes = apply_check(turns, load_check(args.check, kv(args.check_alias)))
@@ -344,6 +373,7 @@ def main() -> int:
             "attribution_note": args.confidence_method or PROVENANCE,
             "dropped": dropped,
             "repaired": repaired,
+            "overridden": overridden,
         },
         args.confidence,
         disputes,
@@ -364,6 +394,7 @@ def main() -> int:
                 "music_words_dropped": dropped,
                 "asr_words_repaired": repaired,
                 "annotations_attached": annotated,
+                "speaker_overrides_applied": overridden,
                 "disputed_turns": disputes,
                 "outputs": [seg_path, txt_path],
                 "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

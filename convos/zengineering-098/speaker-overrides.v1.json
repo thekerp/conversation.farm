@@ -1,0 +1,36 @@
+{
+  "note": "Speaker labels the per-track audio overrides on the diarizer. Consumed by stage2_transcript.py --overrides, so the transcript has exactly one writer and re-running stage 2 does not silently undo this pass.",
+  "method": "Per-track RMS over each turn's window, mapped master->mix through edit_map. Decisive margin 6.0 dB; below that the diarizer's label stands because that is simultaneous speech, not a mislabel.",
+  "overrides": [
+    {
+      "t": 781.37,
+      "speaker": "adam",
+      "was": "tbj",
+      "margin_db": 19.1
+    },
+    {
+      "t": 1668.35,
+      "speaker": "tbj",
+      "was": "adam",
+      "margin_db": 8.6
+    },
+    {
+      "t": 2099.61,
+      "speaker": "tbj",
+      "was": "adam",
+      "margin_db": 6.8
+    },
+    {
+      "t": 2569.68,
+      "speaker": "adam",
+      "was": "tbj",
+      "margin_db": 12.6
+    },
+    {
+      "t": 3597.92,
+      "speaker": "tbj",
+      "was": "adam",
+      "margin_db": 6.6
+    }
+  ]
+}

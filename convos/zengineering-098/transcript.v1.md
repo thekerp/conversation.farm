@@ -5,9 +5,11 @@
 **Source:** https://media.transistor.fm/ac89d303/b3682229.mp3
 
 > Machine transcript. ElevenLabs Scribe, word-level timings, diarization on.
-> Speaker attribution: `confirmed`. Per-track audio ownership. speaker_0 windows are hot on brian.mp3 and speaker_1 windows on thekerp.mp3 by 38.19 dB median across 170 turns / 2302 s, 169/170 consistent, with the silent track at its noise floor. Measured through the audio-verified master<->raw edit map; perturbing that map by +/-5 s collapses consistency to 73-79% and any single global offset to 46-62%, so the separation is not an artifact of scoring.
+> Speaker attribution: `confirmed`. Per-track audio ownership, arbitrated per turn. See source.json transcripts.v1.
 > 28 word(s) of music-bed vocal removed — the diarizer had attributed the song to a participant. See `corrections.json`.
 > 1 ASR error(s) repaired from `corrections.json`.
+> 5 turn(s) reassigned by per-track audio over the diarizer's label. See `speaker-arbitration.v1.json`.
+> 5 turn(s) disagree with the hand-labelled pass and are marked `disputed` in `segments.v1.jsonl`.
 
 ---
 
@@ -315,7 +317,7 @@ Yeah.
 
 Like, and people are like, "Yeah, well." It's like n- it immediately like seems to break the human scale brain-
 
-**T. Brian Jones** _[00:13:01]_
+**Adam Kerpelman** _[00:13:01]_
 
 [chuckles] Yeah
 
@@ -711,7 +713,7 @@ No
 
 ... I mean, I'm guessing a little bit that everything, but, um, it, it's... I'm trying to speak to the how much complexity there is in the layering of software in the world, right? To make your computer work, to let you video chat, to let you send a text message, there are just hundreds and hundreds of layers of, of things interrupting, interrupt- interruptable? [chuckles]
 
-**Adam Kerpelman** _[00:27:48]_
+**T. Brian Jones** _[00:27:48]_
 
 Interacting.
 
@@ -959,7 +961,7 @@ He needed-
 
 Right
 
-**Adam Kerpelman** _[00:34:59]_
+**T. Brian Jones** _[00:34:59]_
 
 ... create the big open, the most successful open source project.
 
@@ -1155,7 +1157,7 @@ Spitball
 
 But the point is like you can't just go back and delete an old entry. Instead you have to put up a new change that says, "Now ignore this." Uh, oh, I, I screw up constantly, and I have to roll back and make a change, and the funny thing is I'm just constantly aware that my record of like, "And then he put this up and fucked this up and fucked that up, and then there was another one," like is still there, which is kind of funny.
 
-**T. Brian Jones** _[00:42:49]_
+**Adam Kerpelman** _[00:42:49]_
 
 Right. Yep.
 
@@ -1687,7 +1689,7 @@ And it's so, you know, there's a time to express that a thing is wrong. I don't 
 
 Oh, yeah. There's a lot of personality that comes out.
 
-**Adam Kerpelman** _[00:59:57]_
+**T. Brian Jones** _[00:59:57]_
 
 Sorry about that shit. [laughs]
 

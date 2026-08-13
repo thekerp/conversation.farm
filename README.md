@@ -37,6 +37,9 @@ Its current show notes are four links. That's the bar.
       19/19 blocks, wrong-offset controls at chance)
 - [x] Master↔raw edit map recovered and verified — 8 clips, 6 internal cuts, 87.1 s of
       conversation cut, cold open lifted from 20:41
+- [x] The 99 s the edit removed, transcribed off the isolated tracks (`cut-material.v1.md`)
+- [x] Riverside transcript added as the bedrock reference; per-turn speaker arbitration against
+      the per-track audio corrected 5 turns the diarizer got wrong
 - [ ] Decide: beats from the released audio only, or clips cut from the raw tracks so the 87.1 s
       of cut conversation becomes addressable
 - [ ] Music-bed licence answered before any page hosts master 0–33 s or 3634–3683 s
@@ -61,6 +64,13 @@ several things the specs assumed:
   raw timelines differ by up to 83.4 s; a single offset between them is wrong everywhere.
 - **`speakers.md` is not a human pass.** It is byte-reproducible from the Scribe JSON. It agrees
   with the diarization on all 451 turns and therefore corroborates nothing.
+- **Three ASR passes now disagree usefully.** Scribe (canonical), faster-whisper v0, and
+  Riverside. Two of the three write "Engineering Podcast" — only faster-whisper heard the show's
+  own name. Riverside gets "DeFi" right where Scribe wrote "defy". Only Scribe has the Heartbleed
+  passage at all.
+- **Riverside is a text reference, not a speaker reference.** Its diarization puts the Epic/Apple
+  exchange on the wrong host; the isolated tracks disagree with it by 10 dB. Joining it by
+  timestamp also manufactures disagreements, because its block times lead their text — join by text.
 - **Scribe's `logprob` cannot find the errors that matter** — median −3.6e-07, and it flags none of
   the five entity problems. Diffing against the older Whisper pass found all of them with no audio.
   That is why `transcript.v0.md` is kept despite being lossier.

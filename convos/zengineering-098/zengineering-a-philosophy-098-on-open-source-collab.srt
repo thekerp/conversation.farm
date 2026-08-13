@@ -1,0 +1,3626 @@
+1
+00:00:00,322 --> 00:00:01,323
+Will you?
+
+2
+00:00:02,428 --> 00:00:04,242
+Sorry, go ahead.
+
+3
+00:00:05,056 --> 00:00:07,282
+That's never happened before in 100 episodes.
+
+4
+00:00:07,282 --> 00:00:09,024
+don't think we've ever done what we just did.
+
+5
+00:00:09,998 --> 00:00:11,416
+both tried to yield.
+
+6
+00:00:11,416 --> 00:00:12,432
+But yeah.
+
+7
+00:00:14,318 --> 00:00:15,430
+They don't know
+
+8
+00:00:19,886 --> 00:00:21,157
+Hey, it's Engineering Podcast.
+
+9
+00:00:21,157 --> 00:00:22,427
+I'm Adam.
+
+10
+00:00:23,629 --> 00:00:27,221
+Welcome back for another Hang in the Laboratory.
+
+11
+00:00:27,221 --> 00:00:34,376
+It's just the two of us this week, and we don't need help keeping the lights on.
+
+12
+00:00:34,376 --> 00:00:36,477
+So let's do it.
+
+13
+00:00:36,657 --> 00:00:37,954
+How you doing, man?
+
+14
+00:00:37,954 --> 00:00:39,603
+Get out of here, we don't need your help.
+
+15
+00:00:40,814 --> 00:00:47,294
+This is episode 98 and we don't we don't know for sure what this project becomes at
+episode 100.
+
+16
+00:00:47,294 --> 00:00:51,526
+So we're just kind of taking them off when we have time.
+
+17
+00:00:52,952 --> 00:00:57,321
+Yeah, we're evolving.
+
+18
+00:00:57,321 --> 00:00:58,093
+We're changing.
+
+19
+00:00:58,093 --> 00:00:59,535
+Things are happening.
+
+20
+00:01:02,483 --> 00:01:04,596
+You're about to have a kid.
+
+21
+00:01:05,174 --> 00:01:06,775
+You're about to have a kid.
+
+22
+00:01:08,178 --> 00:01:09,170
+Not as soon as me.
+
+23
+00:01:09,170 --> 00:01:10,040
+Yeah.
+
+24
+00:01:10,141 --> 00:01:16,594
+It's funny to have a we, because of medical circumstances, we have an induction scheduled.
+
+25
+00:01:16,594 --> 00:01:18,772
+So like, that's weird.
+
+26
+00:01:19,054 --> 00:01:21,777
+I got a heart out on this pregnancy.
+
+27
+00:01:22,702 --> 00:01:23,624
+I think that's smart.
+
+28
+00:01:23,624 --> 00:01:30,206
+I know some people who have suggested that we do that because then you're just scheduling
+things, but they won't let us do that at our hospital.
+
+29
+00:01:30,478 --> 00:01:31,218
+Yeah, that's fair.
+
+30
+00:01:31,218 --> 00:01:34,740
+uh But we're not here to talk about that.
+
+31
+00:01:34,741 --> 00:01:40,444
+Partially, I think because we're both going through that, we'd rather talk about an
+engineering topic in a sense.
+
+32
+00:01:40,444 --> 00:01:41,425
+It's sort of engineering.
+
+33
+00:01:41,425 --> 00:01:43,682
+It's like engineering cultural topic.
+
+34
+00:01:43,682 --> 00:01:45,354
+I'd rather nerd rage with you.
+
+35
+00:01:45,646 --> 00:01:46,886
+Nerd rage.
+
+36
+00:01:47,706 --> 00:01:51,266
+What's the topic?
+
+37
+00:01:51,786 --> 00:01:53,228
+Give us our intro, sir.
+
+38
+00:01:53,228 --> 00:02:01,654
+Yeah, I mean, you came all fired up to uh discuss the concepts of open source or open
+collaboration.
+
+39
+00:02:01,654 --> 00:02:06,612
+Maybe it'll expand out to, but open source software more specifically.
+
+40
+00:02:08,779 --> 00:02:18,603
+I, I am, JURIS is increasingly, and I am increasingly involved in other projects that are
+ultimately built on top of open source software.
+
+41
+00:02:18,603 --> 00:02:30,978
+Um, and so, you know, that causes this engineering part of my brain to dig deeper and
+deeper into the notions of, you know, both technologically, what gets us to where we are
+
+42
+00:02:30,978 --> 00:02:36,334
+and how's that novel and then, culturally, how does that get us to where we are?
+
+43
+00:02:36,334 --> 00:02:36,814
+Right.
+
+44
+00:02:36,814 --> 00:02:50,054
+So, and the realization I have as I cross the sort of, as I try to bridge rivers, I
+suppose, um, you know, talked to a whole bunch of lawyers all the time and I try to
+
+45
+00:02:50,054 --> 00:02:54,074
+explain to them the way that programmers think about the world in the modern world.
+
+46
+00:02:54,074 --> 00:02:56,234
+And I talk about things like version control.
+
+47
+00:02:56,234 --> 00:03:01,154
+talk about things like open source software, and they just have no idea what I'm talking
+about.
+
+48
+00:03:01,154 --> 00:03:05,246
+And then some subset don't even believe that it's possible.
+
+49
+00:03:05,246 --> 00:03:08,556
+even though we have everything in front of us working.
+
+50
+00:03:08,556 --> 00:03:10,381
+And I go, yeah, but this is working.
+
+51
+00:03:10,381 --> 00:03:12,718
+And they go, I still don't buy it.
+
+52
+00:03:12,718 --> 00:03:18,738
+It's pretty crazy when the legal system is built on open source, right?
+
+53
+00:03:18,738 --> 00:03:28,678
+Open source opinions, open source decisions, open source rules and documents, all those
+funny looking books that are just the same in the background of every legal picture.
+
+54
+00:03:28,678 --> 00:03:31,118
+That's just open source legal stuff.
+
+55
+00:03:31,318 --> 00:03:33,918
+I guess maybe you pay for them so the open part's not.
+
+56
+00:03:33,918 --> 00:03:35,148
+But it's kind of open
+
+57
+00:03:35,148 --> 00:03:36,078
+to be paid for.
+
+58
+00:03:36,078 --> 00:03:40,882
+And every time somebody challenges that, the Supreme Court goes, yeah, you can't you can't
+public.
+
+59
+00:03:40,882 --> 00:03:51,748
+uh Yeah, so let's so so so in this case, when you talk about the laws, like it's easy,
+it's easy to see that the laws are meant to be public, right?
+
+60
+00:03:52,150 --> 00:03:56,712
+In this case, maybe the place to start is defining source.
+
+61
+00:03:57,634 --> 00:04:04,450
+Because opens easy, we can we can dig into open and what it means from a cultural
+standpoint, but like the first thing that makes
+
+62
+00:04:04,450 --> 00:04:13,218
+The movement that we, that you and I would call open source work is the source code
+ultimately, right?
+
+63
+00:04:13,218 --> 00:04:22,335
+Source open source sort of, least in the context you and I are talking about, think,
+because like, obviously source is a broad word, but like from your, from your engineering
+
+64
+00:04:22,335 --> 00:04:23,446
+perspective.
+
+65
+00:04:23,776 --> 00:04:35,651
+Yeah, it's an interesting question because I always with software, I it's easy to kind of
+spiral down into its own little rabbit hole because there's something weird and unique
+
+66
+00:04:35,651 --> 00:04:36,841
+about software.
+
+67
+00:04:36,841 --> 00:04:42,824
+that feeling has faded a little bit as I've as I've progressed in that world in my life.
+
+68
+00:04:42,824 --> 00:04:50,627
+But I'll never forget when I first started really learning to program how strangely unique
+the whole ecosystem is.
+
+69
+00:04:50,627 --> 00:04:52,158
+But
+
+70
+00:04:53,262 --> 00:04:56,502
+Yeah, the source code is the program.
+
+71
+00:04:56,502 --> 00:05:03,122
+It's the thing when you install an app on your phone, like you're downloading code, kind
+of.
+
+72
+00:05:03,122 --> 00:05:05,242
+I mean, there's a lot of other stuff going on.
+
+73
+00:05:05,242 --> 00:05:14,682
+But in theory, right, back in the day when you used to like get a floppy disk when I was a
+kid and people would be like, hey, here's a game or here's a whatever.
+
+74
+00:05:15,522 --> 00:05:22,142
+You're just getting software and then you bring it home and you put it on your computer or
+you download it into your phone.
+
+75
+00:05:22,218 --> 00:05:27,600
+And then when you like tap it or touch it or I don't even know if people use the word open
+anymore.
+
+76
+00:05:27,600 --> 00:05:30,381
+Do kids say I opened an app when they.
+
+77
+00:05:30,861 --> 00:05:41,415
+Right when they touch it, uh it's the computer runs the code like it's it's just I mean,
+it's like a it's kind of a Rube Goldberg machine behind the scenes.
+
+78
+00:05:41,415 --> 00:05:43,706
+The computer is just making the Rube Goldberg machine run.
+
+79
+00:05:43,706 --> 00:05:44,310
+Yeah.
+
+80
+00:05:44,310 --> 00:05:47,571
+Like I think we got episodes on episodes about this stuff.
+
+81
+00:05:47,571 --> 00:05:57,196
+If we want to chase it, if you want to chase through our feed, but like, you know,
+ultimately a computer is this processing mechanism and it runs through a string of digits
+
+82
+00:05:57,196 --> 00:06:04,178
+written out that provide it with everything it needs to do all the sort of conditional
+things that are running an app.
+
+83
+00:06:04,178 --> 00:06:04,799
+Right.
+
+84
+00:06:04,799 --> 00:06:07,120
+But underneath that is just a bunch of code.
+
+85
+00:06:07,120 --> 00:06:08,175
+Like it's a bunch of texts.
+
+86
+00:06:08,175 --> 00:06:12,822
+Like you could print out like Mac OS.
+
+87
+00:06:13,226 --> 00:06:18,169
+It would be reams and reams of paper, but you could print it out and go, yo, here it is.
+
+88
+00:06:18,169 --> 00:06:20,591
+Enter it back in and it'll run.
+
+89
+00:06:20,591 --> 00:06:23,573
+And that's how they used to do programming on like pieces of paper.
+
+90
+00:06:23,573 --> 00:06:24,393
+Right.
+
+91
+00:06:24,914 --> 00:06:30,438
+and, ultimately like it gets weird because it's just text.
+
+92
+00:06:30,438 --> 00:06:35,060
+so even from a legal standpoint, like immediately we're getting to the legal side.
+
+93
+00:06:35,261 --> 00:06:40,134
+The only way you can protect that is kind of the same ways you protect books and things
+like that.
+
+94
+00:06:40,134 --> 00:06:40,375
+Right.
+
+95
+00:06:40,375 --> 00:06:42,966
+Like you can copyright license your code.
+
+96
+00:06:43,116 --> 00:06:45,449
+And so then people have to pay you to use it.
+
+97
+00:06:47,660 --> 00:06:49,005
+That's kinda it.
+
+98
+00:06:49,570 --> 00:06:50,791
+Well, it's interesting.
+
+99
+00:06:50,791 --> 00:06:58,614
+Software is interesting technologically too, because ah it's different.
+
+100
+00:06:58,614 --> 00:07:02,396
+It's different as an entity than like a car, for instance, right?
+
+101
+00:07:02,396 --> 00:07:08,889
+And I choose cars because that's maybe one of the more complex things that everybody owns
+and like deals with on a day-to-day basis.
+
+102
+00:07:08,889 --> 00:07:11,890
+Like if you go under the hood of your car, there's all kinds of stuff going on in there.
+
+103
+00:07:11,890 --> 00:07:15,902
+It seems like a mess, super complicated and ignore the fact that they're
+
+104
+00:07:15,992 --> 00:07:18,223
+tons of computers and software in cars these days too.
+
+105
+00:07:18,223 --> 00:07:19,993
+Let's just pretend it's all the like moving parts.
+
+106
+00:07:19,993 --> 00:07:24,024
+You got your motors and your pistons and your catalytic converters and stuff.
+
+107
+00:07:24,104 --> 00:07:30,166
+It's pretty complicated in there, but actually if you pull everything out, it's like a
+known number of parts.
+
+108
+00:07:30,166 --> 00:07:32,387
+You can even pull into those and pull everything out.
+
+109
+00:07:32,387 --> 00:07:36,678
+And you're talking like probably hundreds of thousands of parts, like physical components.
+
+110
+00:07:36,678 --> 00:07:39,449
+And those break down ultimately down to like a physical thing.
+
+111
+00:07:39,449 --> 00:07:40,649
+Like here's a bolt.
+
+112
+00:07:40,789 --> 00:07:44,490
+Software is kind of, it's like,
+
+113
+00:07:44,490 --> 00:07:46,170
+infinitely complex, right?
+
+114
+00:07:46,170 --> 00:07:53,492
+Every line of code does something and each line of code could do that thing like an
+infinite number of ways.
+
+115
+00:07:53,492 --> 00:08:07,436
+And so when you're dealing with software as a as like a technological entity, there's
+there's this weird thing about it that just makes it like infinitely new, unique ah and
+
+116
+00:08:07,436 --> 00:08:09,477
+infinitely customizable.
+
+117
+00:08:09,477 --> 00:08:14,270
+And that kind of feeds into, I think, what drives ah
+
+118
+00:08:14,270 --> 00:08:17,470
+open source software and why it kind of emerges there.
+
+119
+00:08:17,470 --> 00:08:21,670
+Do you get what I'm saying?
+
+120
+00:08:22,350 --> 00:08:26,030
+Yeah, I mean, and so this is the thing about having to cover the source piece.
+
+121
+00:08:26,030 --> 00:08:30,050
+Cause like, it's not a new thing to say, I'm not going to try to protect.
+
+122
+00:08:30,050 --> 00:08:31,850
+Like this is why I get to the licensing part, right?
+
+123
+00:08:31,850 --> 00:08:42,410
+Like if you invent a car, we live in a governmental system where you get to go, okay, I
+can patent this version of how to put these pieces together, which like nobody's going to
+
+124
+00:08:42,410 --> 00:08:43,110
+try to do anyway.
+
+125
+00:08:43,110 --> 00:08:44,790
+Cause it has to be done at great cost.
+
+126
+00:08:44,790 --> 00:08:52,248
+But if they wanted to, they're not even allowed to, because I have the right to be the
+only one that does this for a certain amount of time and has to do with
+
+127
+00:08:52,248 --> 00:08:55,430
+the laws that we've put in place around market economics, et cetera.
+
+128
+00:08:55,430 --> 00:08:55,660
+Right.
+
+129
+00:08:55,660 --> 00:09:04,207
+Like, but I think the key part of that is, you know, that I couldn't build a car if I
+wanted to, right.
+
+130
+00:09:04,207 --> 00:09:12,012
+doesn't matter if I could get all of Honda's plans for like, you know, a civic, I can't
+build a civic.
+
+131
+00:09:12,233 --> 00:09:13,573
+so that.
+
+132
+00:09:13,774 --> 00:09:15,035
+Mark is what it is.
+
+133
+00:09:15,035 --> 00:09:15,345
+Right.
+
+134
+00:09:15,345 --> 00:09:18,337
+Like Tesla has open sourced all of their patents.
+
+135
+00:09:18,337 --> 00:09:20,038
+It's no help to me.
+
+136
+00:09:20,248 --> 00:09:23,043
+Unless I'm going to go start a competing car company, right?
+
+137
+00:09:23,043 --> 00:09:26,558
+So like, it's funny that they hold that up as, it's been open source.
+
+138
+00:09:26,558 --> 00:09:33,640
+And like, I'm sure that's got, it's done some good for the world, but like, I can't use, I
+can't go build a car, right?
+
+139
+00:09:33,640 --> 00:09:35,022
+Um,
+
+140
+00:09:36,750 --> 00:09:50,070
+Software is just files, digital files on a computer, lists of strings of characters that I
+can, if I have enough disk space, like actually hold and then actually manipulate.
+
+141
+00:09:50,070 --> 00:09:57,610
+And then actually like I can try to build that car because I have everything I need to do
+it on the device that is the computer.
+
+142
+00:09:57,610 --> 00:10:01,450
+And so the idea of saying, I'm going to make everything free.
+
+143
+00:10:01,930 --> 00:10:03,290
+Who cares if you do that with car?
+
+144
+00:10:03,290 --> 00:10:06,324
+It's not a thing that people can really attainably.
+
+145
+00:10:06,324 --> 00:10:15,447
+actually leverage as open source open source giving away software is to give away the
+entire value of that software that you've created you you're not going to be able to
+
+146
+00:10:15,447 --> 00:10:27,460
+monetize that through the Exit invented it port that people are used to If you go open
+source for software, right and part of that is the code like because it's just code
+
+147
+00:10:27,460 --> 00:10:33,442
+written down We can move it around through the idea system instead of having to move it
+through the physical world
+
+148
+00:10:33,710 --> 00:10:39,556
+Well, you're touching on another really critical part of software that makes it a weird
+space.
+
+149
+00:10:39,556 --> 00:10:42,438
+It's entirely virtual.
+
+150
+00:10:42,718 --> 00:10:47,883
+Maybe that's not the right word, but it's fungible, right?
+
+151
+00:10:47,883 --> 00:10:52,688
+You can reproduce it an infinite number of times and it kind of doesn't cost anything and
+everyone can have it.
+
+152
+00:10:52,688 --> 00:10:59,874
+ah Whereas the car, like in service of later parts of this conversation, I think...
+
+153
+00:11:00,090 --> 00:11:02,802
+The open source concept with hardware makes sense too.
+
+154
+00:11:02,802 --> 00:11:06,364
+And we're seeing a lot of that also, but it's just so much harder.
+
+155
+00:11:06,364 --> 00:11:11,938
+You have to go buy the cost of a car is mostly captured in the parts, right?
+
+156
+00:11:11,938 --> 00:11:16,741
+The company's got to make profit, but you have to go buy an engine and like physically get
+it to your house.
+
+157
+00:11:16,741 --> 00:11:19,813
+And they're really heavy and it's still complicated and challenging.
+
+158
+00:11:19,813 --> 00:11:29,888
+There's still all kinds of engineering necessary to put a car together, just like getting
+a computer up and running from scratch, but there's no cost.
+
+159
+00:11:29,888 --> 00:11:34,882
+If you have a computer already to add software to it, there doesn't need to be a cost.
+
+160
+00:11:34,882 --> 00:11:39,986
+The value of buying software is entirely artificial.
+
+161
+00:11:40,047 --> 00:11:42,328
+And I mean that in an economic sense.
+
+162
+00:11:42,328 --> 00:11:52,157
+A uh car, the company who made the car for you has to, at the very least, pay for the
+steel that the car is made out of.
+
+163
+00:11:52,157 --> 00:11:53,598
+They can't get around that.
+
+164
+00:11:53,598 --> 00:11:56,280
+They can't give you a car without having paid for that steel.
+
+165
+00:11:56,280 --> 00:11:58,680
+With software, they wrote it and
+
+166
+00:11:58,680 --> 00:12:05,363
+fine, that costs the money, now they could just give out the software to everyone, which
+you can't do that anywhere else.
+
+167
+00:12:05,363 --> 00:12:07,254
+You can't do that in the physical world.
+
+168
+00:12:07,254 --> 00:12:14,328
+And so that's an incredibly distinct component of open source software and driven it,
+right?
+
+169
+00:12:14,328 --> 00:12:15,457
+And allow it.
+
+170
+00:12:15,672 --> 00:12:23,585
+Well, and this is maybe uh a tangent, but like this is also, think is the fundamental
+thing that people struggle with in cybersecurity conversations.
+
+171
+00:12:23,585 --> 00:12:37,371
+The scariest thing about the idea that the 2020 bar exam might get hacked is everything is
+digitally replicable one for one at the speed of the internet.
+
+172
+00:12:37,531 --> 00:12:44,044
+So for this two day, eight hour a day test, if someone finds an exploit on day one,
+
+173
+00:12:44,212 --> 00:12:53,381
+Every hacker in the world knows about it and how to do it and has the hardware and the
+access to execute it for eight hours the next day.
+
+174
+00:12:53,381 --> 00:13:05,342
+And people are like, yeah, well, it immediately seems to break the human scale brain when
+you take away scarcity.
+
+175
+00:13:05,742 --> 00:13:08,182
+Yeah, you certainly can't.
+
+176
+00:13:08,262 --> 00:13:11,222
+This stuff, this snowball so quickly, right?
+
+177
+00:13:11,222 --> 00:13:15,682
+You can't talk about open source software or you shouldn't without talking about the
+internet, right?
+
+178
+00:13:15,682 --> 00:13:27,862
+Because now all of a sudden, to continue the car analogy, if I am tinkering with my car at
+home, say I've got a machine shop in my garage and I like mill myself a turbocharger and
+
+179
+00:13:27,862 --> 00:13:31,660
+install it on my own car, I can tell people about that.
+
+180
+00:13:31,660 --> 00:13:31,880
+Right?
+
+181
+00:13:31,880 --> 00:13:34,812
+can go tell my friend, I can go help them in their shop, build one and cool.
+
+182
+00:13:34,812 --> 00:13:40,325
+We both hacked our car, but I can't put it on the internet and have every car in the
+world.
+
+183
+00:13:40,325 --> 00:13:42,396
+All of a sudden have a turbocharger.
+
+184
+00:13:42,396 --> 00:13:43,276
+Right?
+
+185
+00:13:43,557 --> 00:13:46,838
+That's what happens with software and with the internet.
+
+186
+00:13:46,838 --> 00:13:47,108
+Right?
+
+187
+00:13:47,108 --> 00:13:54,222
+I can, I can go into a piece of software and I can make a change and anyone who wants that
+change now can just come have it.
+
+188
+00:13:54,222 --> 00:13:57,704
+And in the modern world, they can come have it instantaneously.
+
+189
+00:13:57,704 --> 00:13:57,924
+Right?
+
+190
+00:13:57,924 --> 00:14:00,916
+Their system set up to just to
+
+191
+00:14:00,916 --> 00:14:09,026
+instantly make these upgrades as they're contributed to open source projects, which
+realizing we're way ahead of ourselves on depth.
+
+192
+00:14:09,026 --> 00:14:19,153
+We need to know, but mean, that point that I wanted to make was like, okay, so, so we're
+starting from the fact of code exists and software is weird, blah, blah, blah.
+
+193
+00:14:19,153 --> 00:14:19,913
+Right.
+
+194
+00:14:20,094 --> 00:14:25,317
+the next thing, and this is the part that blows my mind when I talk to like professionals
+about it.
+
+195
+00:14:25,497 --> 00:14:30,961
+We have to talk about the extent to which without open source thinking.
+
+196
+00:14:32,722 --> 00:14:38,510
+none of this stuff that we are, that we just talked about all that internet shit, your
+email.
+
+197
+00:14:38,510 --> 00:14:46,790
+text messages, uh, uh, uh, this conversation we're having right now via video chat doesn't
+exist without open source projects.
+
+198
+00:14:46,790 --> 00:14:48,890
+And I don't think people understand that.
+
+199
+00:14:48,890 --> 00:14:48,970
+Right?
+
+200
+00:14:48,970 --> 00:14:57,850
+Like I think a lot of people's conception of the internet is like Steve jobs invented it
+in 1984 and their geniuses.
+
+201
+00:14:57,850 --> 00:15:00,050
+And that's why Apple should have so much money.
+
+202
+00:15:00,050 --> 00:15:02,290
+And that's not really the evolution of this stuff.
+
+203
+00:15:02,290 --> 00:15:07,490
+Like if you want to get real deep on it, we have episodes about routing protocols and
+about.
+
+204
+00:15:07,490 --> 00:15:12,788
+how the internet works, but like ultimately what we're talking about is, like.
+
+205
+00:15:15,874 --> 00:15:25,703
+the movement that is the meme, the notion of open software, that idea where somebody just
+went, well, let's just give this one away.
+
+206
+00:15:25,703 --> 00:15:29,226
+What if we all agree to not make money off of this?
+
+207
+00:15:29,226 --> 00:15:36,592
+You know, what we're going to do is because this is only protected by license, we're going
+to come up with a license where no one's allowed to use this who doesn't also agree to
+
+208
+00:15:36,592 --> 00:15:39,124
+allow the next person to use it for free too.
+
+209
+00:15:39,438 --> 00:15:41,678
+It's a funny impulse, right?
+
+210
+00:15:41,678 --> 00:15:55,278
+And I think at the very least, it proves that if you reduce the cost to someone to free,
+we as humans are in some capacity, altruistic, right?
+
+211
+00:15:55,278 --> 00:15:56,818
+It's kind of a proof there.
+
+212
+00:15:57,058 --> 00:15:58,218
+Some people still aren't.
+
+213
+00:15:58,218 --> 00:16:03,018
+Some people still would never want to give away something they worked hard on and totally
+make sense, right?
+
+214
+00:16:03,018 --> 00:16:07,682
+Because that is the opposite of like how evolution works.
+
+215
+00:16:07,682 --> 00:16:07,922
+Right?
+
+216
+00:16:07,922 --> 00:16:12,304
+you put energy into something, you need to get it back or else your lineage is going to
+die off.
+
+217
+00:16:12,304 --> 00:16:14,565
+So ah it's weird.
+
+218
+00:16:14,565 --> 00:16:16,126
+it kind of exists.
+
+219
+00:16:16,286 --> 00:16:24,900
+My head's deep in politics right now, obviously, as I expect a lot of people are, but it
+kind of exists in that same philosophical split of like, do we, do we keep things and
+
+220
+00:16:24,900 --> 00:16:31,797
+capitalize on them entirely to like maintain control over things in the case of like
+windows?
+
+221
+00:16:31,797 --> 00:16:34,584
+all the possible value for ourselves.
+
+222
+00:16:34,584 --> 00:16:41,079
+Whereas they're like a greater good that can be achieved with long-term progress by
+sharing things out.
+
+223
+00:16:41,079 --> 00:16:45,243
+honestly, doesn't, you can argue both, right?
+
+224
+00:16:45,243 --> 00:16:52,128
+Like they're really interesting when you start to look at open source software versus like
+closed source software it's owned by companies.
+
+225
+00:16:52,288 --> 00:16:59,784
+Both are hugely successful and you see these, this like up and down battle over the last
+50 years as businesses take these different angles.
+
+226
+00:16:59,784 --> 00:17:04,493
+So it's really interesting to kind of see those different philosophies play out.
+
+227
+00:17:04,493 --> 00:17:06,579
+uh in the space of our world.
+
+228
+00:17:08,301 --> 00:17:18,095
+And so, yeah, so ultimately it's, it, you know, it becomes a public versus private
+question, you know, so it's not a new challenge, right?
+
+229
+00:17:18,095 --> 00:17:27,197
+You can literally go read the Federalist papers if you want to start to break down the
+idea of what is the public good and how should we leverage it in systems of banking and et
+
+230
+00:17:27,197 --> 00:17:27,888
+cetera, right?
+
+231
+00:17:27,888 --> 00:17:35,710
+uh And so it seems to me that it's just sort of like an ebb and flow conversation and, and
+in the space of
+
+232
+00:17:36,174 --> 00:17:41,515
+collaboration, there are times for the open piece and there are time for the closed piece
+and they just sort of flow in and out.
+
+233
+00:17:41,515 --> 00:17:42,056
+Right.
+
+234
+00:17:42,056 --> 00:17:47,897
+And I think we're living through a change in that mindset right now, which is why it comes
+up in politics a lot.
+
+235
+00:17:47,897 --> 00:17:51,908
+But ultimately that change is brought on by the technology we're talking about.
+
+236
+00:17:51,908 --> 00:17:52,158
+Right.
+
+237
+00:17:52,158 --> 00:18:03,171
+So the places I like to take it back to with open source is like, nevermind sort of the
+popular examples we'll get to in a second that I think, you know, uh, so when we'll start
+
+238
+00:18:03,171 --> 00:18:05,166
+saying names that people might recognize.
+
+239
+00:18:05,166 --> 00:18:07,846
+terms of brands and things like that.
+
+240
+00:18:07,946 --> 00:18:12,926
+Um, you know, it starts at the idea of what gave us the internet, which is protocols,
+right?
+
+241
+00:18:12,926 --> 00:18:22,566
+So email works because everyone that had servers at the time that the internet was being
+invented and that was still enough people that you could go like, yo, all of you.
+
+242
+00:18:22,566 --> 00:18:26,046
+Cause it's just like a bunch of universities, academics at universities.
+
+243
+00:18:26,046 --> 00:18:32,998
+Somebody said, Hey, if we use this codified instruction set to send messages back and
+forth,
+
+244
+00:18:33,132 --> 00:18:40,687
+And by codified, mean, it's in a code file, so it can't work another way, not like put in
+laws, which is codified.
+
+245
+00:18:40,687 --> 00:18:51,564
+So like, then we can send email back and forth and all people have been allowed to
+monetize ever since then is like, Hey, here's a novel interface for email.
+
+246
+00:18:51,564 --> 00:18:56,018
+But the reason email works like no one, that's not true.
+
+247
+00:18:56,018 --> 00:19:02,796
+A lot of people listening to this have probably heard of SMTP, but the people I want to
+talk to have never heard of SMTP.
+
+248
+00:19:02,796 --> 00:19:03,646
+Right.
+
+249
+00:19:03,707 --> 00:19:10,914
+It's just the underlying software that makes email work and email works as widely as it
+does because that shit's free.
+
+250
+00:19:11,638 --> 00:19:26,432
+Yeah, another interesting piece with the concept of open source that you see that I think
+is really ah kind of counterintuitive, uh but also like, again, a recognition of these
+
+251
+00:19:26,432 --> 00:19:28,623
+competing philosophies, both having value.
+
+252
+00:19:28,623 --> 00:19:38,594
+uh Some open source licenses, a lot of open source software is allowed to be shared
+freely.
+
+253
+00:19:38,594 --> 00:19:46,979
+but also you're allowed to go like use it to build a product and build a business around,
+which is like the ultimate perfect combination, right?
+
+254
+00:19:46,979 --> 00:19:49,881
+It's like, hey, I've made this thing.
+
+255
+00:19:50,061 --> 00:19:52,973
+For whatever reason, I got the value out of it that I needed.
+
+256
+00:19:52,973 --> 00:19:54,284
+I don't need any more value.
+
+257
+00:19:54,284 --> 00:19:55,785
+Let me pass it along.
+
+258
+00:19:55,785 --> 00:19:57,866
+ah And then...
+
+259
+00:19:57,992 --> 00:19:59,448
+Hey, monetize it if you want.
+
+260
+00:19:59,448 --> 00:20:00,803
+You a better idea than me.
+
+261
+00:20:00,803 --> 00:20:02,104
+Like monetize it.
+
+262
+00:20:02,104 --> 00:20:10,211
+Totally, which it's really easy to get caught up in that philosophy and be like, well,
+that's obviously the way forward, right?
+
+263
+00:20:10,211 --> 00:20:20,740
+Like if I enable you, then you enable other people and like look at all the abundance
+that'll come from that geometric expansion, which kind of is that philosophy on that side,
+
+264
+00:20:20,740 --> 00:20:21,460
+right?
+
+265
+00:20:23,532 --> 00:20:23,762
+Yeah.
+
+266
+00:20:23,762 --> 00:20:27,494
+And, and, and, and, know, I'm, I'm an Apple shareholder for a reason.
+
+267
+00:20:27,494 --> 00:20:38,770
+Like there is an argument for, Hey, take all that stuff, make it actually usable, put it
+in a shiny box, which just costs money and then sell it to people.
+
+268
+00:20:38,770 --> 00:20:42,372
+Um, you know, that, that, that gets to exist.
+
+269
+00:20:42,372 --> 00:20:48,735
+They're not like, they're not, it's not a binary, which is a term I chose carefully.
+
+270
+00:20:48,982 --> 00:20:53,598
+It's not a binary, you know, sort of operations system, right?
+
+271
+00:20:53,612 --> 00:21:00,444
+You're touching on another really critical piece of this, which is like functionality.
+
+272
+00:21:00,444 --> 00:21:02,654
+And this is part of the big argument a lot of the time.
+
+273
+00:21:02,654 --> 00:21:13,527
+Like Apple argues that they should have, they've always had this, this, uh, I don't know
+if it's like rules or terms of service or what, but they've very, very strictly control
+
+274
+00:21:13,527 --> 00:21:17,629
+how their software works and how software that you build that runs on their machines work.
+
+275
+00:21:17,629 --> 00:21:17,939
+Right.
+
+276
+00:21:17,939 --> 00:21:22,690
+Apple, anyone who builds software apps for the Apple store versus apps for like the
+Google,
+
+277
+00:21:23,118 --> 00:21:29,683
+Google Store or uh Android Store, uh very different process, right?
+
+278
+00:21:29,683 --> 00:21:31,154
+Very strict in how you build Apple.
+
+279
+00:21:31,154 --> 00:21:36,019
+so Apple software and then Apple from a hardware perspective does the same thing, right?
+
+280
+00:21:36,019 --> 00:21:40,722
+You can't just go buy a bunch of parts to like build an Apple computer in the same way
+that you can with a PC.
+
+281
+00:21:40,722 --> 00:21:43,695
+So the operating system needs very specific stuff.
+
+282
+00:21:43,695 --> 00:21:52,462
+And so what you get is like a very pristinely clean uh physical hardware system and
+software that runs on it, right?
+
+283
+00:21:52,906 --> 00:22:00,314
+It just it's I know I know it's a flame war between Apple and Windows, but it's just it's
+silly to have it.
+
+284
+00:22:00,314 --> 00:22:01,595
+Apple stuff runs better.
+
+285
+00:22:01,595 --> 00:22:05,100
+uh
+
+286
+00:22:05,100 --> 00:22:09,025
+flame war because the people having it understand why Apple stuff is better.
+
+287
+00:22:09,025 --> 00:22:10,216
+They just can't afford it.
+
+288
+00:22:10,216 --> 00:22:12,215
+uh
+
+289
+00:22:12,215 --> 00:22:20,261
+there early right because they're the benefit is that you can do whatever the hell you
+want with those other systems right I can build anything and throw it on an Android phone
+
+290
+00:22:20,261 --> 00:22:27,444
+whereas there are all kinds of limitations on Apple phones which actually are really bad
+they hold back innovation um
+
+291
+00:22:27,444 --> 00:22:27,764
+sure.
+
+292
+00:22:27,764 --> 00:22:33,547
+don't, mean, better in the just sort of like 50 million people can't be wrong way.
+
+293
+00:22:33,547 --> 00:22:38,819
+It's like, look, Apple is worth what it's worth because that way of doing it works, man.
+
+294
+00:22:38,819 --> 00:22:39,709
+I don't know what to tell you.
+
+295
+00:22:39,709 --> 00:22:44,881
+Uh, at the same time, none of the stuff I spend all day doing works.
+
+296
+00:22:44,881 --> 00:22:50,003
+If like I spend all day working with people and running Linux on their laptops.
+
+297
+00:22:50,254 --> 00:22:57,016
+And then, but that also means I frequently have to troubleshoot shit for them because the
+software doesn't work.
+
+298
+00:22:57,016 --> 00:22:58,127
+perfectly.
+
+299
+00:22:59,186 --> 00:23:00,381
+I can't screen share.
+
+300
+00:23:00,381 --> 00:23:02,975
+Well, are you running Linux?
+
+301
+00:23:02,975 --> 00:23:04,056
+Yeah.
+
+302
+00:23:04,377 --> 00:23:05,478
+Okay.
+
+303
+00:23:05,706 --> 00:23:12,846
+10 things I need you to do right now, which includes dropping code into the core Linux
+kernel, like
+
+304
+00:23:12,846 --> 00:23:14,766
+Wait, do you run a Linux machine?
+
+305
+00:23:14,766 --> 00:23:15,446
+No.
+
+306
+00:23:15,446 --> 00:23:16,506
+You just use.
+
+307
+00:23:16,726 --> 00:23:17,150
+You're right.
+
+308
+00:23:17,150 --> 00:23:18,295
+No, I don't.
+
+309
+00:23:18,295 --> 00:23:18,766
+I don't.
+
+310
+00:23:18,766 --> 00:23:20,340
+I got nothing to prove.
+
+311
+00:23:21,326 --> 00:23:28,246
+It's struggle if your primary desktop is like a total open source everything no good luck
+
+312
+00:23:28,791 --> 00:23:39,397
+But so, mean, and this is kind of the relevant transition without I got, if you want me to
+kill 10 minutes on riot versus apple in the context of app stores, I'm, I'm, I'm raging on
+
+313
+00:23:39,397 --> 00:23:47,602
+that, that bullshit, bad faith representation from riot of what the fuck happened, but I
+don't anyway.
+
+314
+00:23:47,602 --> 00:23:48,396
+uh
+
+315
+00:23:48,396 --> 00:23:48,886
+riot?
+
+316
+00:23:48,886 --> 00:23:51,066
+Oh, is that the gaming?
+
+317
+00:23:51,507 --> 00:23:52,448
+Yeah.
+
+318
+00:23:52,448 --> 00:23:53,869
+Like they want to make more money.
+
+319
+00:23:53,869 --> 00:24:01,637
+So they're pulling their shit out of Apple's app store and they're pretty, the Fort,
+company that makes Fortnite is throwing their weight around to try to change app store
+
+320
+00:24:01,637 --> 00:24:02,446
+dynamics.
+
+321
+00:24:02,446 --> 00:24:03,826
+is how the world works, right?
+
+322
+00:24:03,826 --> 00:24:05,406
+You just throw your weight around.
+
+323
+00:24:05,448 --> 00:24:07,119
+Yeah, they just they have returned.
+
+324
+00:24:07,119 --> 00:24:16,846
+have referred to a bunch of things as retaliatory in press releases that really that that
+tack strikes me as particularly bad faith.
+
+325
+00:24:16,846 --> 00:24:26,432
+They broke a rule and then Apple automatically did the thing that the store does when you
+break that rule, which is exactly the mechanism that has protected us for a really long
+
+326
+00:24:26,432 --> 00:24:29,324
+time from things like money scams.
+
+327
+00:24:29,538 --> 00:24:32,856
+This is why we need all human emotion removed from every decision that's made.
+
+328
+00:24:32,856 --> 00:24:34,616
+And then they say it's a retaliation.
+
+329
+00:24:34,616 --> 00:24:40,188
+Well, yeah, like it's a retaliation the way like the city is not retaliating against you
+and they give you a parking ticket.
+
+330
+00:24:40,188 --> 00:24:42,229
+You broke the fucking rule.
+
+331
+00:24:43,169 --> 00:24:46,530
+Their site's giving you a citation for breaking the rule.
+
+332
+00:24:46,530 --> 00:24:54,552
+They're not retaliating against you with an oppressive what representation of the fact
+that you broke a rule was on the fucking sign right there.
+
+333
+00:24:54,746 --> 00:24:58,393
+You don't have a right to not obey that rule because your car is nice.
+
+334
+00:24:58,393 --> 00:25:00,779
+God, Los Angeles is ruined my brain.
+
+335
+00:25:00,779 --> 00:25:02,282
+I'm a Los Angeles.
+
+336
+00:25:03,466 --> 00:25:05,706
+Uh, anyway, so that's riot.
+
+337
+00:25:05,706 --> 00:25:06,906
+That's riot in Apple.
+
+338
+00:25:06,906 --> 00:25:12,106
+That said, I think it's time for Apple to probably rethink its app store dynamics around
+some of these things.
+
+339
+00:25:12,106 --> 00:25:16,726
+Like payments are getting weird again, and we got to look at that.
+
+340
+00:25:17,086 --> 00:25:23,446
+Um, like, you know, Apple literally employs people to make sure that your things aren't a
+scam.
+
+341
+00:25:23,446 --> 00:25:31,458
+That's, know, your apps in the store aren't going to steal $10,000 from you and then run
+away with it, which happens constantly.
+
+342
+00:25:31,458 --> 00:25:33,068
+with apps on Android.
+
+343
+00:25:33,838 --> 00:25:38,238
+And that touches another interesting place with software, right?
+
+344
+00:25:38,238 --> 00:25:44,658
+If the software is not protected and taken care of, you can easily get screwed by it,
+right?
+
+345
+00:25:44,658 --> 00:25:46,098
+It can take over your computer.
+
+346
+00:25:46,098 --> 00:25:47,158
+It can delete your hard drive.
+
+347
+00:25:47,158 --> 00:25:56,038
+It can turn your computer into part of a botnet, which then is going out and breaking all
+kinds of laws around the world doing illegal things, and you don't even know what's
+
+348
+00:25:56,038 --> 00:25:56,430
+happening.
+
+349
+00:25:56,430 --> 00:26:05,890
+which kind of kicks back to the security thing, is like, you know, bad code can be really
+powerful and that bad code can be open.
+
+350
+00:26:05,890 --> 00:26:09,670
+So all that is open is not virtuous necessarily.
+
+351
+00:26:11,550 --> 00:26:15,490
+And, you know, everything we said to this point, I think sort of gets this thing.
+
+352
+00:26:15,490 --> 00:26:20,930
+It's like, okay, so you can tell just by the way that we talk and I hope that we have
+otherwise introduced it sufficiently.
+
+353
+00:26:21,130 --> 00:26:25,314
+Like the idea that there's there's a cultural split ultimately.
+
+354
+00:26:25,314 --> 00:26:29,599
+Between the idea of like, this stuff is the stuff that should be open.
+
+355
+00:26:29,599 --> 00:26:31,841
+This stuff's the stuff that's not.
+
+356
+00:26:31,841 --> 00:26:35,746
+Everyone is in an ecosystem where we have to acknowledge that open stuff is helpful.
+
+357
+00:26:35,746 --> 00:26:36,957
+Cause otherwise we don't have email.
+
+358
+00:26:36,957 --> 00:26:40,000
+You don't have text message, like communication protocols.
+
+359
+00:26:40,000 --> 00:26:43,758
+We're generally pretty good at being like, okay, you can't lock that one down.
+
+360
+00:26:43,758 --> 00:26:56,707
+I don't think there's anything, I mean there's no piece of software that the average
+person is familiar with that's not ah absolutely crippled if all the open source stuff was
+
+361
+00:26:56,707 --> 00:26:57,578
+pulled out, right?
+
+362
+00:26:57,578 --> 00:27:04,012
+don't think would run, the internet doesn't work, your computer at home wouldn't work,
+everything would break instantly.
+
+363
+00:27:04,012 --> 00:27:06,446
+The entire world would stop working if we out.
+
+364
+00:27:06,446 --> 00:27:15,618
+encryption protocols that run the internet work because they're maintained by a nonprofit
+who's not allowed to make money off of that thing.
+
+365
+00:27:15,618 --> 00:27:25,429
+Literally go Google heartbeat, heart bleed about the 36 hours banks spent thinking they
+were just completely fucked.
+
+366
+00:27:25,942 --> 00:27:28,623
+There's no hyperbole in these comments.
+
+367
+00:27:28,623 --> 00:27:37,645
+I mean, I'm guessing a little bit that everything, I'm trying to speak to how much
+complexity there is in the layering of software in the world, right?
+
+368
+00:27:37,645 --> 00:27:41,166
+To make your computer work, to let you video chat, to let you send a text message.
+
+369
+00:27:41,166 --> 00:27:51,839
+There are just hundreds and hundreds of layers of things inter-opting, inter-optable,
+interacting with each other, pieces of software working with each other and relying on
+
+370
+00:27:51,839 --> 00:27:54,230
+each other and doing these little micro things.
+
+371
+00:27:54,850 --> 00:28:00,481
+think a lot of people probably picture an application as like, it's just abstract, right?
+
+372
+00:28:00,481 --> 00:28:05,995
+Most people aren't thinking about software uh too frequently and how it works and haven't
+really worked in it much.
+
+373
+00:28:05,995 --> 00:28:09,126
+you maybe think of an application as like a book, right?
+
+374
+00:28:09,126 --> 00:28:19,800
+Here's a complete thing that I put together, but really it breaks down more as you break
+it down into the chapters and the pages and the index and the sentences and the grammar.
+
+375
+00:28:19,940 --> 00:28:24,010
+All of those could be different software projects that layer in to make
+
+376
+00:28:24,010 --> 00:28:26,252
+make the program work.
+
+377
+00:28:26,252 --> 00:28:30,805
+each chapter in your book or each sentence in your book could be a different piece of
+software.
+
+378
+00:28:30,805 --> 00:28:33,910
+And a bunch of those are almost always open source.
+
+379
+00:28:33,910 --> 00:28:35,389
+There are things that you can just go look them up.
+
+380
+00:28:35,389 --> 00:28:36,159
+Anyone can use them.
+
+381
+00:28:36,159 --> 00:28:37,680
+They're freely available.
+
+382
+00:28:37,821 --> 00:28:49,942
+Because part of what's neat again with software where you really quickly hit all these
+interesting philosophical places is there kind of are you are able to do things
+
+383
+00:28:49,942 --> 00:28:57,786
+at least at a very small scale when you're looking at a very tiny, specific, well-defined
+problem in computer science, you kind of can do them in the best way.
+
+384
+00:28:57,786 --> 00:29:00,537
+And everyone can say, OK, that's the optimal program.
+
+385
+00:29:00,537 --> 00:29:01,748
+Let's use that one now.
+
+386
+00:29:01,748 --> 00:29:05,889
+um It usually breaks down at a lower level than just the software.
+
+387
+00:29:06,798 --> 00:29:11,909
+I would say it allows for a system where the optimal solution emerges.
+
+388
+00:29:12,334 --> 00:29:13,281
+That's certainly true too.
+
+389
+00:29:13,281 --> 00:29:14,637
+oh
+
+390
+00:29:14,637 --> 00:29:23,551
+way to say it right I mean you can you can have agreement that this is the right way to
+solve it or you can have this way that everybody seems to use and it hasn't broken and
+
+391
+00:29:23,551 --> 00:29:24,888
+okay we're all good with it
+
+392
+00:29:24,888 --> 00:29:29,199
+Well, that's usually actually where it ends up, which is funny to notice is that it ends
+up.
+
+393
+00:29:29,199 --> 00:29:31,560
+You recognize that there is the.
+
+394
+00:29:32,120 --> 00:29:36,461
+There is the ability to optimize and come up with the best way to do something.
+
+395
+00:29:36,461 --> 00:29:43,883
+But what you realize is that in the organic world, what really ends up winning is
+popularity again, even in software, this thing was just adopted.
+
+396
+00:29:43,883 --> 00:29:47,194
+And I don't mean popularity in the sense of the like, Ooh, everyone loves this one the
+most.
+
+397
+00:29:47,194 --> 00:29:47,864
+He's the coolest.
+
+398
+00:29:47,864 --> 00:29:54,447
+Let's elect him a prom king and queen, but it just is the one that got used the most.
+
+399
+00:29:54,447 --> 00:29:59,262
+incidentally, and now you have to keep using it because everything runs on it.
+
+400
+00:29:59,936 --> 00:30:09,054
+And so there's, there's, you know, what's interesting with that, gets us into the sort of
+emergence of like the last thing we got to talk about is Git and version control.
+
+401
+00:30:09,054 --> 00:30:18,381
+And then after we've explained that, I think we can really jump off the cliff of like why
+this creates weird tribes of open source developers who all believe different memes and
+
+402
+00:30:18,401 --> 00:30:20,562
+believe in different cryptocurrencies.
+
+403
+00:30:21,023 --> 00:30:29,990
+like fundamentally it's this layered system and all of those systems are complex and all
+of those systems talk to one another.
+
+404
+00:30:30,242 --> 00:30:31,543
+And it's all code.
+
+405
+00:30:31,543 --> 00:30:33,073
+So it's all really rigid.
+
+406
+00:30:33,073 --> 00:30:36,084
+If you're off by a comma, the shit just doesn't work.
+
+407
+00:30:36,165 --> 00:30:37,025
+Right.
+
+408
+00:30:37,185 --> 00:30:39,706
+So that's the nature of all of the interconnected things.
+
+409
+00:30:39,706 --> 00:30:40,007
+Right.
+
+410
+00:30:40,007 --> 00:30:42,468
+And some are open, some are closed.
+
+411
+00:30:42,468 --> 00:30:47,810
+And then you have this emergent situation that we've, that we sort of, think have
+introduced.
+
+412
+00:30:50,292 --> 00:30:56,225
+On the open side, on the closed side, there's a limited team maintaining that software,
+right?
+
+413
+00:30:56,225 --> 00:30:59,116
+Apple's going to push updates to fix things.
+
+414
+00:30:59,116 --> 00:31:01,867
+Everybody's used to this cycle now in the modern world, right?
+
+415
+00:31:01,867 --> 00:31:08,490
+Like you get software updates, they're for security, they're for usability, they're for
+prettier buttons, whatever, you know, whatever, right?
+
+416
+00:31:08,830 --> 00:31:10,251
+They have a limited team there.
+
+417
+00:31:10,251 --> 00:31:15,833
+I don't know, a thousand people in Cupertino that is their dev squad working on X, Y, and
+Z thing, right?
+
+418
+00:31:15,833 --> 00:31:17,414
+uh
+
+419
+00:31:17,838 --> 00:31:27,738
+An open source project with 500,000 contributors has 500,000 programmers always watching
+that code base and going, ooh, I don't like that bug.
+
+420
+00:31:27,738 --> 00:31:29,038
+I'm going squash it.
+
+421
+00:31:29,038 --> 00:31:29,878
+Oh, that's dangerous.
+
+422
+00:31:29,878 --> 00:31:34,758
+We should all try to fix that right now, full time until it's fixed.
+
+423
+00:31:35,058 --> 00:31:39,482
+And then eight hours later, the bug is squashed and out of the software.
+
+424
+00:31:39,482 --> 00:31:49,311
+Yeah, that's that's the concept for sure I mean it probably if you look at numbers it kind
+of scales similarly right which again is an interesting place where it Right where like
+
+425
+00:31:49,311 --> 00:31:52,754
+these fills philosophies uh parallel each other, right?
+
+426
+00:31:52,754 --> 00:31:56,428
+um software is such an interesting place
+
+427
+00:31:56,428 --> 00:31:56,668
+Right.
+
+428
+00:31:56,668 --> 00:31:56,918
+Okay.
+
+429
+00:31:56,918 --> 00:31:58,258
+So let's back up though.
+
+430
+00:31:58,258 --> 00:32:00,670
+Cause all I, you know, introducing all that stuff.
+
+431
+00:32:00,670 --> 00:32:05,243
+The last thing to understand is then Git was invented a version.
+
+432
+00:32:05,243 --> 00:32:12,547
+So, so you can imagine how this would be a clusterfuck of human coordination, like trying
+to take on like, and this is why it ebbs and flows.
+
+433
+00:32:12,968 --> 00:32:16,970
+It was hard to develop software because you have to keep this code base in sync.
+
+434
+00:32:16,970 --> 00:32:24,364
+Like, and so as your team gets bigger, that becomes harder to do because of all of that
+layers of all of those layers of complexity.
+
+435
+00:32:24,364 --> 00:32:33,285
+And eventually you get to a point where it's just like, it's not worth having a dev team
+of X size because we do more harm than good when we go off and work on different like
+
+436
+00:32:33,285 --> 00:32:35,328
+components of this layered up system.
+
+437
+00:32:35,328 --> 00:32:37,350
+ah
+
+438
+00:32:38,222 --> 00:32:45,350
+Yeah, imagine if every time, I want to try to give an example of this, and this is not.
+
+439
+00:32:45,656 --> 00:32:47,598
+God damn it, Dave missed a comma again.
+
+440
+00:32:47,598 --> 00:32:52,332
+I spent all day trying to figure out why this wouldn't even load.
+
+441
+00:32:52,654 --> 00:32:58,634
+Version control is not distinct, distinctly needed just for open source.
+
+442
+00:32:58,634 --> 00:33:01,273
+It's needed for any sort of software where there's collaboration.
+
+443
+00:33:01,414 --> 00:33:12,854
+imagine if when you wrote a book, if like at the end, when you're done writing, like done
+writing for the day, if you missed that comma somewhere in the book, the book is
+
+444
+00:33:12,854 --> 00:33:13,614
+unreadable, right?
+
+445
+00:33:13,614 --> 00:33:15,034
+The whole book can't be read.
+
+446
+00:33:15,034 --> 00:33:16,034
+It can't sit on your shelf.
+
+447
+00:33:16,034 --> 00:33:17,654
+The shelf catches on fire.
+
+448
+00:33:18,994 --> 00:33:20,750
+can't even find it.
+
+449
+00:33:20,750 --> 00:33:29,687
+The book disappears from reality until someone like goes to the reality fixes the comma
+Now imagine you've got a hundred people writing the book together, right?
+
+450
+00:33:29,687 --> 00:33:38,663
+And some people are working on the same sentence at the same time and so I might edit the
+sentence different than you did and whether or not the sentence Let's say we both made the
+
+451
+00:33:38,663 --> 00:33:39,594
+sentence work, right?
+
+452
+00:33:39,594 --> 00:33:45,749
+So the book renders in the world later and people can read it It's still did we both
+change the sentence differently.
+
+453
+00:33:45,749 --> 00:33:48,128
+So how do we like put the book back together?
+
+454
+00:33:48,128 --> 00:33:50,680
+And so that is a really challenging problem.
+
+455
+00:33:50,680 --> 00:33:59,818
+And I think people run into this a lot now, actually, because most software is
+collaborative and most software is run online in the cloud and run quotes up.
+
+456
+00:33:59,818 --> 00:34:04,261
+But um so you you see that on like Google spreadsheets.
+
+457
+00:34:04,261 --> 00:34:06,413
+If you're both in there, you can see where the other person is.
+
+458
+00:34:06,413 --> 00:34:10,667
+You can see what they're doing, which like sort of prevents you from editing stuff at the
+same time.
+
+459
+00:34:10,667 --> 00:34:11,818
+But right.
+
+460
+00:34:11,818 --> 00:34:15,401
+That's even different because with software, I'm editing a different piece.
+
+461
+00:34:15,401 --> 00:34:17,442
+Like I'm cloning the car.
+
+462
+00:34:17,738 --> 00:34:24,205
+messing with the engine and then we're trying to like push those two clones of the car
+back into one car again.
+
+463
+00:34:24,205 --> 00:34:33,358
+So there's this wild complexity in how that's managed and uh Git like you mentioned is
+like the predominant uh version control now and GitHub which a lot of people
+
+464
+00:34:33,358 --> 00:34:40,352
+It's really just like, get as a software codified methodology for maintaining these files.
+
+465
+00:34:40,774 --> 00:34:41,375
+That's it.
+
+466
+00:34:41,375 --> 00:34:41,727
+Right.
+
+467
+00:34:41,727 --> 00:34:44,641
+And so you go, and you got get running on your document.
+
+468
+00:34:44,641 --> 00:34:45,202
+Yep.
+
+469
+00:34:45,202 --> 00:34:53,760
+even, and even with Git, which is again, like the most developed and coincidentally, I
+think Git was developed by Linus Dorvold who also invented Linux.
+
+470
+00:34:53,760 --> 00:34:57,996
+So he's like really spiraling into the realm of fantasy superhero.
+
+471
+00:34:57,996 --> 00:35:01,846
+necessary tool to create the big open the most successful
+
+472
+00:35:01,846 --> 00:35:10,808
+Even even with that, like the best thing the world has been able to invent for
+collaborative software development, it's still kind of a nightmare a lot of the time to
+
+473
+00:35:10,808 --> 00:35:12,489
+like keep your software working.
+
+474
+00:35:12,489 --> 00:35:13,569
+It's just frustrating.
+
+475
+00:35:13,569 --> 00:35:22,612
+And like, you're like, man, we got to you got to sit down with the other person and work
+through all this stuff or the whole team and like edit things and fight over like, well,
+
+476
+00:35:22,612 --> 00:35:23,509
+should we do it this way?
+
+477
+00:35:23,509 --> 00:35:24,262
+Should we do it that way?
+
+478
+00:35:24,262 --> 00:35:28,699
+So it's not like you push a button and all of your software works again.
+
+479
+00:35:28,699 --> 00:35:31,414
+I know that's kind of the concept everyone wants to
+
+480
+00:35:31,414 --> 00:35:42,238
+but it's but you part of it is there's a there's part of being a software developer that I
+think is hard to appreciate if you're coming from other sectors.
+
+481
+00:35:42,259 --> 00:35:48,321
+There's a time in almost every one of my days where I go, OK, I'm going to press this
+button.
+
+482
+00:35:48,401 --> 00:35:57,535
+And after I do, my company's website might crash and then my boss is going to call me and
+go, what the fuck happened to the website?
+
+483
+00:35:57,535 --> 00:35:59,692
+We're not selling things anymore.
+
+484
+00:35:59,692 --> 00:36:00,544
+Right.
+
+485
+00:36:00,748 --> 00:36:09,776
+And so we have put in place rollback things where you can, I've literally had days where
+that heart sinking feeling where you just, you realize you just pushed something bad up to
+
+486
+00:36:09,776 --> 00:36:11,008
+the live thing.
+
+487
+00:36:11,008 --> 00:36:18,974
+And then you go like, have crashed WordPress is live WordPress builds for e-commerce
+stores with significant amounts of traffic.
+
+488
+00:36:19,035 --> 00:36:25,351
+And I knew how to have that only be down for an hour with backup protocols, but like, it's
+a real thing you deal with.
+
+489
+00:36:25,351 --> 00:36:27,074
+If you're a developer in this space.
+
+490
+00:36:27,074 --> 00:36:28,430
+just in a professional context.
+
+491
+00:36:28,430 --> 00:36:30,798
+Like Apple has, Apple uses this shit too.
+
+492
+00:36:30,798 --> 00:36:37,390
+Yeah, yeah, I mean, so we hit on another interesting piece of software or an interesting
+aspect of software.
+
+493
+00:36:37,390 --> 00:36:38,510
+And this is not always true, right?
+
+494
+00:36:38,510 --> 00:36:39,861
+Because software runs everything right.
+
+495
+00:36:39,861 --> 00:36:44,402
+Your car runs on software, planes run on software, spaceships, the electrical grid,
+everything.
+
+496
+00:36:44,402 --> 00:36:51,344
+But like in the in the day to day that I think most people think of software now, like
+apps on your phone, they're just not very important.
+
+497
+00:36:51,344 --> 00:36:59,316
+If your app on your if some silly app on your phone that lets you play Candy Crush or like
+send a text message doesn't work for the day, really doesn't matter.
+
+498
+00:36:59,438 --> 00:37:09,420
+um And so you're able to iterate kind of in the sense of like there's so many bacteria out
+in the world that it doesn't matter as they like die really quickly and iterate and evolve
+
+499
+00:37:09,420 --> 00:37:11,061
+and genetic difference happens.
+
+500
+00:37:11,061 --> 00:37:13,704
+That's a weird analogy to pull out.
+
+501
+00:37:14,039 --> 00:37:14,952
+It's high volume.
+
+502
+00:37:14,952 --> 00:37:19,136
+that's what's left in biology when we start to talk about internet numbers.
+
+503
+00:37:19,136 --> 00:37:20,780
+There are trillions of apps.
+
+504
+00:37:20,780 --> 00:37:23,813
+You can't do that with a car.
+
+505
+00:37:23,813 --> 00:37:32,734
+If you open sourced my brake system and then all of a sudden anyone could be editing it
+and you could push the brake updates to everyone else's car.
+
+506
+00:37:32,734 --> 00:37:34,870
+and then your breaks don't work also.
+
+507
+00:37:34,870 --> 00:37:37,071
+Right, the cars blow up.
+
+508
+00:37:37,151 --> 00:37:50,679
+there is an interesting, there's, and again, software runs all kinds of important stuff
+that's outside of the world of like willy nilly, silly Silicon Valley crap, like dating
+
+509
+00:37:50,679 --> 00:37:55,421
+apps and text messaging apps and it's slight iterations on email.
+
+510
+00:37:55,902 --> 00:37:59,674
+the, ah that's an important component of it, right?
+
+511
+00:37:59,674 --> 00:38:04,202
+Is you to be able to iterate quickly on this stuff, you have to set up a
+
+512
+00:38:04,202 --> 00:38:11,316
+a means by which there can be critical failure ah is kind of removed from the situation.
+
+513
+00:38:13,174 --> 00:38:28,098
+And so here's my media theorist take on the fundamental thing that get achieved and that
+we need to roll out in some capacity to every other version of in work and whatever.
+
+514
+00:38:28,098 --> 00:38:33,220
+uh And like you already said, already cited the places where it's happening.
+
+515
+00:38:33,220 --> 00:38:37,581
+Versions of this way of thinking of a thing are just, it's infectious.
+
+516
+00:38:37,581 --> 00:38:42,092
+And it also gets us to things like blockchain.
+
+517
+00:38:42,426 --> 00:38:50,858
+which is the way get, get tracks, literally every single change that happens in the
+underlying code.
+
+518
+00:38:50,858 --> 00:38:52,189
+That is your document.
+
+519
+00:38:52,189 --> 00:38:54,029
+You can use it on a word doc.
+
+520
+00:38:54,029 --> 00:38:55,930
+You can use it on simpler files.
+
+521
+00:38:55,930 --> 00:38:58,570
+can use it on wildly complex files.
+
+522
+00:38:58,570 --> 00:39:02,231
+And it just keeps a record of every change that was ever made.
+
+523
+00:39:02,231 --> 00:39:07,253
+And crucially, at least theoretically a canonical record.
+
+524
+00:39:07,253 --> 00:39:11,892
+So the change and what time literally of day, also
+
+525
+00:39:11,892 --> 00:39:16,149
+in what sequence with the other changes, every change was made.
+
+526
+00:39:16,230 --> 00:39:23,252
+And when you think of that, feels like, uh, it's kind of gets back to our, our, our like
+Wolfram episode.
+
+527
+00:39:24,984 --> 00:39:27,076
+Git stopped saying, okay, I have a document.
+
+528
+00:39:27,076 --> 00:39:29,218
+You made some changes, save.
+
+529
+00:39:29,218 --> 00:39:31,039
+Now that's a new document.
+
+530
+00:39:31,259 --> 00:39:33,902
+Git said, I'm just going to save the extra data.
+
+531
+00:39:33,902 --> 00:39:38,706
+I'm only going to save what changed and a record of how and when that change was made.
+
+532
+00:39:38,706 --> 00:39:43,850
+And then the file only grows by a tiny bit relative to the size of the other file.
+
+533
+00:39:43,850 --> 00:39:46,352
+And so you can have this piggyback on your thing.
+
+534
+00:39:46,352 --> 00:39:47,333
+That's just always going in.
+
+535
+00:39:47,333 --> 00:39:48,590
+Then this change happened.
+
+536
+00:39:48,590 --> 00:39:51,630
+and then this person did this thing and then this person did this thing.
+
+537
+00:39:51,630 --> 00:39:55,290
+And at any time you can go back and go, okay, that change and then it crashed.
+
+538
+00:39:55,290 --> 00:39:58,670
+Okay, I'm gonna take out just that change and everything else should still work.
+
+539
+00:39:58,670 --> 00:39:59,430
+It works.
+
+540
+00:39:59,430 --> 00:40:00,806
+Okay, put it back up.
+
+541
+00:40:00,806 --> 00:40:08,012
+And I mean, again, that's another place where you start to touch on kind of underlying
+philosophies of the world, right?
+
+542
+00:40:08,012 --> 00:40:13,146
+The universe, as best as we can tell, is keeping track of all the changes, right?
+
+543
+00:40:13,146 --> 00:40:20,362
+When a change is made, it's a law of thermodynamics, right?
+
+544
+00:40:20,403 --> 00:40:22,694
+If you make a change here, it changes something else.
+
+545
+00:40:22,694 --> 00:40:26,387
+And so the change that you made here is captured in the change in the other thing.
+
+546
+00:40:26,387 --> 00:40:29,910
+And so that's kind of what you do here because
+
+547
+00:40:30,260 --> 00:40:40,324
+anyone who, especially if you work in like the modern data world, as we're seeing the
+explosion and how important information is, uh you just, you, your urge is to capture
+
+548
+00:40:40,324 --> 00:40:51,459
+everything because even if you don't know how it's useful now, you know, it's going to be
+useful in a year or a month or a day because the ability to have that information and do
+
+549
+00:40:51,459 --> 00:40:53,319
+things with it is just expanding.
+
+550
+00:40:53,319 --> 00:40:58,381
+And so it's, it's interesting that it's evolved to capture those changes, right?
+
+551
+00:40:58,381 --> 00:41:00,076
+It would seem trivial.
+
+552
+00:41:00,076 --> 00:41:09,792
+with writing a novel, right, to capture every single time you subtly edited like the uh
+language of each sentence, right?
+
+553
+00:41:09,792 --> 00:41:16,916
+I moved, I changed this word to give a subtly different meaning or to describe something
+in a way that's slightly different.
+
+554
+00:41:16,916 --> 00:41:22,640
+Certainly useful, some for the writers, the books coming together, but ultimately you
+don't need every single change to be tracked.
+
+555
+00:41:22,640 --> 00:41:24,061
+It's just not relevant.
+
+556
+00:41:24,061 --> 00:41:26,508
+But with software, it really can be.
+
+557
+00:41:26,508 --> 00:41:26,728
+Right.
+
+558
+00:41:26,728 --> 00:41:35,382
+You have to go back and see how things happen and you want to be able to roll back and you
+want to be able to see why, why were these explicit decisions made, which maybe begs the
+
+559
+00:41:35,382 --> 00:41:37,275
+question, is that important for books?
+
+560
+00:41:37,275 --> 00:41:40,209
+Should books be open source and forever changing?
+
+561
+00:41:40,209 --> 00:41:42,452
+Like that's an interesting concept.
+
+562
+00:41:42,702 --> 00:41:54,962
+think the last piece is one more core thing that's only doable because of software, which
+is this is kept in a, in a, what's called an append only sort of, just going to call it
+
+563
+00:41:54,962 --> 00:41:55,983
+methodology, right?
+
+564
+00:41:55,983 --> 00:41:58,135
+Cause the thing is you can make the code work.
+
+565
+00:41:58,135 --> 00:42:03,439
+The idea is the rule of your database is you can't delete an old entry.
+
+566
+00:42:03,439 --> 00:42:06,721
+You can just invalidate it by reference.
+
+567
+00:42:06,942 --> 00:42:12,166
+And so when you have an append only methodology for record keeping you.
+
+568
+00:42:13,698 --> 00:42:18,920
+Like it's, it's, it's, it's more like keeping a, like your checkbook or something.
+
+569
+00:42:18,920 --> 00:42:19,820
+Right.
+
+570
+00:42:20,090 --> 00:42:22,921
+if you send out a check, you have to account for that.
+
+571
+00:42:22,921 --> 00:42:31,224
+Like, I don't, I don't want to teach people how to balance their checkbooks, but the point
+is like, you can't just go back and delete an old entry.
+
+572
+00:42:31,224 --> 00:42:35,265
+Instead, you have to put up a new change that says now ignore this.
+
+573
+00:42:35,265 --> 00:42:38,924
+Oh, I screw up constantly.
+
+574
+00:42:38,924 --> 00:42:40,525
+And I have to roll back and make a change.
+
+575
+00:42:40,525 --> 00:42:46,258
+And the funny thing is I'm just constantly aware that my record of like, and then he put
+this up and fuck this up and fuck that up.
+
+576
+00:42:46,258 --> 00:42:54,863
+And then there was another one, like, it's still there, which is kind of funny, but it's
+there because I know that the underlying infrastructure isn't possible of letting me go
+
+577
+00:42:54,863 --> 00:42:56,103
+back and erase it.
+
+578
+00:42:56,124 --> 00:43:00,426
+Cause that's how the record is kept so that we can achieve the thing that we achieve.
+
+579
+00:43:00,426 --> 00:43:07,950
+And the idea of saying, like, if you try to imagine how to do that, like with typewriters
+in a law office.
+
+580
+00:43:07,958 --> 00:43:13,279
+It's like, okay, that, mean, you could maybe almost do it there because of how typewriters
+work.
+
+581
+00:43:13,279 --> 00:43:19,589
+But if you imagine doing that with word processors in an office, it's kind of like, okay,
+I deleted this line.
+
+582
+00:43:19,589 --> 00:43:20,882
+I fixed it.
+
+583
+00:43:20,882 --> 00:43:22,052
+Now the documents updated.
+
+584
+00:43:22,052 --> 00:43:24,562
+Like, why is that assistant that doesn't work?
+
+585
+00:43:24,562 --> 00:43:24,923
+Right.
+
+586
+00:43:24,923 --> 00:43:25,633
+So, so.
+
+587
+00:43:25,633 --> 00:43:27,743
+Well, you apply it to old models.
+
+588
+00:43:27,743 --> 00:43:32,044
+It's weird to think of this idea of like, well, we don't have the, again, it's a scarcity
+thing, right?
+
+589
+00:43:32,044 --> 00:43:38,026
+We try to clear out space to put the new stuff in just as, as humans.
+
+590
+00:43:38,122 --> 00:43:48,731
+in our brains, but software allows it to just say, no, the rule inside of Git is if you're
+going to run Git, the rule is here's how this append only structure works.
+
+591
+00:43:48,731 --> 00:43:49,352
+Right.
+
+592
+00:43:49,352 --> 00:43:54,336
+And so it really does make every single little change trackable.
+
+593
+00:43:54,597 --> 00:44:01,403
+You really can do the thing that you're talking about because of that fundamental thing at
+the core of how this like methodology works.
+
+594
+00:44:01,403 --> 00:44:01,723
+Right.
+
+595
+00:44:01,723 --> 00:44:05,726
+um You stack all of that up.
+
+596
+00:44:06,550 --> 00:44:17,519
+You, you can work on these massively complex projects together with the right
+coordination, which a lot of times people will at this point have heard of GitHub.
+
+597
+00:44:17,740 --> 00:44:22,623
+If only because Microsoft bought them for a shit ton of money.
+
+598
+00:44:23,064 --> 00:44:26,387
+GitHub is essentially just a social platform on top of Git.
+
+599
+00:44:26,387 --> 00:44:35,814
+a way of talking about all the work that you did that was tracked by these things and, and
+maintained interoperability because of the work that you did and.
+
+600
+00:44:36,472 --> 00:44:41,966
+created a social layer, essentially, of people that are like, yo, let's all work on this
+project together with Linux.
+
+601
+00:44:41,966 --> 00:44:46,729
+was, you know, Git was developed because they were tired of doing that via email.
+
+602
+00:44:46,729 --> 00:44:55,795
+And then GitHub popped up because people were tired of however they were coordinating this
+thing whilst not breaking the software amongst a bunch of people that just cared to work
+
+603
+00:44:55,795 --> 00:44:56,346
+on the project.
+
+604
+00:44:56,346 --> 00:44:59,218
+Like just open source gets social really quickly.
+
+605
+00:44:59,218 --> 00:45:05,982
+And so there's this weird social aspect of what we end up talking about with communities
+and like that piece of it.
+
+606
+00:45:06,194 --> 00:45:09,505
+Um, but I think that's everything sort of technical, right?
+
+607
+00:45:09,505 --> 00:45:13,617
+mean, fundamentally the place we're at now is we can make software.
+
+608
+00:45:13,617 --> 00:45:16,998
+can collaborate on it without breaking the software.
+
+609
+00:45:19,099 --> 00:45:22,141
+And, and, and you start looking at other places to apply it.
+
+610
+00:45:22,141 --> 00:45:23,861
+Like it just, you just get to weird things.
+
+611
+00:45:23,861 --> 00:45:32,775
+find myself explaining to lawyers all the time, which is like this thing, this thing we
+just templated, no one should ever have to do that again.
+
+612
+00:45:32,775 --> 00:45:35,359
+No fucking reason.
+
+613
+00:45:35,359 --> 00:45:37,098
+that is a funny concept.
+
+614
+00:45:37,098 --> 00:45:38,400
+You're right.
+
+615
+00:45:38,400 --> 00:45:49,785
+We've reached a point where ah for the most part, almost every it feels like almost
+everything has an open source counterpart, right?
+
+616
+00:45:49,785 --> 00:45:54,817
+Like think of a popular piece of software and there's an open source version, right?
+
+617
+00:45:54,817 --> 00:45:57,368
+Like Photoshop, yep, open source version.
+
+618
+00:45:57,368 --> 00:46:00,940
+Microsoft Office, all of them have open source versions.
+
+619
+00:46:00,940 --> 00:46:09,705
+Not only do you have like the free versions that like Google makes available to you, but
+you can just go get multiple different versions that have large communities that like
+
+620
+00:46:09,705 --> 00:46:11,696
+rebuilt Microsoft Word.
+
+621
+00:46:11,776 --> 00:46:12,716
+It's a little different.
+
+622
+00:46:12,716 --> 00:46:13,737
+It does things differently.
+
+623
+00:46:13,737 --> 00:46:15,218
+Sometimes it doesn't interrupt.
+
+624
+00:46:15,218 --> 00:46:17,399
+They're trying to use interoperability again.
+
+625
+00:46:17,399 --> 00:46:19,820
+Sometimes it doesn't work with the other other tools.
+
+626
+00:46:19,820 --> 00:46:22,842
+uh It works fine within its own environment.
+
+627
+00:46:22,842 --> 00:46:27,204
+And so as a developer, like as you're building things.
+
+628
+00:46:27,725 --> 00:46:30,406
+This is funny, I'm making a really interesting connection to.
+
+629
+00:46:30,530 --> 00:46:38,485
+my previous engineering work before software, but as you're building software, you're
+using other software to build your software, right?
+
+630
+00:46:38,485 --> 00:46:39,695
+You're building on top of it.
+
+631
+00:46:39,695 --> 00:46:45,689
+And so whenever you need a piece of software to do anything, you go search for it first.
+
+632
+00:46:45,689 --> 00:46:46,939
+Like, did someone build this already?
+
+633
+00:46:46,939 --> 00:46:48,820
+Did someone solve this problem?
+
+634
+00:46:48,820 --> 00:46:57,045
+The concepts that you like learn academically, and I'm not a computer scientist, I'll
+often misspeak about this stuff, but I think the concepts are...
+
+635
+00:46:58,870 --> 00:47:00,221
+are called design patterns.
+
+636
+00:47:00,221 --> 00:47:06,635
+And that's kind of what you learn academically, these like reduced concepts that you see
+over and over and over again in engineering and in software.
+
+637
+00:47:06,635 --> 00:47:11,517
+And it's like, you'll see this thing, which is like, they'll be very low level.
+
+638
+00:47:11,517 --> 00:47:13,598
+Like how do you solve this logic problem?
+
+639
+00:47:13,598 --> 00:47:16,670
+You'll see them over and over and over again in your software and they'll manifest in
+different ways.
+
+640
+00:47:16,670 --> 00:47:23,134
+But when you see this, be aware of it and know that the complexity of it has been reduced
+and solved in this way.
+
+641
+00:47:23,134 --> 00:47:25,985
+And you should always kind of do it this way unless you have a really good reason not to.
+
+642
+00:47:25,985 --> 00:47:26,926
+um
+
+643
+00:47:26,926 --> 00:47:31,028
+kind of like how grammar works in written and spoken language.
+
+644
+00:47:31,028 --> 00:47:41,313
+And so you learn that, but we've reached like a meta level where so much of the next layer
+of complexity, like how does this software work in this language, on this operating
+
+645
+00:47:41,313 --> 00:47:45,284
+system, with this hardware, in this use case, you just go get it.
+
+646
+00:47:45,284 --> 00:47:47,825
+Someone's built it and a hundred people have helped maintain it.
+
+647
+00:47:47,825 --> 00:47:53,496
+And so we're in an interesting place where so much stuff can be pieced together.
+
+648
+00:47:53,496 --> 00:47:56,929
+Software is too complicated still for that to just be like plug and play.
+
+649
+00:47:56,929 --> 00:47:59,771
+Anyone just like touch things together and have them work.
+
+650
+00:48:00,632 --> 00:48:12,312
+And you know, it touches on that realization that I caught out there a second ago that was
+so interesting compared to my old job where I worked in physical manufacturing.
+
+651
+00:48:12,312 --> 00:48:14,003
+I was a manufacturing engineer.
+
+652
+00:48:14,184 --> 00:48:22,260
+I constantly was frustrated by having to reinvent things that I knew had been solved.
+
+653
+00:48:22,690 --> 00:48:25,581
+hundreds or thousands of times all around the world, right?
+
+654
+00:48:25,581 --> 00:48:34,552
+In a manufacturing plant where I was building automation, I was building robotics and
+automating manufacturing processes, I constantly had to solve something.
+
+655
+00:48:34,552 --> 00:48:38,657
+was like, this is so simple and silly, but it's not like a thing I can go buy.
+
+656
+00:48:38,657 --> 00:48:47,321
+It's like ever so complex that whoever has solved this a thousand times before in a
+thousand different manufacturing plants, they didn't have like a means to share it.
+
+657
+00:48:47,321 --> 00:48:49,182
+I shouldn't have to do this again.
+
+658
+00:48:49,182 --> 00:48:49,954
+And that-
+
+659
+00:48:49,954 --> 00:48:51,342
+retouched your first startup.
+
+660
+00:48:51,342 --> 00:48:53,923
+Exactly, that's what drove me to my first startup.
+
+661
+00:48:53,923 --> 00:48:55,973
+And I didn't realize what it was at the time.
+
+662
+00:48:55,973 --> 00:48:58,004
+I wasn't actually trying to solve that problem.
+
+663
+00:48:58,004 --> 00:49:02,065
+uh I was solving something different related.
+
+664
+00:49:02,065 --> 00:49:16,519
+And so the concept of open source being released into the world more broadly than software
+is really challenging because it seems to, it works best and maybe arguably only works
+
+665
+00:49:16,519 --> 00:49:19,542
+when things are digitized, which is not true of
+
+666
+00:49:19,542 --> 00:49:33,390
+like physical things like car parts, although the designs are all digitized now, but it
+just it enables such an incredible layering of like success and invention and creativity.
+
+667
+00:49:33,390 --> 00:49:39,693
+And it also makes it so apparent how important other people's contributions to things are.
+
+668
+00:49:39,693 --> 00:49:39,963
+Right.
+
+669
+00:49:39,963 --> 00:49:48,278
+It makes it there's there's nothing that any modern programmer does for the most part that
+would be even even like
+
+670
+00:49:49,241 --> 00:49:54,782
+imaginable without the incredible underpinnings of everything that that allow it to
+happen.
+
+671
+00:49:54,922 --> 00:50:02,582
+Like modern technology, especially in software and hardware and computers, is so
+complicated that no one really knows how it all works anymore.
+
+672
+00:50:02,582 --> 00:50:06,262
+And and I don't mean it like a high level, I can tell you how a computer works.
+
+673
+00:50:06,262 --> 00:50:15,702
+But I could not even come freaking close to being functional with like 99.99 % of what's
+out there, even in a lifetime.
+
+674
+00:50:15,702 --> 00:50:17,282
+It's too complicated now, right?
+
+675
+00:50:17,282 --> 00:50:18,278
+And you
+
+676
+00:50:18,391 --> 00:50:19,244
+We'll let's be certain.
+
+677
+00:50:19,244 --> 00:50:19,997
+languages.
+
+678
+00:50:19,997 --> 00:50:22,001
+You can get an interpreter.
+
+679
+00:50:22,202 --> 00:50:34,025
+We talk about this sometimes I wonder I wonder how this felt even even just a few hundred
+years ago when you have like the concept of like Jack of all trades or what's the fancier
+
+680
+00:50:34,025 --> 00:50:35,946
+word for that type of person?
+
+681
+00:50:36,066 --> 00:50:36,666
+Generalist.
+
+682
+00:50:36,666 --> 00:50:38,066
+Yeah, where are you like?
+
+683
+00:50:38,067 --> 00:50:47,239
+I feel like you almost kind of could know everything in a lifetime a few hundred years ago
+If you were extraordinarily well read you could be up to date on like everything that's
+
+684
+00:50:47,239 --> 00:50:50,872
+really known in modern science and modern medicine and chemistry
+
+685
+00:50:50,872 --> 00:50:52,963
+There just wasn't as much happening.
+
+686
+00:50:52,963 --> 00:50:58,697
+I, know there's subtlety in like the human experience that can't be known and emotion and
+how you perceive the world.
+
+687
+00:50:58,697 --> 00:51:07,343
+But in terms of kind of like raw scientific knowledge, you could know such a larger
+percentage of it, uh, in times of past, right.
+
+688
+00:51:07,343 --> 00:51:11,016
+And now it's absolutely impossible, right?
+
+689
+00:51:11,016 --> 00:51:14,758
+Even pick the, pick the most specific niche and you can't know it all anymore.
+
+690
+00:51:14,758 --> 00:51:20,610
+Um, so we've reached a point where we have to open source stuff.
+
+691
+00:51:20,610 --> 00:51:29,389
+We have to open source information and we have to exist in a world where you can trust
+what's been open sourced because if you can't, then you can't make progress anymore.
+
+692
+00:51:29,389 --> 00:51:32,584
+We can't go forward if you can't trust the layer that's beneath you.
+
+693
+00:51:32,814 --> 00:51:37,025
+Even if you hear that and have a violent reaction to it, it doesn't matter.
+
+694
+00:51:37,025 --> 00:51:39,086
+It's happening.
+
+695
+00:51:39,086 --> 00:51:42,497
+This is also just a force that is not even guided.
+
+696
+00:51:42,797 --> 00:51:48,088
+Technology is a force unto itself that's doing what it wants with us, whether we like it
+or not.
+
+697
+00:51:48,088 --> 00:51:54,080
+Wikipedia exists.
+
+698
+00:51:54,080 --> 00:51:57,681
+You might say, we need to keep that locked in an encyclopedia.
+
+699
+00:51:57,681 --> 00:51:58,521
+Sorry.
+
+700
+00:51:58,521 --> 00:52:01,902
+The Wikipedia box is unlocked and it runs.
+
+701
+00:52:02,518 --> 00:52:04,102
+Like it slaps.
+
+702
+00:52:04,102 --> 00:52:05,610
+uh
+
+703
+00:52:05,610 --> 00:52:07,470
+people are doing everything.
+
+704
+00:52:07,470 --> 00:52:10,250
+There's so many projects to maintain that, right?
+
+705
+00:52:10,250 --> 00:52:14,670
+There are people printing it out regularly and stashing it in vaults so we never lose it.
+
+706
+00:52:14,670 --> 00:52:22,530
+There are people putting it on media that will last for millions of years and hiding it
+and preserving it and constantly updating it as it's updated.
+
+707
+00:52:22,690 --> 00:52:25,452
+Like, this stuff has meaning and...
+
+708
+00:52:25,452 --> 00:52:30,306
+writing it on gold records and firing it billions of miles from the earth.
+
+709
+00:52:30,306 --> 00:52:33,446
+We should definitely launch Wikipedia out on some satellites.
+
+710
+00:52:33,446 --> 00:52:34,318
+For sure.
+
+711
+00:52:34,318 --> 00:52:39,719
+uh But yeah, like so there's two things to wrap up.
+
+712
+00:52:41,020 --> 00:52:48,162
+If you're also one of those people that listens and hears about cryptocurrencies and DeFi
+and blockchain and that part of what we talk about.
+
+713
+00:52:49,162 --> 00:53:02,498
+The application of this way of thinking about the world to finance is why that has
+captured some subset of every young person's mind that I have talked to.
+
+714
+00:53:02,498 --> 00:53:06,822
+They understand what you can do with this and they're taking down the banks.
+
+715
+00:53:07,163 --> 00:53:08,704
+They're just tired of it.
+
+716
+00:53:08,825 --> 00:53:12,228
+They're tired of being oppressed by our financial system.
+
+717
+00:53:12,228 --> 00:53:15,101
+And so, like what will happen?
+
+718
+00:53:15,101 --> 00:53:22,538
+I don't know, but this tiny subset has the tool we just described and they're using it for
+money to not watch that.
+
+719
+00:53:22,538 --> 00:53:23,639
+It's just ignorant.
+
+720
+00:53:23,639 --> 00:53:26,210
+oh
+
+721
+00:53:26,210 --> 00:53:27,911
+Let me spin it the other way too.
+
+722
+00:53:27,911 --> 00:53:36,793
+ah We just see the opportunity and we're tired of not executing on it.
+
+723
+00:53:36,793 --> 00:53:41,885
+The systems that came before when they were new were fucking fantastic.
+
+724
+00:53:41,885 --> 00:53:45,036
+And those people were just as thrilled as we are to innovate.
+
+725
+00:53:45,036 --> 00:53:52,322
+But there's so many places we can innovate and innovation happens so much easier now when
+it's allowed to.
+
+726
+00:53:52,322 --> 00:53:57,045
+that it's even more frustrating when you see the opportunity and it's not being executed
+on.
+
+727
+00:53:57,045 --> 00:54:07,600
+So comparatively now to 50 or 100 or a couple hundred years ago, when a lot of things that
+exist now that people are so fed up with were being established, we can fix them at a
+
+728
+00:54:07,600 --> 00:54:08,381
+faster rate.
+
+729
+00:54:08,381 --> 00:54:10,832
+We can iterate and improve at a faster rate.
+
+730
+00:54:10,832 --> 00:54:12,253
+We can do it more successfully.
+
+731
+00:54:12,253 --> 00:54:13,593
+We can do it more collaboratively.
+
+732
+00:54:13,593 --> 00:54:17,275
+We can do it more science and technology and statistically based.
+
+733
+00:54:17,275 --> 00:54:22,456
+And so it's just like ever increasingly obvious to us
+
+734
+00:54:22,456 --> 00:54:31,331
+that we're wasting time, we're wasting energy when you have to exist inside these systems
+that aren't operating at efficiencies that we know are just around the corner, we're
+
+735
+00:54:31,331 --> 00:54:32,331
+pissed off.
+
+736
+00:54:32,331 --> 00:54:40,195
+And especially when that expands out into beyond like simple things like I don't wanna pay
+a fee when I overdraw my checking account.
+
+737
+00:54:40,195 --> 00:54:44,517
+Fine, I get that you extract money there that helped run the business, but that's fucking
+stupid.
+
+738
+00:54:44,517 --> 00:54:45,342
+Don't do that.
+
+739
+00:54:45,342 --> 00:54:53,459
+once in few years the fucking bank loses the lawsuit about fraudulently charging those and
+they have to return a bunch of money to us.
+
+740
+00:54:53,621 --> 00:54:56,276
+Why the fuck do you even trust that system?
+
+741
+00:54:56,972 --> 00:54:58,204
+Right, let's just fix it.
+
+742
+00:54:58,204 --> 00:54:59,465
+Let's fix it.
+
+743
+00:55:00,068 --> 00:55:01,162
+We're off.
+
+744
+00:55:01,612 --> 00:55:02,483
+Right.
+
+745
+00:55:02,483 --> 00:55:03,444
+that's financial, right?
+
+746
+00:55:03,444 --> 00:55:06,977
+But the other piece, and this is backing up to the idea of the generalist, right?
+
+747
+00:55:06,977 --> 00:55:10,710
+Which is, know, I think like you were saying, Jack of all trades, right?
+
+748
+00:55:10,710 --> 00:55:15,083
+You could know how to do a bunch of things around a town at some point.
+
+749
+00:55:15,384 --> 00:55:25,231
+My life as a producer, then as a project manager and everything I've ever done has been
+like, like people say, what does a producer do on a movie?
+
+750
+00:55:25,572 --> 00:55:28,724
+A producer knows who to talk to and in what order.
+
+751
+00:55:29,004 --> 00:55:29,955
+And that's it.
+
+752
+00:55:29,955 --> 00:55:32,217
+And then they help you with creative things, right?
+
+753
+00:55:32,217 --> 00:55:36,980
+em And there are people that are better at the creative piece and they make more fun
+things.
+
+754
+00:55:36,980 --> 00:55:44,067
+But like fundamentally, you can maintain a job as a producer around Hollywood if you know
+who to talk to and in what order, right?
+
+755
+00:55:44,067 --> 00:55:47,510
+And if that's not like...
+
+756
+00:55:49,302 --> 00:55:56,605
+If that's not a perfect articulation for where this starts to consume knowledge work is
+like.
+
+757
+00:55:57,846 --> 00:56:02,338
+Just knowing that I should talk to a lawyer is the first step, right?
+
+758
+00:56:02,338 --> 00:56:04,049
+When if you're talking about consuming the law.
+
+759
+00:56:04,049 --> 00:56:08,701
+um So already that's gated by the same mechanism.
+
+760
+00:56:08,701 --> 00:56:09,782
+That's like, well, who do you know?
+
+761
+00:56:09,782 --> 00:56:10,993
+Well, now I can Google.
+
+762
+00:56:10,993 --> 00:56:11,343
+Yeah.
+
+763
+00:56:11,343 --> 00:56:14,134
+So that's already started to fuck with your universe.
+
+764
+00:56:14,134 --> 00:56:16,195
+That same workflow applies to absolutely everything, right?
+
+765
+00:56:16,195 --> 00:56:19,277
+As soon as it's a project, it's what do I need to know and in what order?
+
+766
+00:56:19,277 --> 00:56:25,160
+And it's whether you go talk to someone or now, it used to be you had to go talk to
+somebody, right?
+
+767
+00:56:25,160 --> 00:56:29,401
+Even relatively recently, like as a kid, I would have to call the library.
+
+768
+00:56:29,554 --> 00:56:38,136
+I would ask my mom about something that you would, I trivially look up a thousand times a
+day now, and we would call the library and someone would go look it up in a book, which
+
+769
+00:56:38,136 --> 00:56:38,466
+is...
+
+770
+00:56:38,466 --> 00:56:41,663
+And if you couldn't find it in that one, you had to go to the other one downtown.
+
+771
+00:56:41,663 --> 00:56:44,412
+Because it was for a paper.
+
+772
+00:56:44,412 --> 00:56:46,806
+is utter insanity in today's world.
+
+773
+00:56:48,362 --> 00:56:58,305
+So anyway, the thing is like ah it the place where it hits cryptocurrency and all the
+weird stuff that's happening right now and the reason like it's it's all because of all
+
+774
+00:56:58,305 --> 00:57:06,027
+the stuff we just ran through, which I hope that at least the way that we presented it
+like, OK, this is what's happening and it's consuming parts of the world.
+
+775
+00:57:06,027 --> 00:57:13,889
+ah It's common for knowledge work like sometime soon, and it's not because A.I.
+
+776
+00:57:13,889 --> 00:57:16,600
+is going to think like a lawyer, it's because.
+
+777
+00:57:16,600 --> 00:57:26,826
+People with legal training like me can identify everything a lawyer does that no one
+should ever have to do again because software exists.
+
+778
+00:57:28,942 --> 00:57:32,791
+which has all kinds of other implications if you're listening and thinking that's scary
+and awful.
+
+779
+00:57:32,791 --> 00:57:34,666
+Totally agree.
+
+780
+00:57:34,666 --> 00:57:36,680
+There's all kinds of scary things to figure out there too.
+
+781
+00:57:36,680 --> 00:57:38,960
+m
+
+782
+00:57:38,960 --> 00:57:40,373
+to take people to attend it.
+
+783
+00:57:40,373 --> 00:57:43,699
+So it's like that's where we've ended up with jurists.
+
+784
+00:57:43,699 --> 00:57:44,790
+Go learn how to attend it.
+
+785
+00:57:44,790 --> 00:57:47,485
+That's your legal engineering certification, right?
+
+786
+00:57:47,485 --> 00:57:48,847
+Totally different subset.
+
+787
+00:57:48,847 --> 00:57:49,929
+People will have jobs.
+
+788
+00:57:49,929 --> 00:57:50,680
+We're probably fine.
+
+789
+00:57:50,680 --> 00:57:53,022
+They'll probably be two for every lawyer that used to exist.
+
+790
+00:57:53,022 --> 00:57:56,566
+You know it's easy to be excited about this stuff when you're involved in making it.
+
+791
+00:57:57,789 --> 00:58:00,192
+And probably horrifying if you're not.
+
+792
+00:58:00,192 --> 00:58:00,402
+Right?
+
+793
+00:58:00,402 --> 00:58:04,084
+No, it's, mean, it's also, it's also horrifying to be in it because does it work or not?
+
+794
+00:58:04,084 --> 00:58:04,484
+Right.
+
+795
+00:58:04,484 --> 00:58:12,497
+And does it work or not boils down to this funny thing with open source, which is you have
+to, everything is a test of this is one that should be open and this is one that
+
+796
+00:58:12,497 --> 00:58:13,862
+shouldn't.
+
+797
+00:58:13,862 --> 00:58:17,519
+And you know, different things win different pieces of the pie there.
+
+798
+00:58:17,519 --> 00:58:17,790
+Right.
+
+799
+00:58:17,790 --> 00:58:22,912
+Like cryptocurrency is a place where the government might be like too many people get
+hurt.
+
+800
+00:58:22,912 --> 00:58:26,473
+If we don't do this through the existing infrastructure, I'm sorry, y'all.
+
+801
+00:58:26,473 --> 00:58:28,248
+And they'll shut it down.
+
+802
+00:58:28,248 --> 00:58:29,160
+That happens all the time.
+
+803
+00:58:29,160 --> 00:58:31,985
+eh sometimes that's right.
+
+804
+00:58:31,985 --> 00:58:33,988
+And often it's not.
+
+805
+00:58:34,530 --> 00:58:36,793
+Often it's the wrong decision.
+
+806
+00:58:38,377 --> 00:58:41,292
+used a word that's not a real word.
+
+807
+00:58:41,582 --> 00:58:42,386
+wrong.
+
+808
+00:58:43,726 --> 00:58:46,437
+There's one thing I've learned from doing this podcast.
+
+809
+00:58:46,437 --> 00:58:54,571
+It's anytime I use a word like wrong or better, ah any sort of judgmental word, I'm making
+something up.
+
+810
+00:58:54,851 --> 00:58:55,762
+It's not a real thing.
+
+811
+00:58:55,762 --> 00:58:58,973
+And it has no real bearing on the world.
+
+812
+00:58:59,113 --> 00:59:00,254
+It's just me.
+
+813
+00:59:00,254 --> 00:59:01,102
+just my own.
+
+814
+00:59:01,102 --> 00:59:02,362
+list papers.
+
+815
+00:59:02,903 --> 00:59:10,506
+And it's interesting, they they're, you know, more tactful statesmen and better writers
+than I will ever be.
+
+816
+00:59:10,506 --> 00:59:15,548
+uh They still occasionally go to that place, right?
+
+817
+00:59:15,548 --> 00:59:22,991
+Like, you're having this, I think, very politically correct thing of like, let's try to
+pull out from an impassioned perspective.
+
+818
+00:59:23,911 --> 00:59:31,074
+Hamilton does an awful lot of I understand this is an impassioned perspective, but if we
+cannot
+
+819
+00:59:31,074 --> 00:59:34,398
+keep in our minds the notion of a public good.
+
+820
+00:59:34,398 --> 00:59:38,882
+We're fucked because Spain is going to come attack us and take us over.
+
+821
+00:59:38,882 --> 00:59:40,844
+And he means it literally.
+
+822
+00:59:41,825 --> 00:59:46,650
+So, you know, there's a time to express that a thing is wrong.
+
+823
+00:59:46,650 --> 00:59:48,332
+I don't know what to say otherwise.
+
+824
+00:59:48,332 --> 00:59:48,692
+Right.
+
+825
+00:59:48,692 --> 00:59:51,394
+um I don't think we do too.
+
+826
+00:59:51,635 --> 00:59:52,236
+That's not true.
+
+827
+00:59:52,236 --> 00:59:54,748
+We do a shitload of this on this podcast, but whatever.
+
+828
+00:59:59,998 --> 01:00:10,028
+Anyway, thanks for hanging out for episode 98 on open source and something and robots will
+replace you.
+
+829
+01:00:10,028 --> 01:00:11,960
+don't know.
+
+830
+01:00:13,090 --> 01:00:15,551
+We're a long ways from robots replacing anything.
+
+831
+01:00:15,691 --> 01:00:18,072
+We're not even going bother.
+
+832
+01:00:18,072 --> 01:00:20,514
+That one's so obvious, we're not even going to bother with robots anymore.
+
+833
+01:00:20,514 --> 01:00:28,597
+We're just going to have glasses on soon and then we'll be in that episode of Star Trek
+where Riker brings that weird game back from that fantasy party planet.
+
+834
+01:00:28,938 --> 01:00:29,730
+Yep.
+
+835
+01:00:29,730 --> 01:00:32,030
+A little swallows the little discs.
+
+836
+01:00:33,550 --> 01:00:34,950
+3D animation.
+
+837
+01:00:34,950 --> 01:00:35,719
+Who saves the day?
+
+838
+01:00:35,719 --> 01:00:37,332
+Does Wesley save the day on that one?
+
+839
+01:00:37,332 --> 01:00:38,434
+I think so.
+
+840
+01:00:38,434 --> 01:00:42,397
+Even Data, I think, got sucked into it, which was kind of a cop-out.
+
+841
+01:00:42,578 --> 01:00:43,729
+But maybe not.
+
+842
+01:00:43,729 --> 01:00:46,466
+I thought Data was...
+
+843
+01:00:46,683 --> 01:00:47,674
+Maybe he was away.
+
+844
+01:00:47,674 --> 01:00:49,145
+He was on an away mission.
+
+845
+01:00:50,770 --> 01:00:55,246
+fixed rhetorical device anyway I'm Adam
+
+846
+01:00:55,246 --> 01:01:03,152
+uh Brian, an open mind everybody and share and share stuff actually let me rewind just
+share some things go share something
+

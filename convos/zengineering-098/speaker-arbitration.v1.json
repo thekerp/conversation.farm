@@ -1,0 +1,55 @@
+{
+  "convo": "zengineering-098",
+  "method": "Per-track RMS over each turn's window, mapped master->mix through edit_map. Decisive margin 6.0 dB; below that the diarizer's label stands because that is simultaneous speech, not a mislabel.",
+  "turns": 451,
+  "confirmed_by_audio": 249,
+  "changed_by_audio": 5,
+  "left_to_diarization_ambiguous": 75,
+  "left_to_diarization_unscorable": 122,
+  "talk_seconds": {
+    "adam": 1800,
+    "tbj": 1760
+  },
+  "changes": [
+    {
+      "id": "s0077",
+      "t": 781.37,
+      "from": "tbj",
+      "to": "adam",
+      "margin_db": 19.1,
+      "text": "[chuckles] Yeah"
+    },
+    {
+      "id": "s0176",
+      "t": 1668.35,
+      "from": "adam",
+      "to": "tbj",
+      "margin_db": 8.6,
+      "text": "Interacting."
+    },
+    {
+      "id": "s0238",
+      "t": 2099.61,
+      "from": "adam",
+      "to": "tbj",
+      "margin_db": 6.8,
+      "text": "... create the big open, the most successful open source project."
+    },
+    {
+      "id": "s0287",
+      "t": 2569.68,
+      "from": "tbj",
+      "to": "adam",
+      "margin_db": 12.6,
+      "text": "Right. Yep."
+    },
+    {
+      "id": "s0420",
+      "t": 3597.92,
+      "from": "adam",
+      "to": "tbj",
+      "margin_db": 6.6,
+      "text": "Sorry about that shit. [laughs]"
+    }
+  ]
+}
