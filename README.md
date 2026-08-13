@@ -15,6 +15,7 @@ published, and eventually composted into later ones. Same object throughout, gai
 | [`docs/convo-v1-spec.md`](docs/convo-v1-spec.md) | The unit, the object, the pipeline, the checks block, definition of done |
 | [`docs/tech-stack.md`](docs/tech-stack.md) | Three planes, performance budget, characters and consent, the production skill |
 | [`docs/research-pass.md`](docs/research-pass.md) | Stage 4 — the queue, the Slack loop, the anti-slop rules |
+| [`docs/slack-protocol.md`](docs/slack-protocol.md) | The harvest thread — drop contract, roles, every message, the gates. **Draft with 22 blocking holes, see §12** |
 | [`CLAUDE.md`](CLAUDE.md) | How agents should work in here |
 
 ## v1

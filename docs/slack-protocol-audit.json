@@ -1,0 +1,682 @@
+{
+  "spec": "docs/slack-protocol.md",
+  "method": "Four independent protocol designs from different priorities, scored by three judges, synthesized, then walked by three adversarial passes (happy path, adversary, consistency-against-existing-docs).",
+  "dated": "2026-08-13",
+  "counts": {
+    "total": 110,
+    "blocking": 22,
+    "high": 47,
+    "medium": 33,
+    "low": 8
+  },
+  "checked_by_hand": [
+    {
+      "finding": "stitcher music timing is poisoned by ffprobe format.duration (lib/probe.py:40)",
+      "verdict": "REAL BUT NOT LIVE",
+      "evidence": "probe.py does read format.duration, which is the exact field measured 5.510 s short on E098's master. But on the files the stitcher actually processes it is accurate to 8 ms: Zengineering Intro Tune w-Fade.mp3 format 58.802 vs decoded 58.800; episode.mp3 2509.168 vs 2509.160. The E098 error was an unusual CBR master where ffprobe estimated from bitrate x size. It becomes live only if a back-catalogue master is fed through the stitcher.",
+      "action": "Not urgent. Worth a decoded-duration fallback in probe.py before any back-catalogue episode is re-cut."
+    }
+  ],
+  "holes": [
+    {
+      "where": "§1.3 (cron */10) + §6.4 (\"apply\" is a claimed stage) + §3 generally",
+      "problem": "The poll is specified only for *drop detection*. Nothing says what advances a convo from stage to stage, when reactions are read, or when the 7-day/18-day/21-day guest timers and the 24h/72h nudges are evaluated. Walking E098: after M01 posts at 09:14 the spec says \"Working: stage 2\", then \"Next ping: the research queue, ~20 min\" — implying one invocation chains stages 2→3→4a, but research-pass §7 says the runner \"clone[s], run[s] ONE stage, push[es] a branch, exit[s]\". Implementer A writes a per-convo state machine driven by the same */10 cron that scans every open thread's reactions; implementer B chains stages inside one long invocation and only polls Slack when a gate is open. These are different products with different cost, latency and failure profiles.",
+      "severity": "blocking",
+      "fix": "Add a §1.6 \"the tick\": one cron entry does, in order, (a) poll inbox for new/incomplete drops, (b) for every convo whose `state` is not `published|abandoned`, fetch `conversations.replies` since the last-read cursor stored in `gates.json`, run `apply`, (c) evaluate timers, (d) launch at most one stage per convo per tick, claimed. Publish the state table: `convo.json.state` × gate status → next stage, and say explicitly whether one invocation may run more than one stage (recommend: no, one stage per tick, so the ~20 min ETA in M01 becomes ~3 ticks)."
+    },
+    {
+      "where": "§6.5 (\"Slack returns reactions with no timestamps at all… any rule that orders reactions in time is unbuildable here\") vs M10 (\"adam ✅ 22:31, tbj ✂️ 07:14 next morning\") and M18 (\"on tbj's 🔒 at 21:47\")",
+      "problem": "The spec proves reaction times are unavailable to a stateless outbound-only runner, then prints reaction times in two message shapes — one of which (M10) is the split-decision message a human reads to understand who was overruled. An implementer either builds an inbound endpoint/socket to get `reaction_added` events (violating research-pass §7) or ships M10 with the times missing, which changes the message's meaning.",
+      "severity": "blocking",
+      "fix": "Strike times from M10 and M18. M10 becomes \"Split on b4: adam ✅, tbj ✂️. ✂️ beats ✅ by the lattice — order didn't matter and I can't see it anyway.\" M18 becomes \"Merged by CI on tbj's 🔒.\" Add one line to §6.5: \"No message may print a reaction time. The only times the skill can print are message ts, reply ts, and commit times.\""
+    },
+    {
+      "where": "§1.4 Path A condition 3 (\"No file under the drop root missing from files[] — an extra file means still-arriving or tampered\") vs M01 (\"transcripts/scribe-raw.json · session/098.sesx · 1 file ignored (not in manifest)\")",
+      "problem": "The walked happy path violates its own completeness rule in the thread-root message. E098's archive genuinely contains a file that must be excluded (`…thekerp copy.mp3`, the 2024 re-export with 55 s spliced out, which source.json says must never be transcribed). Condition 3 says that drop is incomplete forever; M01 says it verified. Implementer A blocks the drop and posts M02 in a loop; implementer B ignores extras and loses the tamper check.",
+      "severity": "blocking",
+      "fix": "Add `ignore[]` to drop.json — `{path, reason, sealed_by}` — written by `farm drop` when a human excludes a file. Restate condition 3 as: no file under the drop root outside `files[] ∪ ignore[]`. M01's line becomes \"1 file ignored: tracks/_excluded/thekerp copy.mp3 — 'redundant 2024 re-export' (adam)\". Path B (unmanifested) can have no ignore list, so it keeps the strict rule and asks."
+    },
+    {
+      "where": "§1.5, §2.6, §3.2–3.6 (every \"Lands as\" line), §6.6 — `convos/<id>/gates.json`",
+      "problem": "`gates.json` is the protocol's central ledger — it holds `client_msg_key`s, every human decision, the `superseded` verb, the `apply_key`, the G4 approval state, and (per the fix above) the Slack read cursor — and it is the one object with no schema. drop.json, person/1, rss.json and episode.json all get shapes. Two implementers produce mutually unreadable ledgers, which means the two operators' skill installs cannot take over from each other mid-convo, which is the entire premise.",
+      "severity": "blocking",
+      "fix": "Add §2.7 with a `gates/1` schema: `{schema, convo, thread_ts, cursor, gates: {g0..g4: {state: open|applied|held|closed, items: {<item_id>: {version, marks: [{actor, verb, source_msg_ts}], outcome, applied_in: <sha>}}}}, posted: {<client_msg_key>: msg_ts}, apply_keys: []}`. Every \"Lands as\" line in §3 then names a path into this object instead of prose."
+    },
+    {
+      "where": "§2.4 (v1 delivery is a rendered HTML file an admin emails; the guest replies by email; an operator pastes it back) vs §2.5 (\"Never opened → No. Not ever, on any timer\") and M14/M16 (\"State: sent, unopened\", \"No open event on the link\", \"Reminders day 3, 7, 14\")",
+      "problem": "In v1 there is no link and no open event, so every guest packet is permanently in the one state that can never resolve — meaning no convo with a guest can ever pass G4 until a human ✅s M16 with an evidence line. Worse, the paste-back path lets an operator write a guest's consent to TRUE by typing it, which §2.2 forbids even to an admin; §5's token table has no consent token at all, so an implementer must invent one (or invent a rule that consent can never be granted in v1).",
+      "severity": "blocking",
+      "fix": "Split the state machine by delivery mode. v1 (`delivery: \"email\"`) has states sent → returned → declined, no `opened`, and the 21-day auto-resolve applies to `sent` because an emailed attachment IS a delivered opportunity; M16 becomes the v1.5-only case. And rule the consent grant out of the paste path: in v1 a guest's `consent.generative: true` requires a signed reply forwarded verbatim into `people/<id>.json` with `granted_by: \"<guest>\" via: \"email\" evidence: <message-id>` — add token `consent:<person> grant|withhold <evidence>` to §5, operator-typable only for `withhold`."
+    },
+    {
+      "where": "§8.1–8.3 + M17/M19, checked against /Users/kerp/Dropbox/Zengineering/Claude/stitcher (lib/validator.py `resolve_inputs`, lib/ffmpeg_builder.py `build_bare_command`)",
+      "problem": "The spec materialises `_wrap/<farm>-<number>/` in the **template** layout (Intro/, Main Convo/, Outro/, Episode Cards/) and then runs `--bare` for E098. Bare mode does not read that layout: `resolve_inputs` requires `episode.{mp4|mp3|wav…}` and `title_card.{png,jpg}` at the folder root and will exit 2 on the wrap folder. Bare mode also **cannot append an outro bump** — `build_bare_command` muxes one still image against one audio file and adds nothing — yet M19 claims \"Outro bump 11.2 s appended\" in `--bare`. Implementer A adds a pre-concat step outside the stitcher; B patches the stitcher; C renames files into the legacy layout and drops the bump.",
+      "severity": "blocking",
+      "fix": "Define two wrap layouts explicitly. `wrap_mode: bare` materialises `_wrap/<id>/episode.mp3` (master + bump, concatenated by an explicitly named pre-step, e.g. `farm wrap concat`) plus `title_card.png`; `wrap_mode: template` materialises the Intro/Main Convo/Outro tree. State that the bump is concatenated *before* the stitcher in bare mode and *is* the Outro/ segment in template mode, and record which in `episode.json.wrap_mode`."
+    },
+    {
+      "where": "§1.5 (`drop_id = sha256(sorted (relpath, bytes, sha256) triples)[:12]`) vs §1.3 (\"The poll never downloads media. Full sha256 is recomputed once, after download, at stage 1\")",
+      "problem": "The claim commit must be pushed before anything posts (§1.5 step 2), but the id it claims needs per-file sha256, which by §1.3 does not exist until after a 400 MB download at stage 1. Unmanifested Path B drops have no declared sha256 at all. And if the verified sha256 at stage 1 differs from the declared one, the drop_id changes — so the ledger entry that was already claimed and posted no longer identifies the drop. Implementer A computes drop_id from declared hashes, B downloads first and claims late (re-opening the two-runner race), C uses remote_hash instead.",
+      "severity": "high",
+      "fix": "Say `drop_id` is computed from **declared** `(relpath, bytes, sha256)` for manifested drops and from `(relpath, bytes, remote_hash)` for inferred ones, and name it `declared_drop_id` in the ledger. At stage 1, verified hashes produce `content_id`; if `content_id ≠ declared_drop_id` the drop fails loudly as tampered/corrupt (a new message shape, ⛔), it does not silently become a different drop."
+    },
+    {
+      "where": "§1.1 relation table (\"`edited`, no map → G0 reopens with three named choices\"), §7 failure row 4, §1.4 Path B (\"Stage 7 refuses to cut clips until someone answers timelines.relation\")",
+      "problem": "G0-reopen is promised three times and has no message text, no reactions, and no directive token — `timeline:` is absent from §5's table. This is the single most likely real failure for the back catalog (most old episodes have a master and no parsable session), and the spec that demands actual message text doesn't have one for it. Two implementers invent two different question shapes and two different answer vocabularies.",
+      "severity": "high",
+      "fix": "Add M03b with real text, three reactions bound to the three outcomes (✅ master-only / 🧪 tracks-only / ✂️ abort is wrong — these aren't the vocabulary's meanings, so use a reply-only form), and add `timeline: master-only|tracks-only|edited <map-path>|abort` to §5. State the consequence of each in the message: master-only = published timestamps ship, 87 s of conversation is unaddressable; tracks-only = complete transcript, no publishable timestamps, no clips."
+    },
+    {
+      "where": "§4 table (🛑 \"Stop this gate. Nothing proceeds until whoever placed it clears it\") vs M12 (\"Removing a reaction doesn't undo a commit\")",
+      "problem": "🛑 is the only reaction that halts the pipeline and it has no defined release. If the 🛑 is committed to gates.json, un-reacting doesn't clear it (M12's own rule); if it isn't committed, it violates \"every human decision lands as a commit\". §5 lists `release: <stage>` under concurrency, not gates. So a 🛑 placed from a phone at bedtime may be unclearable, which wedges the convo — the exact failure the 30-minute claim expiry exists to prevent.",
+      "severity": "high",
+      "fix": "Add `clear: <gate|item> <reason>` to §5, valid from the person who placed the 🛑 or from any admin, and say that removing the 🛑 reaction posts a one-line prompt asking for `clear:` rather than acting. Add a 7-day 🛑 escalation to §3.9 so a forgotten hold surfaces once."
+    },
+    {
+      "where": "§1.5 (`client_msg_key = sha256(convo_id + stage + item_id + content_hash)`) + §6 Versions",
+      "problem": "Because the key includes the content hash, a stage re-run whose output text differs by one word produces a new key and **posts again** — the opposite of the stated guarantee that \"any stage re-run from any state is safe against double-posting\". Model stages never reproduce byte-identical prose, so the common case double-posts. The v1/v2 mechanism is supposed to cover this but the spec never says what promotes a re-post to v2 versus what suppresses it as a duplicate.",
+      "severity": "high",
+      "fix": "Key on identity only — `sha256(convo_id + stage + item_id)` — and store `content_hash` alongside. Same key + same content = skip. Same key + different content = `chat.update` the existing message and bump the version in its header, then log every prior mark as `superseded` per M11. Never post a second message for the same item_id."
+    },
+    {
+      "where": "§3.2 M06 (\"Nothing runs and nothing costs until a ✅ lands here\") + §4.3 message-scope (\"✅ on the message acts on all nine\") + §5 form 2 (directive replies need no reaction)",
+      "problem": "Adam replies `cut: 3` and never reacts; Brian ✅s four hours later. Reactions have no timestamps (§6.5) and replies do, so the skill cannot order them. Does ✅ run 9 or 8? And if Brian ✅s first and Adam's `cut: 3` lands after $6.10 is spent, there is no message for \"you cut an item that already ran and cost $0.68\". Implementer A treats ✅ as \"run whatever the queue file says at apply time\"; implementer B snapshots the queue at ✅.",
+      "severity": "high",
+      "fix": "State that ✅ authorises the queue **as it stands at the apply tick**, that directive replies are applied before any ✅ in the same tick regardless of apparent order, and that once 4b has launched, a late `cut:` on an item is refused with one line naming what it already cost. Add a sentence to M06: \"Edits land before approvals in the same pass, so a reply and a ✅ in any order give the same result.\""
+    },
+    {
+      "where": "§2.2 G4 row (admin \"🔒 (not the PR opener)\"; operator \"opens PR, 🔒 after 24 h\") + M17 (\"adam ran this, so tbj ships it\") + §6 Publish",
+      "problem": "The two-key rule turns on who \"opened\" the PR, but the PR is opened by the runner at stage 8, and stage 8 has no gate and therefore no authorising ✅ to populate `on_behalf_of` (§6.3 defines on_behalf_of as \"whoever's ✅ authorised the stage\"). For E098 the G1 ✅ is tbj's and the G3 ✅s are adam's, and M17 asserts adam is the opener with no stated derivation. Implementer A uses the G1 spender; B uses the last G3 reactor; C uses whoever adopted the drop; D uses the runner and lets anyone 🔒.",
+      "severity": "high",
+      "fix": "Define `convo.owner` explicitly: the person whose mark authorised the **last** paid or state-changing stage before stage 8, recorded in gates.json as `opener` when the PR is created, and printed in M17 as \"opener: adam (from G3 apply, e01ab22)\". If no human mark exists (fully auto convo), the opener is null and either operator's 🔒 ships it immediately."
+    },
+    {
+      "where": "§2.6 (\"A 🔒 on a convo with an open hard block is acknowledged, committed, and queued. It is not executed\") + M17 Lands-as (\"🔒 writes the approval into gates.json and onto the PR. CI merges\")",
+      "problem": "If CI merges on seeing approval, and the runner commits an approval that is supposed to be queued-not-executed, CI merges a convo with an open hard block unless approval carries a distinct executable/queued state — which no field expresses. The spec also never says who evaluates the six hard blocks (runner pre-flight, CI, or both) or what CI does when a queued approval later becomes executable (nothing re-triggers it after the block clears).",
+      "severity": "high",
+      "fix": "Make the approval field tri-state — `approval: {by, state: effective|queued, blocked_on: [...]}` — and state that CI merges only on `effective`, that CI re-checks all six hard blocks itself (the runner's check is advisory), and that clearing the last block flips queued→effective in a commit which is what re-triggers CI. Name the token type for the merge job here too, not only in the build note."
+    },
+    {
+      "where": "§1.1 timelines contract + §3.4 M09 clip block, against source.json `external_dependency.resolution` (\"Cut the cold-open clip from the raw tracks at session 1241.603–1253.765 instead of from the master… the first case where a published clip must NOT come from the published master\")",
+      "problem": "E098's b1 sits at master 0.000–12.084, entirely inside the intro music, and source.json rules that its clip must be cut from the isolated tracks while its published timestamp stays on the master. The drop contract and the beat/clip data carry one timeline and one source; there is no per-clip `cut_from` field and no message shape that shows a reviewer that this clip's audio came from a different recording than its timestamp. On the walked happy path, beat one is wrong.",
+      "severity": "high",
+      "fix": "Add `clip_source: master|tracks|mix` plus `source_range` per beat in convo.json, defaulting to master and set to tracks wherever the master window intersects `structure.music_intro|music_outro`. M09 prints it: \"Clip cut from tracks (master window is inside the 2020 music bed) · session 1241.603–1253.765 · voice only.\" Add it to §7 as a named case, not a one-off."
+    },
+    {
+      "where": "§1.2 (\"You run `farm drop <folder>`… It normalises names\") + drop.json `participants[].track` naming (`tracks/adam.mp3`)",
+      "problem": "Riverside delivers `2020-08-22--t02-00-00pm--thekerp.mp3` and `…--brian.mp3`. Nothing says how the sealer maps a vendor filename to a person id, and source.json is explicit that the entire speaker-attribution chain for E098 rests on the filename token 'thekerp' and inverts silently if the vendor swapped handles. `farm drop` has no documented flags, prompts, or output beyond \"normalises names\". Implementer A regexes handles from a per-person alias list; B prompts interactively; C asks a model.",
+      "severity": "high",
+      "fix": "Give `farm drop` a contract: it prints its proposed mapping and refuses to seal without `--map adam=<file> --map tbj=<file>` (or an interactive confirm), writes `participants[].track_source_name` and `track_mapping: \"declared\"`, and copies source.json's caveat verbatim into provenance. M01 then prints the mapping line so a reviewer can catch a swap in the one place it's still catchable."
+    },
+    {
+      "where": "§2.4 v1 (\"An admin sends it by email\") + M14 (\"Emailed j••••@example.com 11:02 by adam… Reminders day 3, 7, 14\") + §2.1 runner (\"Slack token and model keys\")",
+      "problem": "The runner has no mail credential and cannot send or observe email, yet M14 reports a send time and promises three reminders, and §2.5's timers count from it. Implementer A adds SMTP to the runner (new secret, contradicts §2.1); B posts the packet path and waits for a human to confirm; C treats `/farm guest jane-doe send` as the send and lies about the timestamp.",
+      "severity": "high",
+      "fix": "In v1 the skill *mints and stages* — it writes `reply-packet.html` and posts M14 saying \"Ready to send: <path>. Reply `sent: jane-doe <YYYY-MM-DD>` when it's out; timers start from that.\" Reminders become nudges to the operator, not to the guest. Say plainly that no mail leaves the runner until the porch exists."
+    },
+    {
+      "where": "§1.1 `timelines` (`published` / `session` / `map`), against source.json `edit_map.frame` and `tracks.final_mix`",
+      "problem": "E098 has three timelines, not two: master, the final-mix/session timeline, and the raw tracks (sample-locked to the mix at offset 0). The .sesx clip table is in Audition sample positions requiring a documented −0.0784 s shift to reach the ffmpeg decode frame. The contract names only `session: \"tracks/\"` and says stage 2 \"parses the map, verifies it\" with no word about frame conversion. An implementer who skips the shift is 78 ms out — which is inside the 250 ms clip pad but outside the \"0.2 s clear of an edit boundary\" rule at stage 7, and it silently poisons every mapped timestamp.",
+      "severity": "high",
+      "fix": "Add `timelines.frames: {map_frame: \"sesx@44100\", offset_to_decode_seconds: -0.0784, verified_by: \"...\"}` as required whenever `relation: edited`, and require stage 2 to re-derive that offset by cross-correlation and fail loudly on disagreement rather than trusting the declared value. Name the three timelines in the contract: `published`, `mix`, `tracks`."
+    },
+    {
+      "where": "§4 table (🔎 \"Costs money\", valid G1 G2 G3; 🧪 valid G2 G3) + M09 reaction list + M06 (\"Nothing runs and nothing costs until a ✅ lands here\")",
+      "problem": "🔎 and 🧪 at G3 launch new paid research after the money gate has closed and after the queue's spend authorisation was consumed. There is no re-authorisation, no cap re-check message, and no statement of whether a G3-triggered research run re-opens G2 (posting a new M07 for the result) or silently writes a tendril. Implementer A blocks and asks; B spends up to the cap silently; C queues it for a human to approve at the next tick.",
+      "severity": "high",
+      "fix": "State that any G3 reaction that spends re-enters the pipeline at G2: it posts an M07 for the result and the ✅ that authorised the original queue does not cover it. Print the incremental cost in the acknowledgement (\"🔎 on b5 queued: ~$0.70, $6.14 of $12 spent — reply `no:` within 10 min to cancel\")."
+    },
+    {
+      "where": "§1.2 web-upload row (\"The upload endpoint *is* the sealer. It calls the same seal() server-side when the last part completes\")",
+      "problem": "\"The last part\" is unambiguous for one multipart file and meaningless for a folder of five. A browser upload has no way to know a human isn't about to add the session file, so the web transport has no completeness signal at all — the exact problem §1.4 solves for sync. D2 says the two transports must produce the same canonical drop; as written, one has a rigorous completeness test and the other has a race.",
+      "severity": "medium",
+      "fix": "Give the web transport an explicit finish action: the UI collects files into a draft drop, the human presses \"Seal drop\", and only then does the endpoint run seal(). Until sealed, the prefix is invisible to the poller. Say that a sealed web drop and a sealed sync drop differ in exactly one field, `transport`, and that an unsealed web draft is never a drop."
+    },
+    {
+      "where": "§1.3–1.4 (`remote_hash` from the adapter's `list()`, compared against the manifest)",
+      "problem": "`remote_hash` is transport-specific (Dropbox's 4 MB-block SHA-256 tree; a blob store's ETag, which for multipart uploads is not a hash of the content at all). `farm drop` runs locally against a synced folder and must therefore compute the *provider's* algorithm to write a manifest the poller can check — and the same folder re-homed to another provider invalidates every manifest. That undercuts \"a byte-identical manifest\" across transports.",
+      "severity": "medium",
+      "fix": "Make it `remote_hash: {algo: \"dropbox-content-hash|s3-etag|sha256\", value: \"…\"}` and say the poller accepts a manifest whose algo it cannot verify by falling back to Path B's three-stable-polls rule instead of failing. Note that ETags from multipart uploads are not content hashes and must be treated as unverifiable."
+    },
+    {
+      "where": "M01 (\"0 ms content drift\", \"dual mono, music bed baked in\", \"8 clips / 6 internal cuts / 87.1 s\") + §3's \"M01 is edited, never re-posted, as stages complete\" + §3's 12-line cap",
+      "problem": "Two problems in the root message. (a) Drift, isolation and dual-mono are *analysis* results requiring decoded audio, and edit-map stats require parsing the .sesx — all of which §1.3 says the poll doesn't do and §1.1 says stage 2 does. drop.json has no field to carry them, so an implementer either downloads and analyses at G0 (contradicting the poll design) or prints numbers it can't have. (b) M01 is simultaneously the 12-line-capped root and the living status board that accumulates transcription stats, per-stage cost and clip counts — it cannot stay under the cap.",
+      "severity": "medium",
+      "fix": "Move drift/isolation/dual-mono into optional `drop.json.analysis` written by `farm drop` at seal time on the machine that has the files, and mark them `declared` in M01 until stage 2 confirms. Split the status board out of the root: M01 stays a fixed ~10 lines, and a single pinned M05 claim/status message carries the accumulating state."
+    },
+    {
+      "where": "M18 (`_output/098-final.mp3`), M19 (`_output/098-on-open-source-collaboration-final.mp4`, \"71.4 MB\", \"loudnorm −16 LUFS\", \"byte for byte\"), M20 (`audio _output/098-final.mp4`), §8.4 guarantee 1 (\"byte-identical… additions strictly around it\") — checked against stitcher metadata.py and config.yaml",
+      "problem": "Four disagreements in one artifact. (1) Three different filenames for one file across M18/M19/M20; the tool actually writes `ep-098-<slug>-final.mp4`. (2) mp3 in M18 vs mp4 in M19/M20 — Transistor wants audio, and the spec never says where an MP3 deliverable comes from. (3) 71.4 MB is impossible: the config renders 1920×1080 at 8 Mbps, so 62 minutes is multiple GB. (4) `loudnorm=I=-16` is on by default and rewrites the conversation audio, so \"unmodified / shas equal\" is true of the *inputs* only while the shipped audio is loudnormed AAC — and \"re-running produces this file byte for byte\" is not a promise ffmpeg/x264/AAC can keep across versions.",
+      "severity": "medium",
+      "fix": "Name two artifacts: `episode.mp3` (the RSS deliverable — master + bump, concat only, no re-encode, no loudnorm, so guarantee 1 is literally true) and `episode.mp4` (the video render, loudnormed, object storage). rss.json points at the mp3. Replace \"byte for byte\" with \"same manifest in, same *inputs* and same command out; the mp3 is bit-identical, the mp4 is not guaranteed across ffmpeg versions.\" Use the tool's real `output_filename` in every message."
+    },
+    {
+      "where": "M07 (\"Two share a domain — anti-slop rule 5 keeps one. I picked #2\") + research-pass §3 rules 3/5 + §2.6 hard block 2 (fewer than 2 tendrils on any beat)",
+      "problem": "Rule 5 (one tendril per domain per convo) and rule 3 (max 3 per beat) are convo-scoped but are enforced inside a single result message. Two independently ✅'d results can both point at the same domain and the conflict only surfaces at stage 5 assembly, with no message — so a reviewer's approved tendril silently disappears, and worse, the dedupe can drop a beat below the 2-tendril floor, which is a hard block that then fails at G4 with no recovery path (M21 covers dead links only).",
+      "severity": "medium",
+      "fix": "Add an assembly-report message (M09b or a block inside M09): \"Trimmed at assembly: t14 (rule 5, kalzumeus.com already used by t7) · b6 now has 2 tendrils.\" Add a hard-block recovery message for the tendril floor with `swap:`/🔎 as the exits, matching M21's shape."
+    },
+    {
+      "where": "M04 (\"Superseding re-runs stages 2–5… 4 of 7 beats survive untouched: b1 b2 b4 b7\" while \"I've done nothing with it\")",
+      "problem": "The message predicts which beats survive a re-transcription it says it hasn't run. You cannot know whether a beat's timestamps move until stages 2–5 have re-run against the new bytes. Implementer A diffs the changed files against beat windows and reports a *guess*; B re-runs on a scratch branch first (spending money before a human approves the supersede); C drops the claim.",
+      "severity": "medium",
+      "fix": "Weaken the message to what's actually knowable from the file diff: \"tracks/adam.mp3 changed (+12 s). Beats whose master windows fall after the first changed region — b3 b5 b6 — are the ones at risk; b1 b2 b4 b7 are before it. I won't know for certain until stage 5 re-runs.\" State the rule: survival is decided *after* re-assembly by comparing beat claim text and window, and retired marks go to reviews.superseded.json then."
+    },
+    {
+      "where": "M10 (b4 cut) vs M17 (\"7 beats\", \"G3 ✅ 7/7\") vs M26 (\"4 of 7 decided… b1 ✅ b2 ✂️\") and M06's b-ids (b3 at 34:52) vs M09's b3 (13:34–15:52)",
+      "problem": "The worked example contradicts itself on beat identity and count — b3 is at two different timestamps in two gates, and a cut b4 still ships in a 7-beat page. Underneath the cosmetics is a real undefined rule: are beat ids immutable and non-contiguous after a ✂️, or does the page renumber? Renumbering breaks gates.json keys, M11's version rule, and every permalink; not renumbering means the published page shows b1,b2,b3,b5,b6,b7 or needs a display index.",
+      "severity": "medium",
+      "fix": "State it once: beat ids are minted at stage 3, immutable, never reused, and non-contiguous after a cut; the page renders position numbers, ids are for the data and the thread. Then fix the example so one convo's numbers agree across M06, M09, M10, M17 and M26 — the example is the spec for anyone skim-reading."
+    },
+    {
+      "where": "§4 table and §4.2 (unknown emoji ignored and tallied) + §4.1 disjointness (headers use ⛔ 👀 ❓ …)",
+      "problem": "The vocabulary is given as glyphs; the Slack API matches on names, and the near-misses are exactly the ones a human on a phone will tap: `heavy_check_mark` ✔️ for ✅, `x`/`negative_squared_cross_mark` for ✂️, and `no_entry` ⛔ — which the spec itself uses as a header glyph — for 🛑. All are silently ignored today and only surface after three uses. §4.2 gets skin tones right and then leaves the bigger alias problem open.",
+      "severity": "medium",
+      "fix": "Publish the canonical API names next to the glyphs (`white_check_mark`, `scissors`, `repeat`, `mag_right`, `test_tube`, `warning`, `top`, `writing_hand`, `octagonal_sign`, `lock`) and an explicit alias map that accepts `heavy_check_mark`→✅, `x`→✂️, `no_entry`/`no_entry_sign`→🛑. Ignored-once (not three times) should get the ❓ reply when the reaction is in the alias-adjacent set."
+    },
+    {
+      "where": "§5 token table (`cut: 3`, `reply:c4 <text>`, `swap: t11 <url>`, `first: 1,6,9`) + M13",
+      "problem": "No grammar. The table mixes `token: value` and `token:value` forms; nothing says whether matching is case-sensitive (phone keyboards capitalize line-initial words, so `Cut: 3` is the common case), whether leading whitespace or Slack's bullet formatting is stripped, or how to handle Slack's URL mangling — a pasted link arrives as `<https://example.com/x|example.com/x>`, so `swap:` and `archive:` will fail on the first real use. Smart quotes will break `claim:` and `edit:` text round-tripping.",
+      "severity": "medium",
+      "fix": "Add a five-line grammar: `^\\s*[-*>]*\\s*(?<token>[a-z-]+)\\s*:\\s*(?<arg>.*)$`, case-insensitive, one directive per line; unwrap `<url>` and `<url|text>` to url before parsing; normalize smart quotes in free text but never inside `claim:`/`reply:` payloads (commit those verbatim, as promised). State that `reply:c4` and `reply: c4` are both valid."
+    },
+    {
+      "where": "M18 (\"12 minutes of the two of you (adam 7, tbj 5)\") + §9 (\"the only feedback loop on the number this protocol exists to protect\")",
+      "problem": "Slack gives no dwell time, so there is no way to measure human minutes. Implementer A counts reactions × a constant; B measures first-reaction-to-last-reaction span per gate (which for async review is hours, not minutes); C omits the line. The spec elevates this number to the project's key metric and then leaves it unmeasurable — and a fabricated metric on a project whose premise is publishing where we were wrong is the wrong kind of bug.",
+      "severity": "medium",
+      "fix": "Define it as an explicit estimate with a published formula in `gates.json` — e.g. 20 s per reaction, 45 s per directive line, 90 s per gate first-touch — and print it as such: \"~12 min estimated (formula in gates.json). Correct it with `time: adam 15`.\" Or drop the line."
+    },
+    {
+      "where": "M02 (\"⏳ zengineering-101 — drop is mid-sync. Posted once per state, then silent\") + M01 (\"This is the thread root\")",
+      "problem": "M02 is posted for a convo that has no thread yet, so it is top-level; when the drop completes, M01 posts as a second top-level root and the two are unlinked. And \"once per state\" is undefined — if state is the ok/PARTIAL/MISSING vector, every file that finishes changes it, so a 5-file drop posts up to 5 times, which is the channel-muting behavior §1.5 works hard to avoid.",
+      "severity": "medium",
+      "fix": "Make M02 the thread root when it fires: M01 becomes a reply in M02's thread (and edits M02's header to 🌱 on completion) so one drop is always one thread. Define state as a coarse enum — `waiting|partial|stalled` — and edit the file table in place rather than posting again; a new post only on transition to `stalled` at 6 h."
+    },
+    {
+      "where": "M06 Lands-as (`research/queue.json`), M07 (`research/results/r04.json`) vs §1.5 (`convos/_drops/…`, `convos/<id>/gates.json`) and §2.4 (\"move `consent.json.reply_state`\") vs §2 (consent lives in `people/<id>.json`)",
+      "problem": "Paths are inconsistent across the document: research artifacts get bare `research/…` roots while everything else is `convos/<id>/…`, and consent is specified in two different files in two different sections. Implementers will place these differently, and since git is the ledger, a path disagreement is a data-model disagreement.",
+      "severity": "low",
+      "fix": "One layout block in §0 or §2.7: `convos/<id>/{source.json,convo.json,gates.json,research/{queue.json,results/*.json},thread.jsonl,undelivered.jsonl,episode.json,rss.json}` and `people/<id>.json` as the sole home of role + consent, with per-convo guest state as `convos/<id>/guests/<person>.json`. Delete the `consent.json` reference."
+    },
+    {
+      "where": "§3.9 (\"@-mentions only… between 08:00 and 21:00 in that person's timezone\") + §2 person/1 record",
+      "problem": "The person record has no timezone field. Slack's `users.info` carries `tz`, but the spec says reactions/identity come from `people/` and doesn't authorise a user-lookup call, so an implementer either adds an unlisted API dependency or ignores the rule.",
+      "severity": "low",
+      "fix": "Add `access.tz` to person/1, seeded from `users.info` once at account creation, and say the nudge window reads that field."
+    },
+    {
+      "where": "M17 (`https://pr-41.preview.conversation.farm/zengineering/098`)",
+      "problem": "A per-PR preview environment appears only in this message; tech-stack §0 describes the reader plane as static files on a CDN with nothing about preview deploys, and §2.6's hard blocks (LCP, gz size, tendril 200s) are reported as measured — implying the preview build runs the full check suite. Whether previews exist, who builds them, and whether the runner or CI measures the budget is unspecified, and G4 is unreviewable without the preview.",
+      "severity": "low",
+      "fix": "One line in §3.6: previews are built by CI on every push to `convo/*` at `pr-<n>.preview.conversation.farm`, and the numbers in M17 are read from CI's build report artifact, not measured by the runner."
+    },
+    {
+      "where": "M01 (\"✂️ within 15 min aborts\") + \"Working: stage 2 transcribe (runner) since 09:14\"",
+      "problem": "The abort window overlaps a stage that is already running and already spending. Nothing says whether ✂️ at minute 10 kills the in-flight run, what happens to money already spent, or how a running stage is signalled to stop given the runner is a separate stateless process the skill cannot reach.",
+      "severity": "low",
+      "fix": "Say ✂️ at G0 writes an abort marker to the claim ref; the running stage checks it at its next heartbeat (≤10 min) and exits, committing its receipt first per failure 9. M01's line becomes \"✂️ within 15 min aborts — anything already spent is reported and kept.\""
+    },
+    {
+      "where": "§8.2, §8.3, M17, M19 — `stitcher --bare` on `_wrap/<farm>-<number>/`",
+      "problem": "Bare mode does not read the template folder layout. `stitch.py` routes `--bare` to `resolve_inputs(folder, assets_dir, bare=True)`, which requires `episode.{mp4,mov,mkv,wav,mp3,aif,m4a,flac}` AND `title_card.{png,jpg}` at the TOP of the folder (or `title_card_default.*` in `stitcher/assets/`, which is an empty directory on this machine). It never looks at `Intro/`, `Main Convo/`, `Outro/`, or `Episode Cards/` — those are only read by `resolve_template_inputs`. The spec materialises the template folder and then runs `--bare` against it. Result: `ValidationError: Need either episode.{mp4/mov/mkv} or episode.{wav/mp3/...}`, exit code 2, before ffmpeg is ever invoked. E098, the one convo v1 exists to ship, is the case the spec routes to `--bare`.",
+      "severity": "blocking",
+      "fix": "Define two wrap shapes, not one. Bare wrap = `_wrap/<id>/episode.mp3` + `title_card.png` + `metadata.json`. Template wrap = the Intro/Main Convo/Outro/Episode Cards shape. `master_has_music` selects the shape as well as the flag, and G4 prints which shape was materialised."
+    },
+    {
+      "where": "§8.4 guarantee 1; M17 \"Main Convo bytes are sha-identical to the reviewed master\"; M19; M20 \"unmodified · Main Convo bytes == reviewed master bytes. shas equal\"",
+      "problem": "Byte-identity is unachievable with the chosen tool, in either mode. Template mode applies `aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo` to `[2:a]` (the main conversation) before `concat=n=5`, then `amix` with the music bed, then `loudnorm=I=-16:TP=-1.5:LRA=11`, then encodes `-c:a aac -b:a 192k`. Bare mode applies the same loudnorm and the same AAC encode. The reviewed master is a 44.1 kHz dual-mono MP3; the shipped conversation is 48 kHz stereo AAC that has been loudness-normalised. The sha can never match, and the strongest guarantee in the document — the one the whole RSS seam rests on — is false on its face. Worse, the spec instructs the skill to print `shas equal` in a message, so the pipeline will either lie or fail forever at that assertion.",
+      "severity": "blocking",
+      "fix": "Replace guarantee 1 with the measurable version the earlier draft already had: correlation ≥ 0.999 over the main-convo span against the reviewed master, computed post-render, with the number printed at G4 and stored in `episode.json`. Record the reviewed master's sha256 as provenance (what went in), never as an equality claim about what came out. Add the discovered constant offset to `episode.json` as `wrap_to_master`."
+    },
+    {
+      "where": "§8.3 \"the music timing math is the stitcher's and is not reimplemented\"; M19 reproducibility claim",
+      "problem": "The stitcher's duration source is `ffprobe format.duration` — `lib/probe.py` does `float(fmt.get(\"duration\"))` — which is the exact call `CLAUDE.md` #3-adjacent rules, `convo-v1-spec.md` §4 stage 7, and `source.json.runtime_note` ban outright, and which reads **5.510 s short** on 098's CBR MP3 master. Three consequences, all real: (a) `compute_music_cue(d_intro, gap, sync)` places the intro bump off by the intro's estimate error; (b) `outro_cue_pre = d_intro + gap + d_main` places the outro music ~5.5 s early on a 098-shaped master; (c) `video_branch` emits `trim=duration={info.duration_seconds}` for the main segment while the audio chain concatenates the full decoded stream and there is no `-shortest` in template mode — so the video is 5.5 s shorter than the audio and the picture ends before the conversation does. The spec adopts this math by reference and explicitly declines to check it.",
+      "severity": "blocking",
+      "fix": "Stage 8 computes decoded lengths (frames × 1152 ÷ 44100, the method `source.json` already documents) for every wrap segment and writes them into `metadata.json`; the stitcher call is changed to read durations from there rather than from `probe()`. Until that patch lands, G4 prints decoded length and `format.duration` side by side for Intro, Main and Outro and hard-blocks when they differ by more than 100 ms."
+    },
+    {
+      "where": "M18 \"upload `_output/098-final.mp3` to Transistor\" vs M19/M20 `_output/098-…-final.mp4` vs `metadata.py`",
+      "problem": "No stage produces an audio file, and the spec names the artifact three different ways. `metadata.EpisodeMeta.output_filename` is hardcoded `f\"{slug}-final.mp4\"`; every builder ends `-c:v libx264 … -movflags +faststart <path>.mp4`. There is no audio-only path in the tool. Transistor and the RSS feed ingest audio. So the one artifact the feed actually carries is produced by no stage, is named `.mp3` in M18, `.mp4` in M19 and `rss.json.audio`, and would be `ep-098-on-open-source-collaboration-final.mp4` under the tool's own slug rules. M20's `audio  _output/098-final.mp4  sha d41f8a…` records a sha for a file the pipeline never wrote.",
+      "severity": "blocking",
+      "fix": "Name the audio render as its own step in stage 8 with its own command and its own sha in `episode.json` (`ffmpeg -i <mp4> -vn -c:a libmp3lame …`, or a second stitcher mode). Settle one filename, derived from `metadata.load()`'s actual rules, and use it in M18, M19 and M20 identically."
+    },
+    {
+      "where": "§8.2/M17/M19 — 098 ships `--bare` with an \"Outro bump 11.2 s appended\"",
+      "problem": "Bare mode cannot append anything. `build_bare_command` takes exactly two inputs — the looped title card and one audio file — and ends with `-shortest`. There is no intro slot, no outro slot, and no concat. So the bump named in M17 and M19 cannot exist in the artifact those messages describe. Something upstream must concatenate master + bump into a single `episode.mp3`, and no stage in the spec owns that step; whoever does it re-encodes the master, compounding the byte-identity problem above.",
+      "severity": "blocking",
+      "fix": "Add an explicit pre-stitch concat step to stage 8 that produces `episode.mp3` = reviewed master ⧺ bump, records both input shas and the concat method in `episode.json`, and states that this is where the conversation is re-encoded. Or route 098 through `--template` with the standing intro and accept the music-bed conflict check from the finding on `master_has_music`."
+    },
+    {
+      "where": "§1.4 Path A, condition 3 (\"No file under the drop root missing from `files[]`\")",
+      "problem": "`.DS_Store` permanently and silently blocks every drop made from a Mac. Finder writes it the moment the operator opens the folder to put files in it — which is the only way a synced drop ever happens — and this very repo already carries three of them (`/repo/.DS_Store`, `docs/.DS_Store`, and one in the 098 archive). It is not in the sentinel list (which covers `.dropbox.cache` but not `.DS_Store`, `.dropbox`, `Icon\\r`, `._*`, `desktop.ini`, `Thumbs.db`). Condition 3 therefore fails forever, and because M02's shape is per-manifest-file PARTIAL/MISSING rows, an *extra* file produces no row and no message. The most likely real-world drop dies without a word.",
+      "severity": "blocking",
+      "fix": "Split condition 3 into an ignore-list (`.DS_Store`, `.dropbox*`, `Icon\\r`, `._*`, `desktop.ini`, `Thumbs.db`, `.Spotlight-*`, `.fseventsd`) and a genuine unexpected-file check, and log ignored files in provenance so nothing is invisible. Sealer and poller must share one ignore-list constant."
+    },
+    {
+      "where": "§1.4 conditions 3/4/5 and §3.1 M02",
+      "problem": "There is no message for \"the manifest verifies but a non-file condition blocks adoption.\" M02 renders rows against `files[]`, so a drop blocked by an extra file, a stray sentinel, or condition 5 produces silence indefinitely. Condition 5 (`now − sealed_at ≥ 120 s`) has no upper bound either: a laptop with a skewed clock or a timezone-naive write stamps `sealed_at` in the future, the condition never satisfies, and the drop is dead with no output. Condition 5 also contradicts the section's own claim that \"no quiescence window is needed, because the hash already proves every byte arrived.\"",
+      "severity": "blocking",
+      "fix": "Add M02b: \"Drop verified but not adopted — <named condition>\", one line per failing condition, posted once per state transition like M02. Bound `sealed_at` to `now + 120 s` and reject a future-dated seal loudly. Either justify condition 5 or delete it — as written it is a silent failure with no stated benefit."
+    },
+    {
+      "where": "§2.5 resolution table, §3.5 M14/M16 — \"Never opened → No. Not ever, on any timer.\"",
+      "problem": "v1 has no open event. §2.4 says the v1 path is \"zero new infrastructure\": the skill renders `reply-packet.html`, an admin emails it, the guest replies by email. Email attachments and plain links produce no open signal a cron runner can read. So in v1 every guest packet is permanently in the `never opened` state, and `never opened` never resolves — therefore **no convo with a guest can ever pass G4 in v1**, except through M16's ✅-with-evidence escape at day 18. The spec presents the v1 path as fully functional and the tracked-open distinction as the moral core of §2.5, while the mechanism that produces the distinction only exists in v1.5.",
+      "severity": "blocking",
+      "fix": "Define the v1 delivery-evidence artifact explicitly: the sent message-id plus any guest reply counts as `opportunity delivered`, and the 21-day timer runs from delivery. State plainly that the never-opened/opened distinction activates when the porch ships, and that until then M16's day-18 escalation is the only path — so the operators know a guest convo costs them one manual step, not that it is blocked."
+    },
+    {
+      "where": "§2.6 hard blocks; M17 preflight; the named case \"someone hand-edits convo.json\"",
+      "problem": "Nothing binds published content to approved content. Hard block 5 validates `convo.json` against the schema, not against what any human agreed to. A hand-edited claim sentence between G3 and G4 — explicitly forbidden by `CLAUDE.md` line 52 and named as a test case — produces a schema-valid file that clears every gate. M17 prints counts (7 beats, 19 tendrils, 5 checks), never a diff, and G3's own message tells the reviewer \"you are deciding the beat, not the research,\" so nobody is looking. The machinery to catch it already exists — `client_msg_key` hashes content — and is used only to deduplicate Slack posts.",
+      "severity": "blocking",
+      "fix": "At G3, record `sha256(canonical(object))` for every decided object into `gates.json` alongside the verb. Add hard block 7: at G4 preflight, re-canonicalise and re-hash every approved object; any mismatch blocks the publish and posts the diff with both hashes. Same check runs in CI before merge."
+    },
+    {
+      "where": "§6 Abandonment vs M17 preflight \"G3 ✅ 7/7\" — the named case \"an admin publishes while an operator is mid-review\"",
+      "problem": "The spec answers this two contradictory ways and never reconciles them. §6 Abandonment: \"a half-reviewed gate is a valid state… No gate ever requires completeness to make progress on the part that is decided\" — so stage 7 cuts clips and stage 8 renders while b7 is undecided, and G4 can open. M17's preflight line implies G4 only opens on a complete G3. There is no hard block for \"an earlier gate has undecided objects,\" so as written a 🔒 from either operator ships a page whose seventh beat nobody ever looked at — and the 24-hour self-🔒 rule means one person can do it alone.",
+      "severity": "blocking",
+      "fix": "Add hard block 8: any object in an earlier gate with no decision blocks 🔒. Reconcile abandonment by making the rule explicit — undecided objects are *dropped from the build*, not shipped unreviewed — and have M17 print \"b7 undecided, excluded from this build\" rather than a false 7/7."
+    },
+    {
+      "where": "§3.4 M10 (\"adam ✅ 22:31, tbj ✂️ 07:14 next morning\") vs §6 mechanism 5",
+      "problem": "§6.5 states, correctly and at length, that `conversations.replies` returns reactions as `{name, users[], count}` with no timestamps, that `reaction_added` events need an inbound endpoint or a socket, and that both are denied to a stateless cron runner — concluding \"any rule that orders reactions in time is unbuildable here.\" M10, the spec's showpiece for the split-decision case, prints exactly those two timestamps. The skill cannot know them. The same error is in M12 (\"tbj removed ✂️ … I committed that 14 min ago\") and in the §3.4 prose.",
+      "severity": "high",
+      "fix": "M10 prints the run in which each mark was first observed (`first seen run 7c2, 22:41` / `first seen run 8f1, 07:22`) and says so in one clause, so the reader isn't misled into thinking Slack recorded a reaction time. Strike the reaction-timestamp language from §3.4 and M12."
+    },
+    {
+      "where": "§4.2 \"An unlisted emoji is ignored and tallied. Three uses of the same one gets one message\"",
+      "problem": "✅ has near-identical Slack neighbours that sit in the same picker row: `heavy_check_mark` ✔️, `ballot_box_with_check` ☑️, `heavy_check_mark` in particular is what many clients surface first for \"check\". At Slack's reaction render size they are visually indistinguishable from `white_check_mark`. Under the stated policy, an approval placed with the wrong glyph does nothing, twice, before anyone is told — on the single most-used verb in the system, at a gate whose whole design premise is that a reaction must be frictionless. The same hazard applies to ✂️ (`scissors`) vs `x`, and 🔒 (`lock`) vs `closed_lock_with_key`.",
+      "severity": "high",
+      "fix": "Add an alias table: every check glyph → `approve`; `closed_lock_with_key`/`lock` → `ship`; and normalise before matching, next to the skin-tone strip. Change the 3-strike tally rule: an unlisted reaction placed on a *gate* message gets a ❓ in the same run, not on the third use. Tallying is fine on non-gate messages only."
+    },
+    {
+      "where": "§1.5 step 2 vs §6 mechanism 2",
+      "problem": "Two incompatible claim mechanisms are described for the same job. §1.5: \"commit the claim and push it… Ref creation on the remote is atomic, so two cron runners race on git\" — but a commit pushed to an existing branch is a fast-forward *update*, not ref creation, and does not give create-only semantics. Then: \"The claim commit is force-updated with `thread_ts` once the post succeeds\" — a force-update on a branch discards whatever the other runner pushed in between, which is the one operation §6's branch rule forbids (\"never rebases and never forces\"). §6.2 meanwhile specifies a genuine create-only push to `refs/claims/<convo>/<stage>`.",
+      "severity": "high",
+      "fix": "Make the drop claim the same primitive as the stage claim: create-only push to `refs/drops/<drop_id>`, no force ever. Carry `thread_ts` in a follow-on commit on the convo branch or in a second ref (`refs/drops/<drop_id>/thread`), so nothing is force-updated and the dead-claim rule (30 min, no thread ref) still works."
+    },
+    {
+      "where": "§1.4 Path B — \"three consecutive polls spanning ≥20 minutes with an identical file set, sizes and mtimes\"",
+      "problem": "Path B is built on exactly the two signals the same section just proved insufficient: \"Size alone is not a completeness test\" and \"Sync clients preserve source mtimes, so a half-transferred file can carry a finished-looking timestamp\" — and Path B has no hash to backstop them. A 1.2 GB drop stalled at 40 % for 20 minutes (paused sync, closed laptop — the stated normal condition for these two operators) passes all three polls. The runner then synthesises a manifest over truncated bytes and content-addresses them, so when the rest arrives the completed drop hashes to a *different* `drop_id` and arrives as an M04 supersede proposal rather than a correction — after a transcript of a truncated recording has already been produced and posted.",
+      "severity": "high",
+      "fix": "Path B must download and hash before adopting, and must additionally require: size non-decreasing across all three polls, a successful full decode probe on every audio file (a truncated MP3 fails or decodes short), and decoded length within 1 % of the size/bitrate estimate. Treat a later size change on a Path B drop as a correction to the same convo, not a new drop."
+    },
+    {
+      "where": "§1.5 `drop_id` definition vs §1.3 \"The poll never downloads media\"",
+      "problem": "`drop_id = sha256(sorted (relpath, bytes, sha256) triples)[:12]` requires a sha256 per file, but §1.3 says sha256 is only computed once, after download, at stage 1, and the poll lists metadata only. For Path A the manifest supplies the shas, so it works. For Path B nothing supplies them, so the idempotency ledger check and the claim can only happen after a full download — meaning two runners can each pull 1.2 GB before either claims, which is the exact double-work the ledger exists to prevent, and it is the expensive case rather than the cheap one.",
+      "severity": "high",
+      "fix": "Define `drop_id` over `(relpath, bytes, remote_hash)` from the listing, which both paths have without downloading, and keep the full-sha256 recomputation at stage 1 purely as a transit-integrity check. Claim the ref before any byte is downloaded, on both paths."
+    },
+    {
+      "where": "§3.2 M06 (\"React on THIS message; put numbers in your reply. A reply with no reaction is not read\") vs §5 mechanism 2",
+      "problem": "Direct contradiction, on the message the spec calls \"the highest-leverage sixty seconds in the pipeline.\" §5 mechanism 2 says a reply beginning with a directive token needs no reaction. M06 says a reply with no reaction is discarded. Under M06's rule, `add: <question>` typed from a phone with no accompanying tap is silently dropped — the single instruction the spec most wants to capture.",
+      "severity": "high",
+      "fix": "Keep §5's rule and delete M06's sentence. Directive tokens stand alone. M06's copy becomes \"Put numbers in a reply, no reaction needed; ✅ approves everything not named in a reply.\""
+    },
+    {
+      "where": "§3.2 M06 spend authorisation vs the `add:` token",
+      "problem": "✅ on M06 authorises the spend for the queue as displayed. §3.2's own commit example is `G1: queue 8/9 approved, 1 added (tbj)` — so an item added after the authorising ✅ gets run on that ✅. The human whose reaction is recorded as the receipt never saw the item, which breaks the section's stated principle that \"the receipt for every dollar points at a human.\" With a $6.10 queue and a $12 cap, two or three added `since` questions can consume the remaining budget on nobody's authority.",
+      "severity": "high",
+      "fix": "An item added after the queue's ✅ is queued as `authorised_by: <adder>` and runs only if the adder is an operator; the message says so and the forecast is restated. If the adder is the same person who ✅'d, no extra step. If it takes the convo past 80 % of the cap, it needs a second ✅."
+    },
+    {
+      "where": "§5 directive table — `recut: b3 in=… out=…`",
+      "problem": "Units and timeline are unstated on the one token where a human types a timestamp into a system whose central lesson is that two timelines diverge by up to 83.44 s. An operator listening in a player reads master seconds; but 098's cold-open clip must be cut from the *tracks* at session 1241.603–1253.765, per `source.json → external_dependency.resolution` (\"the first case where a published clip must NOT come from the published master\"). A bare `recut: b1 in=3.0 out=12.0` silently cuts music-over-voice from the master when the whole point of that beat is that it must not.",
+      "severity": "high",
+      "fix": "Require an explicit timeline token — `recut: b3 master in=… out=…` or `recut: b3 session in=… out=…` — reject bare numbers as unparsed, and hard-refuse `master` on any beat whose window intersects a `structure.music_*` placement, naming the session range to use instead."
+    },
+    {
+      "where": "§2.4 \"the skill commits it verbatim as `checks[].host_note` with their byline\" / M15 \"Nobody edits her words\"",
+      "problem": "In v1 the only path is an operator retyping or pasting an email into Slack as `reply:c4 <her words>`. Nothing binds the committed `host_note` to what the guest actually wrote — no message-id, no quoted source, no signature. The spec states \"Nobody edits her words\" as a guarantee, on the one right §2.3 classes as unconditional, while the mechanism is one human's copy-paste. The page then publishes that text under her byline.",
+      "severity": "high",
+      "fix": "Commit the raw email (headers plus body) to `convos/<id>/guest/<guest>/reply-<n>.eml` as the evidence artifact, and have the skill diff the pasted text against it before committing. The packet text says plainly that until the porch exists a reply is transcribed by an operator from her email, and that the email is kept."
+    },
+    {
+      "where": "§2 `people/<id>.json` `access.contact` and M01g's masked `j••••@example.com`",
+      "problem": "The redaction is backwards. The guest's email is masked in Slack — ephemeral, private channel, two people — and committed in the clear to a git record, in a repo whose public/private status is `convo-v1-spec.md` §10 open question 3 and therefore undecided. `invited_by` is committed too. The same problem applies to `thread.jsonl`, which §5 says exports the entire thread — including the human conversation §5 promises is never parsed — and commits it at publish.",
+      "severity": "high",
+      "fix": "Guest contacts live outside the repo (an operator-local file or a secret store); `people/<id>.json` carries an opaque `contact_ref` only. `thread.jsonl` exports decisions and directive replies only, never freeform chatter. Add a CI check that fails on an email-shaped string in `people/` or `convos/`."
+    },
+    {
+      "where": "§7 row 21 (\"Consent withdrawn after images generated → 4 renders deleted, typographic card substituted\")",
+      "problem": "The row implies likenesses were generated for a person whose consent defaults to false — otherwise there would be nothing to delete. `tech-stack.md` §2 forbids this in terms: \"Guests are opt-in and default to no likeness… Generating a real person's cartoon likeness because they came on a podcast is not a thing we do,\" and `CLAUDE.md` #4 says consent is honoured everywhere with no override. The spec turns a prohibition on generation into an after-the-fact cleanup, and the G4 preflight message advertises the cleanup as working correctly.",
+      "severity": "high",
+      "fix": "Gate generation itself on a committed consent grant: no `consent.generative: true` commit for that person, no render request is ever issued. Row 21 then covers only withdrawal after a genuine grant, which is the real case. Add it as hard block 3b: any render whose subject lacks a consent-grant commit fails the build."
+    },
+    {
+      "where": "§3.8 M22 (\"stage 4b crashed… The receipt commits before the result is parsed\") and §7 row 9",
+      "problem": "Two gaps. First, a crashed process cannot post its own postmortem — M22 is written in the first person as though the dying run wrote it, and the spec never assigns it to the recovery poll that finds the expired claim. Second, \"the receipt commits before the result is parsed\" only protects if the commit was *pushed*; the runner is stateless, so a crash between the API charge and the push loses the receipt entirely and the money becomes invisible. The stated defence against the named case (\"a stage crashes after spending money\") depends on a push the spec never mentions.",
+      "severity": "high",
+      "fix": "Assign M22 explicitly to the recovery poll and write it in that voice (\"run 7c2 died at 15:04; I'm run 8f1 and here's what it left\"). Push the receipt per model call, before parsing the response, not per stage — one commit per charge, so the ledger is never behind the credit card."
+    },
+    {
+      "where": "§2.1 (\"runner — a machine principal, strictly weaker than an operator\") and §2.2 (`people/` records: runner \"writes on instruction\")",
+      "problem": "The runner is the only writer of `people/<id>.json` and `farms/<farm>/farm.json`, and those files define who holds 🔒, which CI honours to merge and publish. So the principal described as strictly weakest is the sole writer of the file that grants the strongest power. Anything that can induce a runner commit — a parser bug, a crafted directive line, a compromised model key — can add an operator or an admin. `research-pass.md` §7's security model is stated only about the deploy key (\"the runner can never publish\"), which stops being true one indirection out.",
+      "severity": "high",
+      "fix": "Role changes and admin-set changes require a human-authored commit (signed, or opened as a PR by a human account), never a runner commit. CI rejects any diff touching `people/*.access`, `people/*.character.consent`, or `farms/*/farm.json` whose author is the runner. Say this next to §7's one-sentence security model, because it is the second sentence."
+    },
+    {
+      "where": "§8.4 guarantee 4 (\"Nothing reaches the feed that isn't named in `additions[]`\") vs §8.3 and M20 (`additions[] empty`)",
+      "problem": "The wrap folder in §8.3 contains `Intro/` (the standing recorded intro) and `Outro/` (the auto-generated bump). Both are material added around the conversation on the way to the feed — that is the definition of an addition given in §8.4's own opening line. So `additions[]` is empty while two additions are shipping, and the guarantee is falsified inside the same section. Since guarantee 4 is what makes the deliberately-open question safe to defer, the deferral rests on a claim that is already untrue.",
+      "severity": "high",
+      "fix": "Seed `additions[]` with the two standing entries — `{kind: \"intro\", source: \"farms/zengineering/assets/intro-v3.mp3\", rendered: …, added_by: \"standing\", decided_on: …}` and the same for the bump. \"Empty\" then correctly means \"nothing beyond the two standing slots,\" and guarantee 4 becomes checkable: every audio second not inside Main Convo maps to an `additions[]` entry."
+    },
+    {
+      "where": "§8.4 final paragraph — \"the page's Dirt block links the conversation audio; the RSS feed carries the wrapped episode\"",
+      "problem": "The spec names the two-artifact fact and then does not apply its own lesson to it. Every published timestamp is on the master timeline, but a listener in a podcast app is offset from every one of them by the intro plus the gap — 0:34 + 7 s ≈ 41 s on the spec's own M17 numbers. This is E098's master-≠-session divergence recurring one layer out, and the document that exists because of that divergence provides no map for it. Chapter marks, a named `additions[]` candidate, would land on a third timeline.",
+      "severity": "high",
+      "fix": "`episode.json` carries `wrap_to_master: {main_starts_at: <seconds>}` and the page states which timeline its timestamps are on. Any future addition that references a moment (chapters, a checks read) derives its position from that offset, never from beat `t` directly. Add it to guarantee 3."
+    },
+    {
+      "where": "§1.1 `master_has_music` and §8.2 mode selection",
+      "problem": "A self-declared boolean, trusted without verification, selects the mode — while its sibling field `timelines.relation` is explicitly \"a claim, not a default\" and is machine-verified with a downgrade path. A wrong `false` template-wraps a master that already carries a bed, which is precisely the double-music failure §8.2 says the field exists to prevent, and it will not be noticed until someone listens. It is measurable by the method `source.json` already used: correlate the known bed against the master head and tail (098's placements are recorded at 0.000–32.731 and 3634.018–3683.186).",
+      "severity": "high",
+      "fix": "Stage 1 verifies `master_has_music` by correlating each known farm bed against the master's first and last 60 s, exactly as `external_dependency.placements` was derived. A failed claim downgrades with a posted message and the placements go into `source.json`; the field becomes a hint, not an instruction."
+    },
+    {
+      "where": "§3.8 M21 `archive: t11`, §7 row 11",
+      "problem": "Substituting a Wayback snapshot changes the resource without changing the record. Three problems: the tendril's `source`, `title` and `retrieved` still describe the original; `research-pass.md` §3 rule 5 is one tendril per domain per convo, so two archive substitutions in one convo collide on `web.archive.org` and trip an anti-slop rule that will read as a mystery build failure; and a page whose premise is self-fact-checking now cites a resource that is not the one the research pass actually read, with nothing on the page saying so.",
+      "severity": "medium",
+      "fix": "An archive substitution writes `{original_url, archived_url, snapshot_date, substituted_at}` on the tendril, renders as \"original (archived <date>)\" on the page, and is exempt from the one-per-domain rule by explicit carve-out. If the snapshot predates the research retrieval date, refuse it and offer ✂️ only."
+    },
+    {
+      "where": "§3.6 M17/M18 (\"All 19 tendrils re-fetched in CI, 19/19 200\") and §7 row 16",
+      "problem": "CI re-fetches every tendril at merge, so a transient 503, a rate limit, or a Cloudflare bot wall on a datacenter IP turns an approved 🔒 into a failed publish. The 3×-at-60 s retry is specified only for the build-time check in M21, not for CI. Combined with the 24-hour self-🔒 rule, a merge can fire at 03:00 and fail with nobody watching, and row 16's remedy is a one-line table entry (\"one line: page NOT live\") rather than a defined message — the only failure in the document that ships without message text.",
+      "severity": "high",
+      "fix": "CI uses the same 3×/60 s policy and distinguishes hard 4xx (fail the merge) from 5xx/timeout/429 (retry, then hold the merge and post, don't fail). Write the M-number for it with real text, including the fact that readers still see the previous build. Send it as an @-mention regardless of hour, since it is the one state where a human already committed to shipping."
+    },
+    {
+      "where": "§4 🛑 (\"Nothing proceeds until whoever placed it clears it\") + §6 Abandonment",
+      "problem": "A 🛑 plus the abandonment the protocol is explicitly designed around is a permanent deadlock. Only the placer clears it; §2.2 gives admin a reversal power over *guest-objection rulings* only, not over a 🛑. If Brian holds a gate on Tuesday and disappears for three weeks — the exact behaviour §0 says to design for — the convo is dead and Adam has no defined path. Both operators being admin in v1 hides this rather than solving it, since the admin row grants no 🛑-clearing power to hide behind.",
+      "severity": "high",
+      "fix": "🛑 expires after 7 days into `held — needs a ruling`, and an admin other than the placer can clear it with a committed reason (same shape as the guest-objection ruling). Post one line at day 7 naming who can clear it now."
+    },
+    {
+      "where": "§3.1 M01 (\"Working: stage 2 transcribe (runner) since 09:14 … ✂️ within 15 min aborts\")",
+      "problem": "Stage 2 spends money before any human has seen the thread, and the abort window is 15 minutes on a message posted whenever the cron happened to fire — for two people with day jobs and small children it will elapse unread essentially always. That contradicts M06's \"nothing runs and nothing costs until a ✅ lands here\" and §7 row 27's \"Nothing auto-approves, ever,\" both stated as absolutes. It also makes the abort look like a control when it is decoration.",
+      "severity": "medium",
+      "fix": "Say plainly that stage 2 is pre-authorised because it is cheap, deterministic and re-runnable, and delete the 15-minute window — or keep the abort valid until stage 4a posts, which is the first moment a human has actually had a chance to look. Amend row 27 to \"nothing auto-approves at a gate; stages 2–5 are pre-authorised.\""
+    },
+    {
+      "where": "§3.6 M17 (\"If tbj hasn't in 24 h, adam's own 🔒 is enough\") and §3.9 M26/M27",
+      "problem": "The 24-hour self-🔒 requires a human to hold a deadline in their head, which §9's own protective rule 2 forbids (\"Every gate message says what happens if you do nothing — always 'nothing'\"). At G4, doing nothing does not mean nothing: it means the convo sits indefinitely until someone remembers that the timer has matured. The nudge ladder M26/M27 is written for G3 (\"G3 still open\") and no G4 equivalent exists.",
+      "severity": "medium",
+      "fix": "Schedule a G4 nudge at +24 h: \"Your own 🔒 is now sufficient on zengineering-098. One tap.\" Then the same 72 h / 7 d ladder as G3. State it in M17 so the reader knows a reminder is coming and can stop tracking it."
+    },
+    {
+      "where": "§5 mechanism 2 (directive-token replies) vs mechanism 1 (bound by `(message_ts, user_id)`)",
+      "problem": "Directive-token replies have no object scope. Mechanism 1 binds free text to the message reacted to; mechanism 2 needs no reaction and therefore no binding. `cut: 3` posted under a beat message, or at thread level, is ambiguous — item 3 of the queue, or something else entirely. With five gates open in one thread over days, `first: 1,6,9` has no anchor at all.",
+      "severity": "medium",
+      "fix": "Tokens are scoped to the message replied to, full stop. A token naming an id or index the replied-to message never printed is echoed back as unparsed (M13), which the spec already has the shape for. Thread-level directives are not read."
+    },
+    {
+      "where": "§3.4 M12 (un-react) and §6 mechanism 6",
+      "problem": "Detecting an un-react requires storing the full reactor set per message per run and diffing it, since the API gives no removal event. `gates.json` is described as storing decisions and `client_msg_key`s, never the observed reaction set for objects that had no decision. Without that, M12 cannot be produced. Related: the spec never says what happens when a non-deciding reaction is removed (both operators ✅, one withdraws) — under the lattice nothing should change, but it isn't stated.",
+      "severity": "medium",
+      "fix": "`gates.json` records `observed_reactions: {message_ts: {emoji: [user_ids]}}` per run. M12 fires on the diff against the last observation. State the non-deciding-removal rule in one line: removing a mark that did not determine the outcome changes nothing and is logged, not posted."
+    },
+    {
+      "where": "§4.1 Disjointness (\"The ten vocabulary emoji never appear as decoration in message text\")",
+      "problem": "The spec's own messages break the rule it states as absolute. M06 uses ⚠️ as decoration on item 8's cold-open warning — inside the one message that is exempt from the length cap and therefore the one most likely to be skimmed on a phone. M07 uses ✅ decoratively (\"✅ `since` rule satisfied: 4 of 4\"). M08 uses ✂️ in its recommendation line. M17 uses ✅ in \"✅ does nothing here,\" which at least is about the vocabulary, but M07 and M06 report status with verbs.",
+      "severity": "medium",
+      "fix": "Move decorative marks to the header set (⚑, ▲, ‣, or plain `NOTE:` / `FLAG:`), and re-read every message body against the rule before this document ships — it is a rule the messages must demonstrate, not describe."
+    },
+    {
+      "where": "§2.3 (guest objection auto-honoured at day 7) vs §2.2 (admin \"may reverse an operator ruling inside 7 days\")",
+      "problem": "Two seven-day clocks with no stated interaction, producing opposite outcomes on silence. M15's ✅ declines the objection; silence honours it. If an operator declines on day 6 and an admin reverses on day 10, the packet may already have resolved and the page published — the reversal then applies to live content with no defined unpublish path (`revert:` is listed for \"any\" gate but a merged publish is an unpublish, not a revert; row 16 offers `revert-merge` only for CI failure).",
+      "severity": "medium",
+      "fix": "The admin reversal window runs from the ruling, not from the objection, and G4 hard-blocks while any reversal window is open. Define the post-publish path explicitly: a reversal after merge opens a `revert-merge` PR and posts M18's inverse (\"page pulled to previous build\")."
+    },
+    {
+      "where": "§1.3 adapter set (`dropbox`, `blob`) vs §1.4 sentinel list and §7 row 2 (iCloud placeholder)",
+      "problem": "The flagship failure case is defended by a mechanism the transport that produces it cannot supply. A local `.icloud` dataless stub never syncs to Dropbox, so with the two named adapters row 2 cannot occur; and if iCloud Drive ever were the inbox, it exposes no server-side content hash to a cloud runner, so `remote_hash` — the field §1.4 says is the only thing that sees through a placeholder — would not exist. The spec asserts a defence it cannot run and lists a transport it cannot support.",
+      "severity": "medium",
+      "fix": "State the requirement on the transport rather than the file: an inbox must expose a server-side content hash per object. Dropbox and blob storage qualify; iCloud Drive does not and is listed as unsupported. Keep the sentinel list for local-sealer hygiene (`farm drop` refuses to seal a folder containing them) and drop row 2's runner-side claim."
+    },
+    {
+      "where": "§3.9 M28 and §7 row 28 (\"Cron dies → M28 stops appearing → silence past 8 days is the signal\")",
+      "problem": "The liveness message is emitted by the thing whose death it is meant to signal, so a dead cron produces silence — and the detection asks two people with day jobs and small children to notice the *absence* of a message in a channel they are told throughout the document to mute-proof by posting rarely. Row 28 presents this as a handled failure mode with a recovery. It has neither a detector nor a recovery.",
+      "severity": "medium",
+      "fix": "Add an external dead-man's switch: each successful poll pings a cron-monitor URL (outbound only, satisfies §7 of research-pass) that alerts on absence after 30 minutes. M28 stays as the human-readable version. Row 28's recovery column becomes \"monitor alerts by email,\" not \"notice the silence.\""
+    },
+    {
+      "where": "§11 open question 5 (Slack `conversations.replies` rate limits) vs §6 mechanism 5",
+      "problem": "Listed as open-not-blocking, but §6's core mechanism depends on it: because reactions carry no timestamps and the runner is stateless, every apply re-reads and re-paginates the entire thread. Thread length grows monotonically through the harvest — M01 plus 9 queue, 8 results, 7 beats, guest, publish is 30+ messages before any nudges — so the most expensive read happens at the last and most important gate. If the newer non-Marketplace limit bites, G4's apply is where it bites.",
+      "severity": "medium",
+      "fix": "Record `last_seen: {message_ts: reaction_count}` in `gates.json` and fetch reaction detail only for messages whose count changed, using `reactions.get` per changed message instead of paginating the thread. Measure the actual limit before convo five, as §11 says — but move the item from \"open\" to \"design depends on this.\""
+    },
+    {
+      "where": "§3.3 M11 — \"Every beat message carries its version. No `v2` in the header means it's current\"",
+      "problem": "The inference inverts at the third version. Once b3 v3 exists, b3 v2's header says `v2` and is stale, so \"no v2 means current\" is false and the reader's rule of thumb now silently misleads on the exact message they are most likely to be confused by. Two rewrites on one beat is not exotic — 🔁 requires a note and invites a second pass.",
+      "severity": "low",
+      "fix": "Every object message carries its version always, including v1, and M11 states the current version explicitly (\"current is b3 v3: <permalink>\") rather than teaching a rule about absence."
+    },
+    {
+      "where": "§2.1–§2.2 role table, with both operators admin in v1",
+      "problem": "Several rows enforce nothing today and read as if they do: \"adam ran this, so tbj ships it\" (both are admin, both hold 🔒 unconditionally), \"`cap: 18` (admin)\" (self-raisable by whoever blew the cap), \"admin may reverse an operator ruling\" (there is no non-admin operator). The table is a permission system written for later, presented as a control set for now, which invites trusting a control that is inert.",
+      "severity": "low",
+      "fix": "One line under the table: which rows bind at two people (the consent ratchet, the guest packet block, the hard blocks) and which are structure for the first non-owner operator (the admin/operator split, the cap authority, the reversal power). §10 already makes this argument for scale — make it for today."
+    },
+    {
+      "where": "§3 length rule (\"capped at roughly 12 visual lines / 1,200 characters\") vs M01, M07, M15, M17",
+      "problem": "The rule is stated as a hard cap with one named exemption (M06), and four of the spec's own messages exceed it — M17, the publish gate, runs about 20 lines and roughly 1,400 characters, which is exactly the \"See more\" tap on a phone the rule exists to prevent, on the one gate that ships a page. M15 and M01 are similar.",
+      "severity": "low",
+      "fix": "Either split M17 into two messages (the page decision, then the episode detail as a threaded child) or raise the cap to a number the messages actually meet and say why. A rule the deliverable breaks four times will not be enforced by anyone reading it."
+    },
+    {
+      "where": "§8.2, §8.3, §8.4, M17, M19 — stitcher mode selection",
+      "problem": "`--bare` cannot do what the spec asks. Verified in the tool: `stitch.py --help` says bare \"Skips intro/outro segments\", and `lib/validator.py:resolve_inputs(..., bare=True)` looks for `episode.{mp4,mp3,wav…}` + `title_card.{png,jpg}` at the TOP of the episode folder — it never reads `Intro/`, `Main Convo/`, `Outro/`, `Episode Cards/`. So (a) the `_wrap/<farm>-<number>/` folder in §8.3 is the template layout and is unreadable by `--bare`, and (b) M17/M19's \"stitcher --bare … Outro bump 11.2 s appended\" is impossible — bare mode muxes a card onto finished audio and appends nothing. Meanwhile `--template` requires all of Intro/, Main Convo/, Outro/, a music bed and a card, and `config.yaml > template.outro_music: true` always lays music at both gaps, so there is no \"template without music\" path either. E098, the one worked example, therefore has no runnable stitcher invocation.",
+      "severity": "blocking",
+      "fix": "Name three modes, not two: `--bare` (card + finished audio, no additions at all), `--template` (music-free master 103+), and a new pre-concat step for \"master already has music, still needs a bump.\" For the third, concatenate master + bump into `episode.mp3` with ffmpeg, drop a `title_card.png` beside it, then call `--bare` on that flat folder. Say explicitly that `_wrap/` is the TEMPLATE layout only and that bare mode takes a different, flat folder shape."
+    },
+    {
+      "where": "§8.4 guarantee 1; M17 \"Main Convo bytes are sha-identical to the reviewed master\"; M19",
+      "problem": "The seam's central guarantee is false with the tool D6 mandates. Every stitcher path re-encodes: `config.yaml > encoding.audio_codec: aac`, `audio_bitrate: 192k`, plus an optional `loudnorm=I=-16` pass that M19 says is on. The conversation inside the shipped MP4 is transcoded and loudness-normalised — it cannot be byte-identical to the reviewed master, and no sha will match. The most a checkable guarantee can be is that the INPUT file in `Main Convo/` is sha-identical, which is a far weaker claim than \"the conversation crossing the seam is byte-identical to what shipped on the page.\" The earlier draft got this right with a correlation test (r ≥ 0.999); the new wording upgraded it into something unachievable.",
+      "severity": "blocking",
+      "fix": "Split the guarantee in two: (1) the INPUT `Main Convo/` file is sha256-identical to the reviewed master — commit both hashes; (2) the RENDERED conversation span is verified by envelope cross-correlation ≥ 0.999 against the master, exactly the way `source.json.archive.provenance_check` verified 098's clips at r 0.99–1.00. Print both numbers on the G4 card. Delete every \"byte-identical\" and \"sha-identical\" claim about the rendered output."
+    },
+    {
+      "where": "§5 (\"Every apply summary ends with 'read N replies, ignored M'\"), M13 (\"Everything else applied → 8c3f21a\") — no such message exists in §3",
+      "problem": "The apply summary is referenced twice as if specified and is never specified. It is also the one message `tech-stack.md` §3 explicitly requires — \"The skill reads the thread, applies the decisions, commits, and posts a diff summary\" — so a binding rule is silently dropped. Worse, it is the message that makes D-constraint \"either may abandon a review halfway\" survivable: without it there is no surface that says which of 7 beats are decided, what each decision did, and what is still open. §3.9's M26 nudge lists what's undecided but never what was applied, and the §3 governing rule pushes state into edits of M01, which fire no notification — so an operator who reacts at 22:00 gets no confirmation their decision landed.",
+      "severity": "blocking",
+      "fix": "Add M09b, posted after every `apply` stage, with actual text: per-object line (`b2 ✂️ tbj → cut, 8→7 beats`), the resulting commit sha, `read N replies, ignored M`, and a closing line naming exactly what remains (`The whole remaining ask is b7`). Cite it as the `tech-stack.md` §3 diff summary so the rule is visibly honoured rather than dropped."
+    },
+    {
+      "where": "Whole document — image generation has no stage, no gate and no message",
+      "problem": "`tech-stack.md` §2 is a substantial production surface: one style chosen per convo, character renders per person per style, one hero plus 3–5 beat images, a JSON sidecar on every generated image, cost and runtime into provenance, and the rule that **\"A new style requires that person's explicit approval before it's generated or published.\"** None of it appears in the protocol. §2.6 hard-block 3 enforces `consent.generative` and failure #21 mentions \"4 renders deleted,\" so images demonstrably exist in the pipeline — but nothing posts them, nobody approves them, and the per-style approval gate that tech-stack §2 requires has no mechanism at all. Consent is modelled as one boolean when the source doc has two objects: `consent.generative` AND `approved_styles`. The role table's consent row covers only the boolean.",
+      "severity": "blocking",
+      "fix": "Either (a) add a message and a gate — a style-approval ask to each participant plus an images message at G3 showing the hero and beat art with weight against the 2 MB budget — or (b) state plainly that images are out of scope for this protocol version and that `approved_styles` is unimplemented, so the omission is a recorded decision instead of a silent drop. Add `approved_styles` to the §2.2 consent row either way: it is a person-owned, admin-unreachable right identical to the boolean."
+    },
+    {
+      "where": "M06 queue item 8: \"identify b2 20:41 … Rewritten against source.json → structure\"",
+      "problem": "This re-commits the exact E098 trap it claims to fix. `20:41` is a SESSION/final-mix time (`structure.cold_open.source_range` = 1241.681). The spec's own rule, stated three times, is \"every published timestamp is on the master timeline.\" On the master timeline those words are at 00:00–12.084, and there is real, different audio at master 20:41 (inside edit_map clip 3, master_in 263.223 → master_out 1253.292). So the \"fix\" swaps a right address with wrong context for a wrong address. The gloss is also inverted: \"00:00 addresses audio twenty minutes in\" — per `research-pass.md` §5 and `source.json.structure.cold_open.note`, the problem is that a question anchored at t=0 is quoting a moment twenty minutes into the CONVERSATION, i.e. the context is displaced, not the address.",
+      "severity": "blocking",
+      "fix": "Write it as `b2 00:00 (master) · source: session 20:41`. Change the note to: \"The cold open was lifted from session 20:41 and MOVED. The master address 00:00 is correct for publication; the surrounding context is not, so 4a resolved the question against `structure.cold_open.source_range` 1241.681–1253.765.\" Add a rule to §1.1: any timestamp printed anywhere in the thread is master-timeline unless the token `session` precedes it."
+    },
+    {
+      "where": "§1.5 (`drop_id = sha256(sorted (relpath, bytes, sha256) triples)[:12]`) vs §1.3 (\"The poll never downloads media… Full sha256 is recomputed once, after download, at stage 1\")",
+      "problem": "The idempotency key is not computable at the moment it is used. §1.5 step 1 checks `drop_id` against the ledger at poll time, before any download, but the key is built from sha256 of every file. On Path A the runner can read declared sha256 out of `drop.json` — making `drop_id` a hash of unverified claims, which quietly undermines \"content-addressed, same bytes twice is the same drop.\" On Path B (§1.4 unmanifested) there are no declared hashes at all, so `drop_id` is uncomputable without downloading, and Path B is exactly the path where an operator dragged in a 1.2 GB folder.",
+      "severity": "blocking",
+      "fix": "Define two ids. `poll_id = sha256(sorted (relpath, bytes, remote_hash))[:12]` — computable from listing metadata alone, and the key used for the claim ref and the duplicate check. `content_id = sha256(sorted (relpath, bytes, sha256))[:12]` — computed after download at stage 1, recorded in `source.json`, and the thing a supersede diff compares. State that Path B claims on `poll_id` only."
+    },
+    {
+      "where": "§2.6 \"Hard blocks — no role approves past these\" (six items)",
+      "problem": "Presented as the exhaustive list of build-breaking rules, and it is not. `research-pass.md` §3 opens \"These are build-breaking, not guidelines\" and lists eight; §2.6 carries only rule 1. Missing: rule 3 (max 3 tendrils per beat), rule 5 (one tendril per domain per convo), rule 6 (every check carries a source AND a confidence, both published), rule 7 (no check on a joke, opinion, prediction or preference). `convo-v1-spec.md` §6's definition of done also drops out: ≥1 non-obvious tendril per beat, ≥3 checks with at least one non-`confirmed`, 1–3 seeds, page readable with JS off. Hard block 6 cites only 2 MB and 40 KB gz from `tech-stack.md` §1, whose table says \"A convo page that misses these doesn't ship\" about all ten rows — critical CSS ≤14 KB, deferred CSS ≤30 KB, JS ≤25 KB with zero render-blocking, ≤2 font files, above-fold images ≤150 KB, LCP ≤1.2 s, CLS ≤0.02, INP ≤100 ms.",
+      "severity": "high",
+      "fix": "Do not restate the rules — that is the duplication that rots. Replace items 1, 2 and 6 with three pointers: \"every build-breaking rule in `research-pass.md` §3 (8 rules)\", \"every checkbox in `convo-v1-spec.md` §6\", \"every row of `tech-stack.md` §1's budget table.\" Then say the CI job asserts each one and names the failing rule by its source doc and number."
+    },
+    {
+      "where": "M17 \"19 tendrils, 19/19 200 at build, 12 domains\"; M18 repeats \"19 tendrils\"",
+      "problem": "The flagship publish card ships a page that violates a build-breaking rule. `research-pass.md` §3 rule 5: \"One tendril per domain per convo. Forces source diversity.\" 19 tendrils across 12 domains means at least 7 duplicate-domain tendrils. This is not a cosmetic example error — M07's body invokes rule 5 correctly (\"Two share a domain — anti-slop rule 5 keeps one. I picked #2\"), so the same document enforces the rule at G2 and then prints a G4 card that broke it. Whichever number a reader trusts, one of them teaches the wrong behaviour.",
+      "severity": "high",
+      "fix": "Make the numbers legal and self-evidently so: `12 tendrils, 12/12 200 at build, 12 distinct domains — rule 5 satisfied`. With 7 beats that is 1.7/beat, still above the ≥2-per-beat floor only if distributed carefully, so use `14 tendrils across 14 domains, 2 per beat`. Add domain-uniqueness to the hard-block pointer in §2.6."
+    },
+    {
+      "where": "§1.4 Path A condition 3 (\"No file under the drop root missing from files[] — an extra file means still-arriving or tampered\") vs M01 (\"1 file ignored (not in manifest)\")",
+      "problem": "Direct contradiction inside the drop contract. Condition 3 makes an unlisted file a completeness FAILURE; M01 verifies a drop and reports an unlisted file as merely ignored. This is not hypothetical for E098: `source.json.tracks.stray_file` records `'…thekerp copy.mp3'`, a redundant 2024 Audition export with \"Do not transcribe it.\" Under condition 3 that drop never completes and the thread never opens; under M01 it opens and something has to decide what \"ignored\" means downstream.",
+      "severity": "high",
+      "fix": "Add an `ignore[]` array to `drop.json` — explicit globs the sealer records with a one-line reason, e.g. `{\"path\": \"tracks/…copy.mp3\", \"reason\": \"2024 partial re-export, redundant\"}`. Restate condition 3 as: no file under the root that is in neither `files[]` nor `ignore[]`. Then M01's line becomes `1 file ignored by manifest: …copy.mp3 (redundant 2024 export)` and the E098 stray is handled by declaration rather than by tolerance."
+    },
+    {
+      "where": "§6.5 (\"Slack's conversations.replies returns reactions as {name, users[], count} with no timestamps at all… Any rule that orders reactions in time is unbuildable here\") vs M10, §3.3, §3.4",
+      "problem": "The spec proves reaction timestamps are unobtainable to a stateless cron runner, then depends on them in three places. M10 prints them verbatim: \"adam ✅ 22:31, tbj ✂️ 07:14 next morning.\" §3.4 says replies are \"read only from the person who reacted, AFTER their reaction, before the gate closes\" — an ordering test against a timestamp that does not exist. §3.3 says \"🔁 requires a threaded reply… Absent one within 60 min the skill posts one line\" — a 60-minute timer with no t=0. The precedence lattice is correctly order-independent; the prose around it is not.",
+      "severity": "high",
+      "fix": "Delete times from M10 — it only needs \"adam ✅, tbj ✂️ → cut.\" Change §3.4's reply rule to: any reply from that user in the thread, at any time, is bound to their reaction on the same object; order is irrelevant because the lattice is order-independent. Change §3.3's timer to run from the POLL at which the 🔁 was first observed (which the runner does timestamp, in `gates.json`), and say so."
+    },
+    {
+      "where": "§4.1 \"Disjointness\" (\"The ten vocabulary emoji never appear as decoration in message text… If you see ✅ in a message body it is telling you what a reaction would do, never reporting a status\")",
+      "problem": "The rule is broken by roughly a third of the spec's own messages. M07: \"✅ `since` rule satisfied: 4 of 4…\". M06 item 8: \"⚠️ 4a wrote this as 00:00\". M17: \"Gates: G1 ✅ tbj · G2 ✅ both · G3 ✅ 7/7\". M26: \"Decided: b1 ✅ adam · b2 ✂️ tbj…\". M10: \"✂️ beats ✅\". M12: \"tbj removed ✂️ from r04\". M18: \"Merged by CI on tbj's 🔒\". Several of these are status reporting, the exact case the rule forbids by name. Separately, the header set omits 😴 (used by M27) and declares 💸, which no message uses.",
+      "severity": "high",
+      "fix": "Narrow the rule to what the messages actually do and what the risk actually is: a vocabulary emoji may appear inline when QUOTING a decision that was already made (`b2 ✂️ tbj`) but must never begin a line, never appear in a header, and never appear in a body position where it could be misread as an available action. Only the action-offer lines put a vocabulary emoji at line start. Add 😴 to the header set and either use 💸 (M23 cost cap is the obvious home) or drop it."
+    },
+    {
+      "where": "§4 table (\"Means — everywhere, at every gate\") vs M17 and M15",
+      "problem": "The table's whole promise is one meaning per emoji, and two rows break it. ⚠️ is defined as \"Unfair, wrong-headed, or unpublishable as framed. Pull it\" — a destructive act on an item. At G4, M17 uses it as \"⚠️ + reply names something wrong on the page,\" which §3.6 says \"reopens G3 on that item only\" — a defect report that fixes rather than pulls. And in M15 the guest-objection block, ✅ means \"decline\" the guest's request — the approve glyph performing a refusal, on a message where the natural reading of \"take this as written\" is to honour the objection. That inversion sits on the one gate the spec calls absolute-adjacent.",
+      "severity": "high",
+      "fix": "At G4 use 🔁 (\"regenerate this one, my reply says what to change\") for a page defect — it already means exactly that and is already note-required. Reserve ⚠️ at G4 for \"this is unpublishable as framed,\" which behaves like the table says. In M15 replace the objection actions with ⚠️ honour the cut · 🛑 hold and rule later · 🔁 counter-propose (reply with the reason, sent to her verbatim), and delete ✅ from that message entirely."
+    },
+    {
+      "where": "§2.4 (\"Both survive intact\") vs `convo-v1-spec.md` §7 and `tech-stack.md` §5",
+      "problem": "An unflagged contradiction presented as a non-contradiction. `convo-v1-spec.md` §7 lists as v1 non-goals: \"Accounts… Anything with a login.\" `tech-stack.md` §5 defers \"Accounts\" too — and §2.4 never cites §5 at all, only §7 and tech-stack §0. D3 explicitly puts auth in scope, so the right move is to amend those lines. Saying they \"survive intact\" makes the next reader believe accounts are still a non-goal and leaves the actual amendment unwritten. The same paragraph also calls the porch \"a fourth plane… named, not smuggled\" and then places it \"on a separate origin in the producer plane\" — it cannot be both, and `tech-stack.md` §0 defines the producer plane as running \"on our machines, on demand,\" which a hosted login origin does not.",
+      "severity": "high",
+      "fix": "Write the amendment: \"`convo-v1-spec.md` §7 and `tech-stack.md` §5 are amended — accounts and logins are in scope, confined to the porch. The reader plane keeps zero accounts, zero logins, zero server.\" Then pick one: make the porch a genuine fourth plane with its own row in tech-stack §0's table (runtime: a hosted origin, always on), or fold it into the producer plane and rewrite that plane's runtime line. Not both."
+    },
+    {
+      "where": "§1.1 `transcripts/` (\"vendor transcripts as delivered (riverside.txt/.srt, scribe-raw.json)\")",
+      "problem": "The drop contract makes `timelines.relation` required and undefaulted for AUDIO, then accepts transcripts as an untyped bag — even though E098 proves a transcript's timeline is exactly as load-bearing. `source.json.transcripts.riverside.timeline`: \"master — Riverside transcribed the published episode, not the session recording. It does NOT cover the 99 s the edit removed.\" Scribe is master-timeline; a per-track pass is session-timeline. Two further E098 findings never reach the contract: Riverside \"loses to per-track audio\" on diarization by ~10 dB and is a text reference, not a speaker reference; and the `.srt` is actively wrong — 37.8% of 1112 cues off by >1 s, max 6.127 s, cue end set to the last word's START, with \"Never derive t/t_end or cut clips from the .srt.\" A `.srt` sitting in `transcripts/` with no warning is a loaded gun for stage 7.",
+      "severity": "high",
+      "fix": "Type each transcript in the manifest: `{\"path\": \"transcripts/riverside.srt\", \"vendor\": \"riverside\", \"timeline\": \"published|session|unknown\", \"role\": \"canonical|text-reference|speaker-reference|none\", \"derive_bounds\": false}`. Make `timeline` required with no default, same as `timelines.relation`. Default `derive_bounds: false` for every `.srt` and say why in one line citing the 6.127 s max error."
+    },
+    {
+      "where": "§1.1 `master_has_music` (\"drives stitcher mode selection\")",
+      "problem": "A boolean where E098 needs ranges. `source.json.external_dependency` records exact placements — intro master 0.000–32.731, outro master 3634.018–3683.186 — and the consequence: \"Master 0.000–12.084 (the cold open) sits entirely inside the intro music… master RMS −29.0 dB vs −42.3/−33.9 dB for the same words on the isolated tracks,\" resolved as \"Cut the cold-open clip from the raw tracks at session 1241.603–1253.765 instead of from the master. This is the first case where a published clip must NOT come from the published master.\" With only a boolean, stage 7 cannot know which beat windows are music-contaminated, and the pipeline will cut a clip with Hendrix under it. The rights record (`decision.call: fair use`, `revisit_when: the project makes money`) also has no home in `drop.json` or anywhere in the protocol.",
+      "severity": "high",
+      "fix": "Replace the boolean with `master_music: [{\"master\": [0.0, 32.731], \"asset\": \"…\", \"rights\": \"fair-use|licensed|owned|unknown\"}]`; `master_has_music` becomes `len(master_music) > 0` for mode selection. Add a stage 7 rule: a clip whose master window intersects `master_music` is cut from `tracks/` through the edit map, never from the master, and G3's beat message says which source it used. Add a `rights` block for the per-convo call with `by`, `date` and `revisit_when`."
+    },
+    {
+      "where": "§1.2 (\"`farm drop` … normalises names\") + §1.1 `participants[].track`",
+      "problem": "Normalising track filenames to person ids destroys the only evidence for the speaker mapping. E098's real filenames are `2020-08-22--t02-00-00pm--thekerp.mp3` and `…--brian.mp3`, and `source.json.transcripts.v1.speaker_confidence_caveat` is explicit: \"Nothing in the audio proves which human is on which file. The mapping rests on the filename token 'thekerp' plus this file. If the recording service wrote the per-guest files under swapped handles, the conclusion inverts and no test run here can see it.\" The spec requires `speaker_confidence: confirmed` to publish and M17 promises \"the speaker caveat published verbatim,\" but the sealer erases the token that caveat rests on, and nothing in `drop.json` preserves it.",
+      "severity": "high",
+      "fix": "Add `original_path` to every `files[]` entry, always, and `evidence` to each participant: `{\"person\": \"adam\", \"track\": \"tracks/adam.mp3\", \"original_path\": \"recording-1/2020-08-22--t02-00-00pm--thekerp.mp3\", \"mapping_evidence\": \"filename token 'thekerp'\", \"mapping_confidence\": \"filename-only\"}`. M01 prints the original names. `mapping_confidence: filename-only` is what the published caveat cites."
+    },
+    {
+      "where": "§2.2 G4 row and §6 (\"🔒 from an admin who did not open the PR… If 24 h pass with no 🔒 and no 🛑, the opener's own 🔒 becomes sufficient\")",
+      "problem": "The two-key rule has no defined opener under the cron trigger D1 mandates. §2.2's runner row says the runner \"opens PR\"; the operator row also says \"opens PR\"; M17 says \"PR #41 opened by adam 16:02\" and \"adam ran this, so tbj ships it\" — but under D1 nobody ran it, cron did. If the runner is the opener (with `on_behalf_of` per §6.3), then \"the opener's own 🔒\" resolves to a machine principal that §2.2 explicitly bars from publishing, and the 24-hour fallback can never fire. If the opener is \"whoever's ✅ authorised the stage,\" that is ambiguous when G1, G3 and the drop were three different people.",
+      "severity": "high",
+      "fix": "Define `pr_opener` as a computed field, not an event: the human named in `on_behalf_of` on the stage-8 claim, which resolves to whoever holds the most recent gate approval on the convo. Print it on the G4 card as `Opened on behalf of: adam (last gate approval, G3 22:31)`. State that the runner is never the opener for two-key purposes, and that with both operators being admins in v1 the rule reduces to \"the other one ships it.\""
+    },
+    {
+      "where": "M18 (\"upload _output/098-final.mp3 to Transistor\") vs M17/M19/M20 (`.mp4`) and §8.4",
+      "problem": "Three inconsistencies in one artifact. (1) Extension: M18 says `.mp3`, M17/M19/M20 say `.mp4`. (2) The stitcher only ever produces MP4 — `encoding.video_codec: libx264`, `audio_codec: aac`, output `_output/<episode slug>-final.mp4` — so M20's `audio _output/098-final.mp4` puts a video file in an RSS audio enclosure. (3) §8.4 also creates a THIRD artifact: \"the page's Dirt block links the conversation audio; the RSS feed carries the wrapped episode.\" That conversation-only audio has no producer, no host, no filename, and no line in the 2 MB budget, while `tech-stack.md` §1 says full episode audio is \"Linked, never preloaded\" — linked to what? Transistor now hosts a different, longer file.",
+      "severity": "high",
+      "fix": "Name three outputs explicitly in `episode.json`: `video` (the stitcher MP4, for YouTube), `audio` (an ffmpeg audio-only extract, the RSS enclosure, `.m4a` or `.mp3`), and `conversation` (the reviewed master, which the page's Dirt block links). Say where `conversation` is hosted — the Transistor URL for the old episode, or object storage per §11 item 6. Fix M18 to name the audio extract."
+    },
+    {
+      "where": "§8.4 guarantee 4 (\"Nothing reaches the feed that is not named in `additions[]`\") vs M20 (\"additions[] empty\") and M19 (\"Outro bump 11.2 s appended\")",
+      "problem": "The guarantee is false on day one. The outro bump is added material, it is in the shipped episode, it reaches the feed, and `additions[]` is empty. As written, the array is decorative and the guarantee it carries is unenforceable — which is precisely the load-bearing part of D4, since the array is how future undecided additions stay auditable.",
+      "severity": "high",
+      "fix": "Seed `additions[]` with the bump: `{\"kind\": \"outro-bump\", \"source\": \"wrap/outro/outro-bump.mp3\", \"rendered\": \"11.2s @ 3683.24\", \"added_by\": \"auto\", \"decided_on\": \"protocol §8.2\"}`. Then guarantee 4 is checkable — CI asserts the rendered duration minus the master duration equals the sum of `additions[].rendered` durations, and fails otherwise."
+    },
+    {
+      "where": "§1.5, §3.2–§3.4 (`gates.json`) vs `research-pass.md` §4 (`human` block) and `convo-v1-spec.md` §2 (`provenance.human_review`)",
+      "problem": "Three homes for the same fact, which is the duplication that rots. §4.4 claims \"it is the same file, not a second bookkeeping system,\" but §3.2 says G1 decisions land in `research/queue.json` items' `human` blocks AND `gates.json`; §3.4 says G3 decisions land in `convo.json` AND `gates.json`; §1.5 puts Slack `client_msg_key` posting state in `gates.json` too; and M04 says superseded decisions replay \"from `gates.json`.\" Meanwhile `convo.json.provenance.human_review` already records who reviewed. Separately, §3.2/§3.3 split `research-pass.md` §4's single `research_item` (which carries both `question` and `finding`) into `research/queue.json` plus `research/results/rNN.json` without ever saying so or reconciling the shapes.",
+      "severity": "high",
+      "fix": "State one rule: `gates.json` is the transport-and-replay ledger only — Slack message keys, reaction sets read, apply keys, superseded-version log. Editorial decisions live exactly once, in the `human` block that `research-pass.md` §4 already defines and in `convo.json`. `provenance.human_review` is derived at build time, never written by hand. And say plainly whether `research-pass.md` §4's `research_item` is one file or two; if two, that is an edit to §4 and belongs in the edit list."
+    },
+    {
+      "where": "§3 — no message for the Hook or the Seeds",
+      "problem": "Two of the six page blocks in `convo-v1-spec.md` §1 ship unreviewed. The Hook is block 1 — \"One sentence naming what got argued… Someone decides in four seconds whether to keep scrolling\" — the single most reader-facing sentence on the page, and it appears in this protocol for the first time nowhere; M17 doesn't even list it. Seeds (1–3, \"the questions the conversation didn't close\") appear once, as a count on the G4 card. G3 is scoped to beats and checks, and G4 is a 1.5-minute 🔒 on a card that doesn't show either object. Nobody ever reads the Hook before it is public.",
+      "severity": "high",
+      "fix": "Add the Hook and the Seeds to the G3 batch as one extra message posted after the last beat: `🎙 hook + seeds · zengineering-098`, quoting the hook sentence and the 3 seed questions, with ✅ · 🔁 (reply `hook:` / `seed:s2` replaces verbatim) · ✂️ per seed via `cut: s2`. One reaction, ~20 seconds, and it closes the last unreviewed public surface."
+    },
+    {
+      "where": "§2.5 (\"recorded as `reply: none, opportunity: exercised`\"), M15/M16, vs `schemas/convo.schema.json`",
+      "problem": "The guest right-of-reply state must be published (M15's byline, §2.5's recorded outcome, M14's \"State: sent, unopened\") and has no home in the schema, which sets `additionalProperties: false` at the top level — so no new top-level key can be added without a schema edit the spec never mentions, and hard block 5 (\"`convo.json` invalid against `schemas/convo.schema.json`\") would fail the build. Two smaller instances of the same: `checks[].host_note` is a bare string with no byline field, yet M15 commits a guest's words with \"byline Jane Doe\"; and `provenance` has no `manifest_source` field although §1.4 promises \"the inferred flag stays in provenance forever.\"",
+      "severity": "high",
+      "fix": "List the schema edits explicitly alongside the doc edits in §4.3: add top-level `right_of_reply` (`{person, offered, opened, responded, closed, state}`), change `host_note` from string to `{text, by, committed}` (or add `host_note_by`), add `provenance.manifest_source` and `provenance.spend_usd`. Bump to `convo/1.1` and say the renderer reads the new fields."
+    },
+    {
+      "where": "§4.3 (\"Nothing else in either document changes\") and the absence of any consolidated edit list for `convo-v1-spec.md` or `tech-stack.md` §4",
+      "problem": "The spec mandates edits to three documents and lists two, and the ones it lists are understated. `convo-v1-spec.md` needs at least four edits, all buried in prose: §1's Dirt row \"The podcast ships unchanged\" (retired in §8.4), §4 stage 10's \"Unchanged from today\" (retired in §8.4), §4's closing \"Two human gates. Everything between them runs unattended\" (this protocol has five gates and §0 says so, with no reconciliation), and §7's non-goals. §4.4 also changes `research-pass.md` §4's `human.decision` enum, one section after §4.3 says nothing else in that document changes. And `tech-stack.md` §4's repo layout gains `convos/_drops/`, `gates.json`, `thread.jsonl`, `undelivered.jsonl`, `research/`, `episode.json`, `rss.json`, `reviews.superseded.json`, `_wrap/`, `_output/` and a new top-level `farms/` — none of it reconciled.",
+      "severity": "high",
+      "fix": "Move §4.3 out of the vocabulary section into a top-level §12 \"Edits this document requires,\" listing every change by doc and section number, including the `convo-v1-spec.md` §4 gate-count line (rewrite as: two gates on the CONVO — beats and publish — plus two on the research spend and one on drop adoption; five total), the §4.4 enum change, the schema edits from the previous finding, and one repo-layout diff block against `tech-stack.md` §4."
+    },
+    {
+      "where": "§3.4 (\"✂️ cut\") vs `schemas/convo.schema.json` `beats: {minItems: 5, maxItems: 9}` and §2.6 hard block 5",
+      "problem": "A plausible G3 outcome deadlocks the pipeline with no named recovery. M04 already describes a state where \"4 of 7 beats survive\"; two more ✂️ at G3 takes a 7-beat convo to 4, `convo.json` fails validation, and hard block 5 fires with \"no override reaction and the skill will not offer you one.\" `convo-v1-spec.md` §3 stage 3 also says \"Long conversations don't get more beats, they get better ones,\" so re-segmenting is the intended answer — but nothing in the protocol routes a below-floor beat count back to stage 3, and the abandonment rule (\"applies what it has\") would happily commit an invalid convo.",
+      "severity": "medium",
+      "fix": "Add a G3 preflight to the apply summary: when applied cuts would take beats below 5, do not write `convo.json`. Post one line — `⛔ 3 cuts would leave 4 beats; the floor is 5 (convo.schema.json). Stage 3 re-segments from the surviving beats, ~$0.30, or reply `keep: b2` to restore one.` — and offer 🔁 (re-segment) or a `keep:` directive. Same check for seeds >3 and tendrils >3 on a beat."
+    },
+    {
+      "where": "§1.1 `timelines` (`\"session\": \"tracks/\"`, `\"map\": \"session/098.sesx\"`)",
+      "problem": "The edit map's second timeline is the FINAL MIX, not the tracks, and the drop directory has no slot for it. `source.json.edit_map.clips[].mix_in/mix_out` are final-mix times; `tracks.final_mix` is a real, separate file (`postproductions/2020-09-03-t09-24-42am-final-mix.mp3`); the tracks happen to be sample-locked to it at offset 0 for 098 — \"Raw tracks are sample-locked to the final mix at offset 0, so mix time == raw-track time\" — which is a measured fact about this convo, not a property of the contract. Declaring `session: \"tracks/\"` bakes 098's coincidence into the schema. The map's frame offset is also unrepresented: `edit_map.frame` says \"Subtract 0.0784 s (3 MP3 frames) to convert to the ffmpeg decode frame,\" and `timelines.map` is a bare path with nowhere to put that number.",
+      "severity": "medium",
+      "fix": "Give the intermediate a slot: `mix/` in the drop directory, and `timelines: {published, mix, session, map: {path, frame, offset_seconds, mix_to_session_offset}}`. Require `mix_to_session_offset` to be measured, not assumed — 0.000 for 098 with the 16 probe points cited. If `mix/` is absent, `mix` defaults to `session` only when the offset is measured and recorded."
+    },
+    {
+      "where": "§3's length rule (\"capped at roughly 12 visual lines / 1,200 characters\") vs M01, M15, M17",
+      "problem": "The cap exists for a real reason the spec states well — \"a gate you have to tap twice to read is a gate that dies\" — and the three messages that most need it break it. M01 runs ~16 lines, M15 ~17, M17 ~20 lines and comfortably over 1,200 characters. §3 offers \"split at a block seam, never per item\" as the escape, but M17 is also the message §8.1 insists must be ONE decision (\"If they were two decisions they could disagree\"), so splitting it is blocked by another rule.",
+      "severity": "medium",
+      "fix": "Resolve the M17 conflict by making the split explicit and non-decisional: post the page block and the episode block as two messages, with the 🔒 valid only on the second, which repeats the one-line summary of the first. State that rule once — \"a gate may span two messages; reactions are read on the last one, which names itself as the decision message.\" Then trim M01 by moving the file table into the edited state region and M15 by moving the resolved checks (c2, c5) to a commit."
+    },
+    {
+      "where": "M09 (\"b3 · 13:34–15:52 … 1.1 s clear of the edit boundary at 1253.292\"), M17/M19 (\"62:14\"), M06/M17/M18 (spend)",
+      "problem": "Three numbers in the worked example don't follow from their own inputs, on a page whose premise is showing the work. (1) b3 spans 814–952 s; the edit_map master boundaries either side are 263.223 and 1253.292, i.e. 551 s before and 301 s after. Nothing is 1.1 s from either, so the clip-safety line is decoration. The beat is also 138 s long with an 18.4 s clip and no statement of which 18.4 s. (2) Bare mode on a 3683.24 s master plus an 11.2 s bump is 61:34, not 62:14; 62:41 is the TRACK length, so the number looks borrowed from the wrong row of M01. (3) M06 says the queue costs ~$6.10 with $0.41 already spent, and M17/M18 report $6.14 total.",
+      "severity": "medium",
+      "fix": "Make M09 print the real relationship: `clip 13:34.2–13:52.6 · nearest master edit boundary 04:23.2 (263.223), 551 s clear`. Set the episode to `61:34` in M17 and M19. Set M06's forecast to `~$5.60` so `0.41 + 0.18 + 5.55 = $6.14` closes, and show that arithmetic on the G4 card the way M23 already does."
+    },
+    {
+      "where": "§5 directive table vs §3 messages and §7 failure table",
+      "problem": "There is an undeclared CLI surface and a set of undeclared directives. Referenced but never defined: `/farm guest jane-doe send` (M01g), `/farm status 104` (M27), `/farm wrap 098` (M18), `farm drop <folder>` (§1.2, M03), `farm budget` implied by `cap:`. Referenced in §7 but absent from §5's table: `retry-ci`, `revert-merge` (failure #16). Present in §5 but offered by no message: `release: <stage>`, `recut: b3 in=… out=…`. §5 opens \"there are exactly three places\" free text is read, and the slash commands are a fourth that is never counted.",
+      "severity": "medium",
+      "fix": "Add a §5.1 listing the CLI commands with their one-line effect and where each may run (operator machine vs porch), and mark it as a fourth free-text surface. Move `retry-ci` and `revert-merge` into the directive table. Either give `release:` and `recut:` an offering message or delete them."
+    },
+    {
+      "where": "§3.2–§3.4 commit examples (`G1: queue 8/9 approved…`, `G2: r04 → check outdated (adam)`, `G3: b3 approved (adam)`, `drop: adopt 3f9a1c2e0b74`)",
+      "problem": "Contradicts `CLAUDE.md` \"Working style\": \"Small commits, one stage per commit, message names the stage and the convo id.\" None of the examples names the convo id, and G3 commits per beat rather than per stage — 7 beats is 7 commits. The branch name carries the convo, so it reads fine in the branch, but once merged to `main` the history is a wall of `G3: b3 approved (adam)` with no way to tell which convo, which is exactly what the CLAUDE.md rule exists to prevent.",
+      "severity": "medium",
+      "fix": "Adopt the earlier draft's form, which already complied: `gate3(zengineering-098): b3 approved — adam`. For per-object commits, either batch one apply into one commit (`gate3(zengineering-098): b1 ✅ b2 ✂️ b3 ✅, 3 of 7 — adam,tbj`) or note in §5 that CLAUDE.md's one-stage-per-commit rule is amended to one-apply-per-commit, and say so out loud."
+    },
+    {
+      "where": "§2.4 (\"move `consent.json.reply_state`\") vs §2 (\"`people/<id>.json` **is** the auth record\") and `tech-stack.md` §2",
+      "problem": "Two homes for consent state in a document whose best idea is that there is only one. `consent.json` appears exactly once, is never defined, has no path, no schema and no other reference — while §2's whole argument is that role and consent are one object in `people/<id>.json`. Separately, the person record shown in §2 silently drops most of `tech-stack.md` §2's `person/1`: `name`, `handle`, `bio`, `links`, and all of `character.sheet`, `refs`, `invariants`, `seed`, `negative`, `approved_styles`, with no ellipsis to signal it is an excerpt.",
+      "severity": "medium",
+      "fix": "Delete `consent.json`. Put reply state on the convo (`convo.json.right_of_reply`, per the schema finding above) since it is per-convo, and keep the durable consent boolean on the person. Add `…` and a line to the §2 JSON: \"Excerpt — the full `person/1` shape is `tech-stack.md` §2; `access` is the only new block.\""
+    },
+    {
+      "where": "§1.4 Path A condition 5 (`now − sealed_at ≥ 120 s`) vs the same section's \"No quiescence window is needed, because the hash already proves every byte arrived\"",
+      "problem": "The section states a rule and then denies it two paragraphs later. Condition 5 IS a quiescence window; it adds up to two minutes of latency to a path that has already proven completeness by content hash, and it trusts `sealed_at`, a timestamp written by a client whose clock the runner cannot verify. A skewed laptop clock either delays every drop or defeats the check entirely.",
+      "severity": "medium",
+      "fix": "Delete condition 5 and the sentence that contradicts it. If a grace period is wanted for out-of-band reasons, base it on the runner's own first-observation time (recorded in the poll ledger), not on a client-supplied field, and say what it is protecting against."
+    },
+    {
+      "where": "§1.4 (\"An iCloud dataless placeholder reports the full size and a final-looking mtime while containing nothing\") vs §1.3 (\"The inbox is an addressable read-only namespace, not a filesystem\")",
+      "problem": "The guard is on the wrong side of the boundary. The poll reads a cloud namespace through `list(prefix)` / `get(path)` — Dropbox or blob — where a local iCloud placeholder cannot appear, because the cloud copy is by definition complete. The real placeholder risk is at SEAL time: `farm drop` runs on the operator's laptop, walks a local synced folder, and can hash a dataless placeholder or a partially-downloaded file into `drop.json` as truth. Nothing in §1.2 guards the sealer, and a bad manifest then verifies perfectly against the cloud forever.",
+      "severity": "medium",
+      "fix": "Move the guard into `farm drop`: before hashing, assert every file is materialised — on macOS check for `com.apple.fileprovider` dataless attributes / `brctl` status, and always assert bytes read equals `st_size`. Refuse to seal otherwise with a named reason. Keep one line in §1.4 explaining that this class of bug is caught at seal, not at poll, and why."
+    },
+    {
+      "where": "§1.2 web-upload row (\"calls the same `seal()` server-side when the last part completes and writes a byte-identical manifest with `transport: \\\"web\\\"`\")",
+      "problem": "Self-contradictory in one sentence — a manifest cannot be byte-identical while `transport`, `sealed_by`, `sealed_at` and `sealer` all differ. More substantively, `remote_hash` is defined as \"the transport's own content hash,\" which for the `blob` adapter is an ETag; for any multipart upload an S3-style ETag is a hash-of-hashes that depends on part size, so the sealer cannot compute it deterministically and completeness condition 2 has nothing to compare against on the web path — the exact path D2 asks to be designed for.",
+      "severity": "medium",
+      "fix": "Say \"schema-identical, differing only in the provenance fields.\" Define `remote_hash` as `{alg, value}` where `alg` is `dropbox-content-hash | s3-etag-<partsize> | sha256`, and for the blob adapter have the upload handler compute and store sha256 server-side as the object's user metadata, then use `alg: sha256` — the web path then satisfies condition 2 with one hash rather than needing a second one."
+    },
+    {
+      "where": "M16 exit ✂️ (\"pull her beats and the checks that quote them, publish without them\")",
+      "problem": "The exit is incomplete and quietly breaks a promise. Pulling beats and checks does not remove the guest from the page: `convo-v1-spec.md` §1's Dirt block is the FULL transcript, collapsed, and the guest is in it verbatim; the linked full audio still contains her; and `participants[]` still names her. So the convo publishes her words with the checks that would have contextualised them removed, and with no reply — a worse outcome for her than publishing normally, offered as the safe exit.",
+      "severity": "medium",
+      "fix": "Split the exit in two, both named in M16: `✂️ pull her beats and checks, and redact her turns from the Dirt transcript` (state that the linked audio still contains her and that the page says so), or `🛑 hold the convo indefinitely`. If redaction is not implementable, say the ✂️ exit is unavailable when a guest has speaking turns and remove it from the message."
+    },
+    {
+      "where": "M19 (\"Re-running with this episode.json produces this file byte for byte\")",
+      "problem": "Not true for an x264/AAC encode. libx264 output varies with build, thread count, and slice decisions; `config.yaml` pins `preset: medium` and `crf: 18` but nothing pins ffmpeg's version or `-threads 1`, and `loudnorm` two-pass measurement can vary. The claim reads as a reproducibility guarantee, sits next to real ones that ARE checkable (segment shas, music identity, stitcher commit), and will be quietly false the first time a machine upgrades ffmpeg.",
+      "severity": "low",
+      "fix": "Downgrade to what is true and checkable: \"Re-running with this `episode.json` reproduces the same inputs, the same cue times and the same command line. The encode is not bit-reproducible across ffmpeg builds; `episode.json` records the ffmpeg version and the full command so a difference is attributable.\""
+    },
+    {
+      "where": "`docs/slack-protocol.md` on disk vs the reviewed draft",
+      "problem": "The repo currently holds a DIFFERENT slack-protocol.md that resolves D5 the opposite way. Its §4 says \"⚠️ … research-pass's meaning wins: 'this belongs in the checks block'\" and has no 🧪 or 🛑; it also uses a pinned canvas (§7.22) instead of edited messages, a 72 h guest window instead of 21 days, 20 human-minutes instead of 13, `master_is_an_edit` instead of `timelines.relation`, and rejects mapless drops at intake instead of recovering by cross-correlation. If the new draft is published without replacing it, the repo contains two protocols whose ⚠️ means opposite things — which is precisely the collision D5 was raised to end.",
+      "severity": "medium",
+      "fix": "Overwrite `docs/slack-protocol.md` with the new draft in the same commit that lands it, and add a line to `README.md`'s read-in-this-order table pointing at it. Carry forward the two things the old draft did better: the pinned canvas as a status surface (M27 already references `/farm status` with nothing behind it), and the message footer that prints run id, model, cost and commit on every post."
+    }
+  ]
+}
