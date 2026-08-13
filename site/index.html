@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>conversation.farm</title>
+<meta name="description" content="We farm conversations. An hour of two people actually thinking, planted, tended, and harvested into something worth sending to a friend.">
+<meta property="og:title" content="conversation.farm">
+<meta property="og:description" content="We farm conversations. Not content.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16301F;
+    --ink-soft:#3D5946;
+    --paper:#DFD6BD;
+    --card:#EDE6D5;
+    --chicory:#2E5C8A;
+    --marigold:#E0A028;
+    --rust:#A6442B;
+    --rule:rgba(22,48,31,.22);
+    --measure:34rem;
+  }
+
+  *{box-sizing:border-box}
+
+  html{-webkit-text-size-adjust:100%}
+
+  body{
+    margin:0;
+    background-color:var(--paper);
+    background-image:repeating-linear-gradient(
+      180deg,
+      transparent 0 46px,
+      rgba(22,48,31,.045) 46px 47px
+    );
+    color:var(--ink);
+    font-family:"Space Grotesk",system-ui,sans-serif;
+    font-size:17px;
+    line-height:1.55;
+  }
+
+  .wrap{max-width:69rem;margin:0 auto;padding:0 1.5rem}
+
+  .mono{
+    font-family:"Space Mono",ui-monospace,monospace;
+    font-size:.72rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+  }
+
+  a{color:var(--chicory);text-decoration-thickness:1px;text-underline-offset:3px}
+  a:hover{color:var(--rust)}
+  :focus-visible{outline:2.5px solid var(--rust);outline-offset:3px}
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    padding:1.1rem 0 1rem;border-bottom:1.5px solid var(--ink);
+  }
+  .brand{display:flex;align-items:center;gap:.6rem}
+  .brand-name{font-family:"Space Mono",monospace;font-weight:700;font-size:.95rem;letter-spacing:.02em}
+  .masthead .mono{color:var(--ink-soft)}
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:grid;grid-template-columns:1.15fr .85fr;gap:3.5rem;
+    align-items:center;padding:4.5rem 0 4rem;
+  }
+  h1{
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:900;
+    font-size:clamp(3.1rem,8.2vw,6rem);
+    line-height:.92;
+    letter-spacing:-.025em;
+    margin:.6rem 0 1.4rem;
+    font-variation-settings:"SOFT" 40,"WONK" 1;
+  }
+  h1 em{font-style:normal;color:var(--rust)}
+  .lede{font-size:1.16rem;max-width:var(--measure);margin:0 0 1.1rem}
+  .lede-2{color:var(--ink-soft);max-width:var(--measure);margin:0}
+
+  /* ---------- seed packet ---------- */
+  .packet-stage{display:flex;justify-content:center;perspective:1400px}
+  .packet{
+    all:unset;
+    display:block;cursor:pointer;
+    width:min(21rem,100%);aspect-ratio:5/7;
+    position:relative;
+    transform:rotate(-2.5deg);
+    transition:transform .5s cubic-bezier(.2,.7,.3,1);
+    transform-style:preserve-3d;
+  }
+  .packet:hover{transform:rotate(-2.5deg) translateY(-6px)}
+  .packet.flipped{transform:rotate(2deg) rotateY(180deg)}
+  .packet.flipped:hover{transform:rotate(2deg) rotateY(180deg) translateY(-6px)}
+
+  .face{
+    position:absolute;inset:0;
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    background:var(--card);
+    border:1.5px solid var(--ink);
+    box-shadow:8px 9px 0 rgba(22,48,31,.16);
+    padding:1.15rem 1.15rem 1rem;
+    display:flex;flex-direction:column;
+  }
+  .face.back{transform:rotateY(180deg)}
+
+  .packet-top{display:flex;justify-content:space-between;align-items:baseline;color:var(--ink-soft)}
+  .packet-crop{
+    font-family:"Fraunces",serif;font-weight:900;
+    font-size:1.85rem;line-height:.95;letter-spacing:-.02em;
+    margin:.45rem 0 .1rem;
+    font-variation-settings:"SOFT" 30,"WONK" 1;
+  }
+  .packet-sub{font-size:.83rem;color:var(--ink-soft);margin-bottom:.7rem}
+  .emblem{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+  .emblem svg{width:100%;height:100%;max-height:12.5rem}
+  .packet-foot{
+    border-top:1.5px solid var(--ink);margin-top:.7rem;padding-top:.55rem;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .stamp{
+    display:inline-block;border:1.5px solid var(--rust);color:var(--rust);
+    padding:.16rem .45rem;transform:rotate(-3deg);
+  }
+
+  .spec{width:100%;border-collapse:collapse;margin-top:.2rem}
+  .spec th,.spec td{
+    text-align:left;padding:.42rem 0;border-bottom:1px dotted var(--rule);
+    font-size:.82rem;vertical-align:top;
+  }
+  .spec th{font-family:"Space Mono",monospace;font-size:.66rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-soft);font-weight:400;width:8.5rem}
+  .back-note{font-size:.83rem;color:var(--ink-soft);margin:.85rem 0 0;line-height:1.45}
+  .flip-hint{color:var(--ink-soft)}
+
+  /* ---------- sections ---------- */
+  section{border-top:1.5px solid var(--ink);padding:3.4rem 0}
+  .sec-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:2.2rem}
+  .sec-head h2{
+    font-family:"Fraunces",serif;font-weight:600;font-size:2rem;margin:0;
+    letter-spacing:-.02em;font-variation-settings:"SOFT" 30,"WONK" 1;
+  }
+  .sec-head .mono{color:var(--ink-soft);white-space:nowrap}
+
+  .rows{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-left:1px solid var(--rule)}
+  .row{padding:0 1.4rem;border-right:1px solid var(--rule)}
+  .row .num{
+    font-family:"Space Mono",monospace;font-size:.72rem;letter-spacing:.14em;
+    color:var(--marigold);display:block;margin-bottom:.5rem;
+  }
+  .row h3{
+    font-family:"Fraunces",serif;font-weight:900;font-size:1.3rem;margin:0 0 .5rem;
+    font-variation-settings:"SOFT" 30,"WONK" 1;
+  }
+  .row p{margin:0;font-size:.95rem;color:var(--ink-soft)}
+
+  .plot{
+    display:grid;grid-template-columns:auto 1fr auto;gap:1.6rem;align-items:center;
+    background:var(--card);border:1.5px solid var(--ink);padding:1.5rem 1.7rem;
+    box-shadow:6px 7px 0 rgba(22,48,31,.14);
+  }
+  .plot-no{font-family:"Fraunces",serif;font-weight:900;font-size:2.6rem;line-height:1;color:var(--marigold)}
+  .plot h3{font-family:"Fraunces",serif;font-weight:600;font-size:1.5rem;margin:0 0 .3rem}
+  .plot p{margin:0;color:var(--ink-soft);font-size:.95rem;max-width:38rem}
+  .plot .mono{color:var(--ink-soft);text-align:right;line-height:1.9}
+
+  .nots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.6rem 3rem;max-width:56rem}
+  .not{display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:start}
+  .not .x{color:var(--rust);font-family:"Space Mono",monospace;font-weight:700;line-height:1.4}
+  .not strong{display:block;font-weight:700}
+  .not span.body{color:var(--ink-soft);font-size:.95rem}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1.5px solid var(--ink);padding:3.2rem 0 4rem}
+  .sow{
+    font-family:"Fraunces",serif;font-weight:900;
+    font-size:clamp(1.9rem,4.2vw,2.9rem);line-height:1.02;margin:0 0 1rem;
+    letter-spacing:-.02em;font-variation-settings:"SOFT" 40,"WONK" 1;
+  }
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;flex-wrap:wrap}
+  .foot-grid p{margin:0;color:var(--ink-soft);max-width:30rem}
+  .colophon{margin-top:2.6rem;padding-top:1rem;border-top:1px solid var(--rule);
+    display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;color:var(--ink-soft)}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;gap:2.8rem;padding:3rem 0 3.2rem}
+    .packet-stage{order:-1}
+    .rows{grid-template-columns:repeat(2,1fr);gap:1.8rem 0;border-left:none}
+    .row{border-right:none;border-left:1px solid var(--rule);padding-left:1.1rem}
+    .plot{grid-template-columns:auto 1fr;gap:1rem 1.2rem}
+    .plot .mono{grid-column:1/-1;text-align:left}
+    .nots{grid-template-columns:1fr}
+    .sec-head{flex-direction:column;gap:.3rem;align-items:flex-start}
+  }
+  @media (max-width:520px){
+    body{font-size:16px}
+    .masthead .mono{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .packet,.packet:hover,.packet.flipped,.packet.flipped:hover{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 40 40" aria-hidden="true">
+        <path d="M4 6h32v20H22l-7 7v-7H4z" fill="none" stroke="#16301F" stroke-width="2.4"/>
+        <path d="M20 26v-9" stroke="#16301F" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M20 19c0-4-3-6-6.5-6 0 4 2.5 6 6.5 6z" fill="#2E5C8A"/>
+        <path d="M20 22c0-3.6 2.8-5.4 6-5.4 0 3.6-2.4 5.4-6 5.4z" fill="#E0A028"/>
+      </svg>
+      <span class="brand-name">conversation.farm</span>
+    </div>
+    <span class="mono">Plot 001 &nbsp;/&nbsp; Charlottesville, VA</span>
+  </header>
+
+  <div class="hero">
+    <div>
+      <span class="mono" style="color:var(--ink-soft)">Est. 2026 &nbsp;·&nbsp; Open field, open repo</span>
+      <h1>We farm<br>conversations.<br><em>Not content.</em></h1>
+      <p class="lede">An hour of two people actually thinking, planted, tended, and harvested into something you'd want to send to a friend.</p>
+      <p class="lede-2">A content farm grows cheap stuff, fast, for an algorithm. We grow one thing at a time, slowly, for a person… who then usually has a thought of their own about it. That's the whole crop.</p>
+    </div>
+
+    <div class="packet-stage">
+      <button class="packet" id="packet" aria-pressed="false" aria-label="Seed packet for Zengineering No. 102. Activate to read the planting instructions on the back.">
+        <div class="face front">
+          <div class="packet-top">
+            <span class="mono">Zengineering</span>
+            <span class="mono">No. 102</span>
+          </div>
+          <div class="packet-crop">Welcome to<br>Zengineering</div>
+          <div class="packet-sub">Hardy perennial · sows year-round</div>
+          <div class="emblem">
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+              <path d="M22 34h156v92H108l-30 30v-30H22z" fill="none" stroke="#16301F" stroke-width="3.5" stroke-linejoin="round"/>
+              <path d="M100 152V78" stroke="#16301F" stroke-width="4" stroke-linecap="round"/>
+              <path d="M100 96c0-17-13-26-30-26 0 17 12 26 30 26z" fill="#2E5C8A"/>
+              <path d="M100 116c0-15 12-23 28-23 0 15-11 23-28 23z" fill="#E0A028"/>
+              <path d="M100 76c0-12-7-19-16-22 3 12 8 18 16 22z" fill="#A6442B"/>
+              <circle cx="100" cy="60" r="7" fill="#16301F"/>
+              <path d="M46 158h108" stroke="#16301F" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M56 168h20M92 168h20M128 168h20" stroke="#16301F" stroke-width="2.5" stroke-linecap="round" opacity=".5"/>
+            </svg>
+          </div>
+          <div class="packet-foot">
+            <span class="mono flip-hint">Turn packet over ↻</span>
+            <span class="mono stamp">Harvesting</span>
+          </div>
+        </div>
+
+        <div class="face back">
+          <div class="packet-top">
+            <span class="mono">Planting instructions</span>
+            <span class="mono">No. 102</span>
+          </div>
+          <table class="spec">
+            <tr><th scope="row">Sown</th><td>Two people, one question, no script</td></tr>
+            <tr><th scope="row">Runtime</th><td>53 minutes</td></tr>
+            <tr><th scope="row">Germination</th><td>4–6 days after recording</td></tr>
+            <tr><th scope="row">Yield</th><td>One scrollable artifact, seven rabbitholes, one audio file</td></tr>
+            <tr><th scope="row">Hardiness</th><td>Survives being sent into a group text</td></tr>
+            <tr><th scope="row">Companion</th><td>Plants well beside an argument</td></tr>
+          </table>
+          <p class="back-note">Do not water with engagement. This variety does not fruit under pressure and will bolt if ranked against its neighbors.</p>
+          <div class="packet-foot">
+            <span class="mono flip-hint">↺ Back to front</span>
+            <span class="mono" style="color:var(--ink-soft)">Pkt. 001</span>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <h2>How it grows</h2>
+      <span class="mono">Four beds, one season</span>
+    </div>
+    <div class="rows">
+      <div class="row">
+        <span class="num">Bed 01 — Seed</span>
+        <h3>A question worth an hour</h3>
+        <p>Usually the one somebody won't shut up about. If it fits in a text message, it isn't a seed yet.</p>
+      </div>
+      <div class="row">
+        <span class="num">Bed 02 — Plot</span>
+        <h3>The conversation</h3>
+        <p>We hit record and talk. No script, no outline… sometimes a guest, if they can hang.</p>
+      </div>
+      <div class="row">
+        <span class="num">Bed 03 — Harvest</span>
+        <h3>The convo, harvested</h3>
+        <p>The transcript gets a real research pass and comes back as something you scroll: the links, the tangents, the stuff we got wrong.</p>
+      </div>
+      <div class="row">
+        <span class="num">Bed 04 — Compost</span>
+        <h3>Old talk, back in the dirt</h3>
+        <p>Every conversation stays in the soil. We've got a hundred-odd episodes down there already, and they keep turning up in new beds.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>What's growing</h2>
+      <span class="mono">One plot under cultivation</span>
+    </div>
+    <div class="plot">
+      <div class="plot-no">01</div>
+      <div>
+        <h3>Zengineering</h3>
+        <p>Two friends, a hundred and six episodes, and a standing refusal to talk about the weather at parties. It's the first farm on the property, and it's the one we use to break things.</p>
+      </div>
+      <div class="mono">
+        106 episodes<br>
+        Season 2 · running<br>
+        Next convo: fall
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>What we're not planting</h2>
+      <span class="mono">The fence</span>
+    </div>
+    <div class="nots">
+      <div class="not">
+        <span class="x">✕</span>
+        <span><strong>Upvotes</strong><span class="body">Nobody scores anybody's thinking here. A field has yield. It doesn't have a leaderboard.</span></span>
+      </div>
+      <div class="not">
+        <span class="x">✕</span>
+        <span><strong>A feed</strong><span class="body">This isn't a feed. It's a field. You come here on purpose, or you don't come.</span></span>
+      </div>
+      <div class="not">
+        <span class="x">✕</span>
+        <span><strong>Streaks and check-ins</strong><span class="body">Nothing withers because you skipped a day. Farm games are treadmills… we just wanted the tractor.</span></span>
+      </div>
+      <div class="not">
+        <span class="x">✕</span>
+        <span><strong>A closed shop</strong><span class="body">Public repo, public working sessions, public university. Watch us build it badly in real time.</span></span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-grid">
+      <div>
+        <p class="sow">Nothing's ripe yet.</p>
+        <p>First convo lands this fall. Until then there's a podcast, and there's the repo, and there's a standing offer: bring us a question you can't get anyone to sit still for.</p>
+      </div>
+      <div>
+        <p><a href="mailto:hello@conversation.farm">hello@conversation.farm</a></p>
+      </div>
+    </div>
+    <div class="colophon">
+      <span class="mono">conversation.farm · Sown by Adam Kerpelman &amp; T. Brian Jones</span>
+      <span class="mono">Research preview. Expect mud.</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var packet = document.getElementById('packet');
+    packet.addEventListener('click', function () {
+      var flipped = packet.classList.toggle('flipped');
+      packet.setAttribute('aria-pressed', String(flipped));
+    });
+  })();
+</script>
+</body>
+</html>

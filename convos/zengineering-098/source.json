@@ -1,0 +1,20 @@
+{
+  "id": "zengineering-098",
+  "farm": "zengineering",
+  "number": 98,
+  "title": "On Open Source Collaboration",
+  "published": "2020-09-10",
+  "runtime_seconds": 3678,
+  "page": "https://zengineeringpodcast.com/episodes/098-on-open-source-collaboration",
+  "audio": "https://media.transistor.fm/ac89d303/b3682229.mp3",
+  "transistor_share": "https://share.transistor.fm/s/ac89d303",
+  "participants": ["adam", "tbj"],
+  "tracks": { "available": true, "fetched": false, "note": "Per-track audio available from Adam; supersede transcript.v0 when it lands." },
+  "existing_show_notes": [
+    "https://en.wikipedia.org/wiki/Open-source_software",
+    "https://www.wired.com/story/wired-guide-open-source-software/",
+    "https://www.softwaretestinghelp.com/unix-vs-linux/",
+    "https://www.cio.com/article/3404462/top-10-open-source-hall-of-famers.html"
+  ],
+  "baseline_note": "Four links. This is the bar we are trying to clear."
+}
