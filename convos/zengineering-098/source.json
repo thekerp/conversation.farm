@@ -3,13 +3,55 @@
   "farm": "zengineering",
   "number": 98,
   "title": "On Open Source Collaboration",
+  "recorded": "2020-08-22",
   "published": "2020-09-10",
-  "runtime_seconds": 3678,
+  "runtime_seconds": 3683,
   "page": "https://zengineeringpodcast.com/episodes/098-on-open-source-collaboration",
   "audio": "https://media.transistor.fm/ac89d303/b3682229.mp3",
   "transistor_share": "https://share.transistor.fm/s/ac89d303",
   "participants": ["adam", "tbj"],
-  "tracks": { "available": true, "fetched": false, "note": "Per-track audio available from Adam; supersede transcript.v0 when it lands." },
+  "archive": {
+    "dir": "098 - On Open Source",
+    "note": "Adobe Audition production archive as delivered. Left with its original names and shape; the pipeline reads from it and never writes into it.",
+    "master": "098 - On Open Source/098 - On Open Source Collaboration.mp3",
+    "session": "098 - On Open Source/098 - On Open Source.sesx",
+    "asr": "098 - On Open Source/098 - On Open Source Collaboration.scribe-raw.json",
+    "external_dependency": "Music bed 'Who Knows (suonho raw-dub)' is referenced by the session from the episode 032 folder and is not in this archive."
+  },
+  "tracks": {
+    "available": true,
+    "fetched": true,
+    "dir": "098 - On Open Source/recording-1",
+    "adam": "098 - On Open Source/recording-1/2020-08-22--t02-00-00pm--thekerp.mp3",
+    "tbj": "098 - On Open Source/recording-1/2020-08-22--t02-00-13pm--brian.mp3",
+    "final_mix": "098 - On Open Source/recording-1/postproductions/2020-09-03-t09-24-42am-final-mix.mp3",
+    "format": "mono, 44.1 kHz, 128 kbps",
+    "duration_seconds": 3761.08,
+    "inter_track_drift_ms": 78,
+    "note": "Raw tracks share the 3761 s session timeline. The published master is ~3683 s and carries the edit; Scribe's timestamps are on the master, so beats and clips key off the master, not these tracks."
+  },
+  "transcripts": {
+    "v0": {
+      "transcript": "transcript.v0.md",
+      "segments": "segments.v0.jsonl",
+      "asr": "faster-whisper small.en, int8, chunked, VAD",
+      "diarization": "none",
+      "speaker_confidence": "inferred",
+      "superseded_by": "v1"
+    },
+    "v1": {
+      "transcript": "transcript.v1.md",
+      "segments": "segments.v1.jsonl",
+      "asr": "ElevenLabs Scribe, word-level timings, diarization on",
+      "diarization": "model; speaker_0 -> tbj, speaker_1 -> adam",
+      "speaker_confidence": "inferred",
+      "turns": 452,
+      "words": 11770,
+      "talk_seconds": { "adam": 1830, "tbj": 1756 },
+      "mapping_evidence": "Five self-identifying anchors in the transcript, no contradictions. See skill/stages/stage2_transcript.py.",
+      "cross_check": "098 - On Open Source/098 - On Open Source Collaboration.speakers.md agrees on all 452 turns, but is derived from the same diarization pass and is therefore not independent."
+    }
+  },
   "existing_show_notes": [
     "https://en.wikipedia.org/wiki/Open-source_software",
     "https://www.wired.com/story/wired-guide-open-source-software/",

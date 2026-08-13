@@ -29,12 +29,24 @@ Its current show notes are four links. That's the bar.
 - [x] Landing page drafted (`site/index.html`)
 - [x] Spec, tech stack, research pass drafted
 - [x] E098 audio pulled, mono transcript produced (`transcript.v0.md`, 11k words)
-- [ ] Per-track audio for E098 → re-run stage 2, supersede v0
+- [x] E098 production archive landed — per-track audio, Audition session, ElevenLabs Scribe ASR
+- [x] Stage 2 rerun → `transcript.v1.md` + `segments.v1.jsonl`, 452 turns, both speakers named.
+      Supersedes v0. Attribution is still `inferred` — see below.
+- [ ] Earn `confirmed` attribution from the per-track audio, or decide diarization is enough
 - [ ] Beat segmentation
 - [ ] Research pass
 - [ ] Character sheets for adam + tbj
 - [ ] Fallback renderer
 - [ ] Deploy
+
+## On `inferred` vs `confirmed`
+
+Speaker attribution in v1 comes from a diarization model, mapped to people by five
+self-identifying anchors in the transcript. The mapping is evidenced; the turn boundaries are
+still a model's guess, so `speaker_confidence` stays `inferred` per the spec's own definition.
+
+The hand-labelled `speakers.md` in the archive agrees on all 452 turns — but it was produced from
+the same diarization pass, so it corroborates nothing. Only the per-track audio can upgrade this.
 
 ## Ground rules
 

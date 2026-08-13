@@ -3,3 +3,7 @@
 *.m4a
 __pycache__/
 .DS_Store
+
+# Audition autosave snapshots — 9 near-identical XMLs per session.
+# tech-stack.md §6.4 flags repo bloat; the live .sesx is kept, the autosaves are not.
+Backup/
