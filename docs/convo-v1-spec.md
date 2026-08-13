@@ -137,6 +137,10 @@ one of us happens to remember at the right moment.
 }
 ```
 
+`speaker_confidence: "confirmed"` requires per-track audio ownership and a written method. Content
+anchors in the transcript, however unanimous, are `inferred` — they establish which id is which
+person, not that the model drew the turn boundaries correctly.
+
 **Why `provenance` is not optional.** We're publishing a block that says where we were wrong. That
 only works if the reader can see how the machine reached that conclusion, and where it's shaky.
 Publish the confidence, publish the method, publish the fact that speaker labels are guesses.
@@ -185,7 +189,7 @@ checks block *before* they record, because I think the answer is yes and it chan
 | 4 | Research pass | Auto | Per beat: search, fetch, verify. Drafts tendrils and checks. The only hard part. |
 | 5 | Assemble `convo.json` | Auto | Schema-validated or it fails loudly |
 | 6 | **Review gate** | Human | Slack ping-pong. Approve, rewrite, or kill beats and checks. |
-| 7 | Cut clips | Auto | ffmpeg, per beat, from the beat timestamps |
+| 7 | Cut clips | Auto | ffmpeg, per beat, from the beat timestamps. Never take a bound from `ffprobe format.duration` — it is a bitrate estimate and reads 5.5 s short on 098's master. Snap in/out to words with duration > 0 (2.5% have none), pad 250 ms, stay 0.2 s clear of an edit boundary, encode mono. |
 | 8 | Render + commit | Auto | Renderer reads `convo.json`, writes a page |
 | 9 | **Publish gate** | Human | Deploy |
 | 10 | Audio to Transistor | Human | Unchanged from today |
@@ -291,10 +295,22 @@ sorted by timestamp, and the speaker is whoever owns the track. Attribution is e
 
 Two details that will bite:
 
-- **Bleed.** Each track picks up the other person. Keep a segment only on the track where that
+- **Bleed.** Each track may pick up the other person. Keep a segment only on the track where that
   speaker's energy is highest across the overlapping window, or you get every line twice.
-- **Drift.** Separately recorded tracks drift over an hour. Cross-correlate the first sixty seconds
-  to align, re-check at the end, fail loudly past 200 ms.
+  *Measured on 098: a no-op — the tracks are cleanly isolated, 90 bleed windows peak at r 0.02–0.19
+  with scattered lag. Energy-max is a per-track filter only. Never use it to arbitrate labels on the
+  master timeline: it disagrees with diarization on 11% of turns under one second, and 5.2% of that
+  hour has both people talking. In overlap, transcribe both tracks and keep both.*
+- **Drift.** Separately recorded tracks can drift over an hour. Cross-correlate to align, re-check at
+  the end, fail loudly past 200 ms — **on content offsets, never on file durations.** MP3 tail
+  padding differs in whole frames (1152/44100 = 0.078367 s), so two perfectly aligned tracks can
+  report an 78 ms duration difference. 098 does exactly that and has zero measured drift; a gate
+  written against durations would have failed it.
+- **The master is not the tracks.** A published episode is an edit. 098's master is 8 clips of the
+  raw session with 87.1 s of conversation cut and a cold open moved to the front, so the two
+  timelines diverge by up to 83.4 s and no single offset relates them. Every convo needs a
+  master↔source map, recorded in `source.json`, and **every published timestamp is on the master
+  timeline.** Per-track transcription alone yields a transcript of a recording nobody released.
 
 Mono is the fallback. When only a mixed file exists, mark every speaker `inferred` and say so in
 provenance. `convos/zengineering-098/transcript.v0.md` is a mono transcript and carries that flag.

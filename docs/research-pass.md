@@ -135,20 +135,27 @@ question types we keep and which we always cut, and 4a can start proposing a bet
 
 ## 5. Worked example — E098, from the real transcript
 
-Recorded 2020-09-10. Queue generated from the actual segmented audio.
+Recorded 2020-08-22, published 2020-09-10. Queue generated from the actual segmented audio.
+Timestamps below are master-timeline seconds from `segments.v1.jsonl`, which is the timeline every
+published timestamp must use.
 
 | # | Type | Beat | Question |
 |---|---|---|---|
-| 1 | `verify` | 09:01 | "Tesla has open sourced all of their patents." True as stated? |
-| 2 | `verify` | 34:40 | Git was written by Linus Torvalds, who also created Linux. |
+| 1 | `verify` | 09:15 | "Tesla has open sourced all of their patents." True as stated? |
+| 2 | `verify` | 34:52 | Git was written by Linus Torvalds, who also created Linux. |
 | 3 | `since` | 21:26 | They contrast Apple's closed App Store with Android's openness. What's changed since 2020? |
 | 4 | `since` | 45:33 | "Almost everything has an open source counterpart." Does that still hold in 2026? |
 | 5 | `contradict` | 38:12 | Adam's claim that Git's append-only model should be rolled out to every other domain — strongest objection? |
-| 6 | `enrich` | 34:40 | Best account of why Git was written, beyond the Torvalds trivia. |
+| 6 | `enrich` | 34:52 | Best account of why Git was written, beyond the Torvalds trivia. |
 | 7 | `since` | 52:41 | The blockchain-adjacent aside. What happened to that thesis? |
-| 8 | `identify` | 00:00 | The specific licenses they gesture at without naming. |
+| 8 | `identify` | 20:41 | The specific licenses they gesture at without naming. |
 
 Three of eight are `since`, which is the right shape for a six-year-old convo.
+
+> Item 8 was written as `00:00`. The published episode opens with a cold open lifted from **20:41**
+> and *moved* there, so `00:00` addresses audio from twenty minutes into the conversation. Any queue
+> item generated from a timestamp has to be checked against `source.json` -> `structure`, or `since`
+> questions get asked about the wrong moment.
 
 **What I'd expect back, before running it:**
 

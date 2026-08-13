@@ -4,6 +4,8 @@
 __pycache__/
 .DS_Store
 
-# Audition autosave snapshots — 9 near-identical XMLs per session.
-# tech-stack.md §6.4 flags repo bloat; the live .sesx is kept, the autosaves are not.
-Backup/
+# NOT ignored, deliberately: Audition Backup/ autosaves. 5.8 MB of XML that gzips to
+# 460 KB, and the only surviving record of the 2020-09-03 edit session — it is what
+# proved the published master is the render of the archived .sesx. The real §6.4 risk
+# here is the opposite of bloat: 260 of 265 MB of production archive is gitignored
+# audio that exists in exactly one place.

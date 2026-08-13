@@ -3,21 +3,48 @@
   "farm": "zengineering",
   "number": 98,
   "title": "On Open Source Collaboration",
+
   "recorded": "2020-08-22",
+  "edited": "2020-09-03T09:25:45-07:00/2020-09-03T11:57:24-07:00",
+  "mastered": "2020-09-03T11:58:16-07:00",
   "published": "2020-09-10",
-  "runtime_seconds": 3683,
+
+  "runtime_seconds": 3683.24,
+  "runtime_note": "Decoded length 3683.2392 s = 140999 MPEG frames x 1152 / 44100, matching Scribe audio_duration_secs 3683.2391875 to 4 microseconds. ffprobe format.duration reports 3677.729250 on this CBR mp3 — a size/bitrate estimate, 5.510 s short. Never read a duration or a clip bound from format.duration in this pipeline.",
+
   "page": "https://zengineeringpodcast.com/episodes/098-on-open-source-collaboration",
   "audio": "https://media.transistor.fm/ac89d303/b3682229.mp3",
   "transistor_share": "https://share.transistor.fm/s/ac89d303",
   "participants": ["adam", "tbj"],
+
   "archive": {
     "dir": "098 - On Open Source",
     "note": "Adobe Audition production archive as delivered. Left with its original names and shape; the pipeline reads from it and never writes into it.",
     "master": "098 - On Open Source/098 - On Open Source Collaboration.mp3",
+    "master_note": "Dual mono in a 192 kbps stereo container — L/R correlate at r = 1.00000 and L-R is -270 dB in speech. Only the music bed is genuinely stereo. Encode clips mono; it roughly halves clip weight against the 2 MB page budget.",
     "session": "098 - On Open Source/098 - On Open Source.sesx",
+    "session_note": "Authoritative edit map. 8 tracks, of which only Track 2 (8 mix clips) and Track 3 (2 music clips) carry audio; tracks named Adam/Brian/Guest are empty template leftovers. The session never contained per-speaker audio. Parser traps: session/@duration is a template leftover (9153 s, off by 149%) — derive runtime from max(endPoint); read gain from parameterKeyframes, not the static clipGain; keyframe sampleOffset is source-relative.",
     "asr": "098 - On Open Source/098 - On Open Source Collaboration.scribe-raw.json",
-    "external_dependency": "Music bed 'Who Knows (suonho raw-dub)' is referenced by the session from the episode 032 folder and is not in this archive."
+    "asr_note": "Canonical. Iterate words[]; never read the top-level .text field — two spacing entries are missing at speaker boundaries, fusing 'itWell,' (735.11) and 'scams.This' (1468.81).",
+    "regenerable_views": {
+      "files": ["*.speakers.md", "*.srt", "*.txt", "*.timestamped.md"],
+      "note": "All four are mechanical exports of scribe-raw.json with no human edits; speakers.md is byte-reproducible from it. Kept as delivered, but they are not sources.",
+      "srt_warning": "The .srt timings are wrong. Cue times are spread evenly across each turn rather than taken from word timings: 37.8% of 1112 cues are off by more than 1 s, max 6.127 s, and cue end is set to the last word's START so every cue truncates its final word. Never derive t/t_end or cut clips from the .srt."
+    },
+    "provenance_check": "XMP ModifyDate on the master is 2020-09-03T11:58:16-07:00, 52 s after the .sesx was saved, and all 8 voice clips verify against the session at r 0.99-1.00 at one constant lag. This local master is the render of this archived session. Not verified against the file currently served at media.transistor.fm."
   },
+
+  "external_dependency": {
+    "asset": "Who Knows (suonho raw-dub) Copy.wav",
+    "referenced_from": "../032 - On Why We Didnt March/032 - On Why We Didnt March/Imported Files/",
+    "in_archive": false,
+    "placements": {
+      "intro": { "master": [0.0, 32.731] },
+      "outro": { "master": [3634.018, 3683.186] }
+    },
+    "licensing": "UNRESOLVED. A same-length sibling copy is named 'Jimi Hendrix Band of Gypsys - Who Knows (suonho raw-dub)' and the transcribed lyrics match. Answer this before any page hosts or clips master 0-33 s or 3634-3683 s."
+  },
+
   "tracks": {
     "available": true,
     "fetched": true,
@@ -26,10 +53,58 @@
     "tbj": "098 - On Open Source/recording-1/2020-08-22--t02-00-13pm--brian.mp3",
     "final_mix": "098 - On Open Source/recording-1/postproductions/2020-09-03-t09-24-42am-final-mix.mp3",
     "format": "mono, 44.1 kHz, 128 kbps",
-    "duration_seconds": 3761.08,
-    "inter_track_drift_ms": 78,
-    "note": "Raw tracks share the 3761 s session timeline. The published master is ~3683 s and carries the edit; Scribe's timestamps are on the master, so beats and clips key off the master, not these tracks."
+    "duration_seconds": 3761.06,
+    "inter_track_drift_ms": 0,
+    "drift_note": "Content offset is 0.000 s at 16 probe points from 18.75 s to 3756 s. The 78 ms once recorded here was the file-DURATION difference (3761.084063 - 3761.005688 = exactly 3 MP3 frames of tail padding), not a misalignment. Compare content offsets, never durations — the spec's 200 ms drift gate fails this convo if implemented on durations, and this convo has zero drift.",
+    "isolation": "confirmed",
+    "isolation_note": "Inter-track correlation ~0; 90 targeted bleed windows peak at r 0.017-0.190 with randomly scattered lag. No de-bleed step needed, and the spec's energy-max rule is a no-op here.",
+    "stray_file": "'2020-08-22--t02-00-00pm--thekerp copy.mp3' is a 2024 Audition export of Adam's first 400 s with 55.14 s of his own silence spliced out. Redundant. Do not transcribe it."
   },
+
+  "structure": {
+    "cold_open": {
+      "master": [0.0, 12.084],
+      "source": "final_mix",
+      "source_range": [1241.681, 1253.765],
+      "note": "Lifted from 20:41 and MOVED, not copied — its source region was cut from the body, so those words occur exactly once in the transcript and nothing looks duplicated. Consequence: the first turn of the transcript is out of chronological order. A beat or a `since` question anchored at t=0 is quoting a moment twenty minutes in. Everything after 12.084 is in program order."
+    },
+    "music_gap": { "master": [12.084, 19.493], "note": "Music bed only, no voice clip." },
+    "program_start": 19.493,
+    "voice_end": 3663.32,
+    "music_intro": { "master": [0.0, 32.731] },
+    "music_outro": { "master": [3634.018, 3683.186] }
+  },
+
+  "edit_map": {
+    "frame": "Adobe Audition .sesx sample positions at 44100 Hz. Subtract 0.0784 s (3 MP3 frames) to convert to the ffmpeg decode frame of the final mix. Raw tracks are sample-locked to the final mix at offset 0, so mix time == raw-track time.",
+    "verified_by": "Envelope cross-correlation and sample-level NCC, independently, both matching the .sesx clip table to 0.0784 s.",
+    "clips": [
+      { "master_in": 0.0,     "master_out": 12.084,   "mix_in": 1241.681, "mix_out": 1253.765 },
+      { "master_in": 19.493,  "master_out": 263.223,  "mix_in": 3.803,    "mix_out": 247.533 },
+      { "master_in": 263.223, "master_out": 1253.292, "mix_in": 250.575,  "mix_out": 1240.645 },
+      { "master_in": 1253.292,"master_out": 1489.308, "mix_in": 1297.5,   "mix_out": 1533.516 },
+      { "master_in": 1489.308,"master_out": 1489.756, "mix_in": 1536.647, "mix_out": 1537.095 },
+      { "master_in": 1489.756,"master_out": 2580.178, "mix_in": 1538.091, "mix_out": 2628.513 },
+      { "master_in": 2580.178,"master_out": 2605.89,  "mix_in": 2659.027, "mix_out": 2684.739 },
+      { "master_in": 2605.89, "master_out": 3663.32,  "mix_in": 2689.412, "mix_out": 3746.842 }
+    ],
+    "cuts": [
+      { "mix": [0.0, 3.803],        "seconds": 3.803,  "kind": "head" },
+      { "mix": [247.533, 250.575],  "seconds": 3.042,  "kind": "internal" },
+      { "mix": [1240.645, 1297.5],  "seconds": 56.855, "kind": "internal", "note": "the cold open was lifted from inside this window" },
+      { "mix": [1533.516, 1536.647],"seconds": 3.131,  "kind": "internal" },
+      { "mix": [1537.095, 1538.091],"seconds": 0.996,  "kind": "internal" },
+      { "mix": [2628.513, 2659.027],"seconds": 30.514, "kind": "internal" },
+      { "mix": [2684.739, 2689.412],"seconds": 4.673,  "kind": "internal" },
+      { "mix": [3746.842, 3761.058],"seconds": 14.216, "kind": "tail" }
+    ],
+    "totals": {
+      "final_mix_seconds_absent_from_master": 105.147,
+      "mid_conversation_seconds_cut": 87.128,
+      "note": "A single constant offset is wrong by up to 83.44 s. 87.1 s of real conversation exists only in the raw tracks and is unaddressable by the current beat schema, which has master-timeline t/t_end only."
+    }
+  },
+
   "transcripts": {
     "v0": {
       "transcript": "transcript.v0.md",
@@ -37,21 +112,38 @@
       "asr": "faster-whisper small.en, int8, chunked, VAD",
       "diarization": "none",
       "speaker_confidence": "inferred",
-      "superseded_by": "v1"
+      "superseded_by": "v1",
+      "retain": true,
+      "retain_reason": "Cross-ASR diff against v0 is the only working entity-error detector. Scribe's logprob is degenerate (median -3.6e-07) and flags none of the five entity problems; a difflib alignment against v0 surfaced all of them in one pass with no audio.",
+      "defects": {
+        "duplicated_block": "segments.v0.jsonl indices 850-1035 (0-based, 186 segments, 1809 words) replay 2750.00-3350.02 s a second time. A chunking bug, not a Whisper loop. Any reader must drop that range. transcript.v0.md is exactly segments-minus-this-block.",
+        "non_monotonic": [[71, 72, -1.46], [849, 850, -600.02], [1035, 1036, -0.02]],
+        "content_gap": "The entire Heartbleed passage (1623-1642 s) is missing — the strongest verify+since claim in the episode. v0 is a valid diff reference and an invalid fallback input."
+      }
     },
     "v1": {
       "transcript": "transcript.v1.md",
       "segments": "segments.v1.jsonl",
+      "corrections": "corrections.json",
+      "produced_by": "skill/stages/stage2_transcript.py",
       "asr": "ElevenLabs Scribe, word-level timings, diarization on",
       "diarization": "model; speaker_0 -> tbj, speaker_1 -> adam",
-      "speaker_confidence": "inferred",
-      "turns": 452,
-      "words": 11770,
-      "talk_seconds": { "adam": 1830, "tbj": 1756 },
-      "mapping_evidence": "Five self-identifying anchors in the transcript, no contradictions. See skill/stages/stage2_transcript.py.",
-      "cross_check": "098 - On Open Source/098 - On Open Source Collaboration.speakers.md agrees on all 452 turns, but is derived from the same diarization pass and is therefore not independent."
+      "speaker_confidence": "confirmed",
+      "speaker_confidence_method": "Per-track audio ownership. speaker_0 windows are hot on brian.mp3 and speaker_1 windows on thekerp.mp3 by 38.19 dB median across 170 turns / 2302 s of mapped speech, 169/170 turns consistent (99.9% duration-weighted), with the silent track at its noise floor rather than merely quieter. Measured through the audio-verified edit map above; perturbing that map by +/-5 s collapses consistency to 73-79% and any single global offset gives 46-62%, so the separation exists only at the correct alignment. Independently, a second pass searched the offset from scratch in 19 blocks across the hour selecting by maximum absolute correlation, and got 19/19 positive with 0 reversals.",
+      "speaker_confidence_caveat": "Nothing in the audio proves which human is on which file. The mapping rests on the filename token 'thekerp' plus this file. If the recording service wrote the per-guest files under swapped handles, the conclusion inverts and no test run here can see it.",
+      "turns": 451,
+      "words": 11742,
+      "talk_seconds": { "adam": 1804, "tbj": 1756 },
+      "overlap_note": "Both speakers are live for 194.4 s (5.2% of the hour). Do not claim per-turn correctness there. Energy-max disagrees with diarization on 14 of 309 sampled turns, 11% for turns under 1 s — crosstalk, not mislabeling.",
+      "cross_check": "The archive's speakers.md agrees on all 451 turns, but it is byte-reproducible from scribe-raw.json and therefore corroborates nothing.",
+      "known_defects": {
+        "zero_duration_words": "293 of 11770 words (2.49%) have start == end, clustered in overlap regions. Timeline is sound (starts strictly monotonic) but a clip bound on one of these has an unknown onset. Snap in/out to the nearest word with duration > 0 and pad 250 ms.",
+        "glued_tokens": [369.1, 1101.73, 1835.29, 2210.55, 2575.43, 2942.33],
+        "glued_tokens_note": "e.g. 'importantIf', 'soThe' — a naive entity extractor promotes these to proper nouns."
+      }
     }
   },
+
   "existing_show_notes": [
     "https://en.wikipedia.org/wiki/Open-source_software",
     "https://www.wired.com/story/wired-guide-open-source-software/",

@@ -74,19 +74,51 @@ def load_scribe(path: str) -> tuple[list[dict], float]:
     return doc["words"], float(doc.get("audio_duration_secs") or 0.0)
 
 
-def turns_from_words(words: list[dict], speaker_map: dict[str, str]) -> list[dict]:
+def in_window(t: float, windows: list[dict]) -> bool:
+    return any(w["start"] <= t < w["end"] for w in windows)
+
+
+def turns_from_words(
+    words: list[dict],
+    speaker_map: dict[str, str],
+    music: list[dict] | None = None,
+    lexicon: list[dict] | None = None,
+) -> tuple[list[dict], int, int]:
     """Group the word stream into speaker turns.
 
     A turn ends when speaker_id changes. Spacing tokens carry no information
     and are dropped; the text is rebuilt from word and audio_event tokens.
+
+    `music` windows are regions where the session carries a music bed and no
+    voice clip. Diarization has no concept of "not a person", so it attributes
+    the vocal of the music to whichever speaker it resembles. Those words are
+    dropped: they are not speech by a participant, and leaving them in inflates
+    talk time and fuses song lyrics onto the front of a real turn.
+
+    `lexicon` entries repair known ASR errors at a specific timestamp. Kept in
+    data rather than applied by hand so the transcript stays reproducible.
     """
+    music = music or []
+    lex = {round(float(e["t"]), 2): e for e in (lexicon or [])}
+
     turns: list[dict] = []
     cur: dict | None = None
+    dropped = 0
+    repaired = 0
 
     for tok in words:
         kind = tok.get("type")
         if kind == "spacing":
             continue
+        mid = (float(tok["start"]) + float(tok["end"])) / 2
+        if in_window(mid, music):
+            if kind == "word":
+                dropped += 1
+            continue
+        entry = lex.get(round(float(tok["start"]), 2))
+        if entry and entry["from"] in tok["text"]:
+            tok = dict(tok, text=tok["text"].replace(entry["from"], entry["to"]))
+            repaired += 1
         sid = tok.get("speaker_id")
         if cur is None or cur["_sid"] != sid:
             cur = {
@@ -128,7 +160,26 @@ def turns_from_words(words: list[dict], speaker_map: dict[str, str]) -> list[dic
                 "_sid": t["_sid"],
             }
         )
-    return out
+    return out, dropped, repaired
+
+
+def attach_annotations(turns: list[dict], annotations: list[dict]) -> int:
+    """Hang known speaker slips and self-repairs on the turns they fall inside.
+
+    These never alter the text. A misspoken referent is a fact about the
+    conversation and stage 4 has to see it, or it researches the wrong subject.
+    """
+    n = 0
+    for t in turns:
+        hits = [
+            {k: a[k] for k in ("said", "means", "kind", "why") if k in a}
+            for a in annotations
+            if a["start"] < t["end"] and a["end"] >= t["start"]
+        ]
+        if hits:
+            t["annotations"] = hits
+            n += len(hits)
+    return n
 
 
 CHECK_TURN = re.compile(r"^\*\*(?P<who>[^*]+)\*\*\s+_\[(?P<ts>\d\d:\d\d:\d\d)\]_\s*$")
@@ -202,6 +253,15 @@ def write_transcript(
         f"> Machine transcript. {meta['transcriber']}",
         f"> Speaker attribution: `{confidence}`. {meta['attribution_note']}",
     ]
+    if meta.get("dropped"):
+        lines.append(
+            f"> {meta['dropped']} word(s) of music-bed vocal removed — the diarizer had "
+            f"attributed the song to a participant. See `corrections.json`."
+        )
+    if meta.get("repaired"):
+        lines.append(
+            f"> {meta['repaired']} ASR error(s) repaired from `corrections.json`."
+        )
     if disputes:
         lines.append(
             f"> {disputes} turn(s) disagree with the hand-labelled pass and are "
@@ -228,7 +288,9 @@ def main() -> int:
     p.add_argument("--names", default="adam=Adam Kerpelman,tbj=T. Brian Jones")
     p.add_argument("--check", default=None, help="hand-labelled transcript to cross-check against")
     p.add_argument("--check-alias", default="adam=adam,tbj=tbj,brian=tbj")
+    p.add_argument("--corrections", default=None, help="corrections.json: music windows, lexicon, annotations")
     p.add_argument("--confidence", default="inferred", choices=["confirmed", "inferred"])
+    p.add_argument("--confidence-method", default="", help="required when --confidence confirmed")
     p.add_argument("--title", default="")
     p.add_argument("--recorded", default="")
     p.add_argument("--published", default="")
@@ -242,8 +304,19 @@ def main() -> int:
     speaker_map = kv(args.map) if args.map else dict(DEFAULT_MAP)
     names = kv(args.names)
 
+    if args.confidence == "confirmed" and not args.confidence_method:
+        p.error("--confidence confirmed requires --confidence-method: how ownership was established")
+
+    corr = {}
+    if args.corrections:
+        with open(args.corrections, encoding="utf-8") as fh:
+            corr = json.load(fh)
+
     words, duration = load_scribe(args.input)
-    turns = turns_from_words(words, speaker_map)
+    turns, dropped, repaired = turns_from_words(
+        words, speaker_map, corr.get("music_windows"), corr.get("lexicon")
+    )
+    annotated = attach_annotations(turns, corr.get("annotations", []))
 
     disputes = 0
     if args.check:
@@ -268,7 +341,9 @@ def main() -> int:
             "duration": duration,
             "names": names,
             "transcriber": "ElevenLabs Scribe, word-level timings, diarization on.",
-            "attribution_note": PROVENANCE,
+            "attribution_note": args.confidence_method or PROVENANCE,
+            "dropped": dropped,
+            "repaired": repaired,
         },
         args.confidence,
         disputes,
@@ -286,6 +361,9 @@ def main() -> int:
                 "duration_s": round(duration, 2),
                 "talk_seconds": {k: round(v) for k, v in sorted(spoken.items())},
                 "speaker_confidence": args.confidence,
+                "music_words_dropped": dropped,
+                "asr_words_repaired": repaired,
+                "annotations_attached": annotated,
                 "disputed_turns": disputes,
                 "outputs": [seg_path, txt_path],
                 "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

@@ -5,7 +5,9 @@
 **Source:** https://media.transistor.fm/ac89d303/b3682229.mp3
 
 > Machine transcript. ElevenLabs Scribe, word-level timings, diarization on.
-> Speaker attribution: `inferred`. Diarized speaker ids were mapped to people by self-identification in the transcript: 'I'm Adam' (21.2s), 'I'm Brian' (22.3s), 'Juris is increasingly' (130.4s), 'I was a manufacturing engineer' (2892.3s), 'people with legal training like me' (3437.1s). Five anchors, no contradictions. The mapping is evidenced; the turn boundaries are still a model's, so confidence stays `inferred` until per-track audio is used.
+> Speaker attribution: `confirmed`. Per-track audio ownership. speaker_0 windows are hot on brian.mp3 and speaker_1 windows on thekerp.mp3 by 38.19 dB median across 170 turns / 2302 s, 169/170 consistent, with the silent track at its noise floor. Measured through the audio-verified master<->raw edit map; perturbing that map by +/-5 s collapses consistency to 73-79% and any single global offset to 46-62%, so the separation is not an artifact of scoring.
+> 28 word(s) of music-bed vocal removed — the diarizer had attributed the song to a participant. See `corrections.json`.
+> 1 ASR error(s) repaired from `corrections.json`.
 
 ---
 
@@ -21,9 +23,9 @@ What? Both tried to yield?
 
 Well, yeah.
 
-**Adam Kerpelman** _[00:00:14]_
+**Adam Kerpelman** _[00:00:19]_
 
-They don't know what I know. They don't know- Hey, it's Engineering Podcast. I'm Adam
+don't know- Hey, it's Zengineering Podcast. I'm Adam
 
 **T. Brian Jones** _[00:00:22]_
 
@@ -1812,7 +1814,3 @@ Anyway, I'm Adam.
 **T. Brian Jones** _[01:00:55]_
 
 I'm Brian. Keep an open mind, everybody, and share, and share stuff. Actually, let me rewind. Just share some things. Go share something with somebody.
-
-**Adam Kerpelman** _[01:01:02]_
-
-[upbeat music] They don't know what I know. They don't know like I know. All the time. They can't arrive. All the time

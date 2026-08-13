@@ -1,0 +1,60 @@
+{
+  "note": "Stage-2 corrections for zengineering-098. Read by skill/stages/stage2_transcript.py so that transcript.v1 stays reproducible — never hand-edit the transcript or the segments.",
+
+  "music_windows": [
+    {
+      "start": 12.084,
+      "end": 19.493,
+      "why": "Music bed only. Track 2 of the Audition session carries no voice clip here. Scribe transcribed 7 words of the music vocal as speaker_1."
+    },
+    {
+      "start": 3663.32,
+      "end": 3683.24,
+      "why": "Outro music. Voice ends at 3663.320. Scribe transcribed 21 words of the vocal as speaker_1."
+    }
+  ],
+
+  "lexicon": [
+    {
+      "t": 20.28,
+      "from": "Engineering",
+      "to": "Zengineering",
+      "why": "The show is Zengineering. Scribe dropped the leading /z/ (logprob -0.0223, so confidence does not catch it). The faster-whisper v0 pass got it right."
+    }
+  ],
+
+  "annotations": [
+    {
+      "start": 1414.62,
+      "end": 1506.0,
+      "said": "Riot",
+      "means": "Epic Games",
+      "kind": "speaker_error",
+      "why": "Both ASRs hear 'Riot' clearly, so this is Adam misspeaking, not a transcription error. The dialogue disambiguates it: Brian asks what Riot is, Adam answers 'I think it's Epic' (1431.1) and 'the company that makes Fortnite' (1438.1), then relapses. The real event is Epic Games v. Apple — Fortnite was pulled from the App Store on 2020-08-13, nine days before this recording.",
+      "for_stage_4": "Do not rewrite the transcript. Research Epic, not Riot. This slip is worth publishing as a check with verdict `wrong` and a host_note."
+    },
+    {
+      "start": 1637.51,
+      "end": 1637.51,
+      "said": "heartbeat, Heartbleed",
+      "means": "Heartbleed",
+      "kind": "self_repair",
+      "why": "Adam says 'heartbeat' at 1636.89 and corrects to 'Heartbleed' at 1637.51. A naive entity extractor emits two entities. Also missing entirely from transcript.v0.md, so the cross-ASR diff will not catch it."
+    },
+    {
+      "start": 3696.0,
+      "end": 3696.0,
+      "said": "Pavre",
+      "means": "povray",
+      "kind": "asr_error",
+      "why": "Star Trek TNG reference. Lowest-logprob content word in the transcript at -0.712, and the audit judged the Scribe reading correct over v0's 'Pavre'. The episode being described is TNG 'The Game'."
+    }
+  ],
+
+  "known_bad_referents": [
+    { "t": 1280.06, "said": "Apple Store", "means": "App Store" },
+    { "t": 1283.16, "said": "Google Store", "means": "Google Play Store" },
+    { "t": 1286.16, "said": "Android Store", "means": "Google Play Store" },
+    { "t": 2043.53, "said": "Google Spreadsheets", "means": "Google Sheets" }
+  ]
+}
