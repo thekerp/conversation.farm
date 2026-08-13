@@ -1,0 +1,126 @@
+{
+  "convo": "zengineering-098",
+  "timeline": "final-mix / raw-track seconds. NOT master seconds — the master does not address this material.",
+  "asr": "whisper.cpp small.en, one pass per isolated track",
+  "speaker_confidence": "confirmed",
+  "speaker_confidence_method": "Track ownership. Each window is transcribed from one speaker's isolated track; no diarization is involved.",
+  "total_seconds": 99.211,
+  "cuts": [
+    {
+      "cut": 1,
+      "mix": [
+        247.533,
+        250.575
+      ],
+      "seconds": 3.042,
+      "at": "04:07",
+      "kind": "internal",
+      "note": null,
+      "lines": [
+        {
+          "t": 247.53,
+          "speaker": "adam",
+          "text": "You know."
+        }
+      ]
+    },
+    {
+      "cut": 2,
+      "mix": [
+        1240.645,
+        1297.5
+      ],
+      "seconds": 56.855,
+      "at": "20:40",
+      "kind": "internal",
+      "note": "the cold open was lifted from inside this window",
+      "lines": [
+        {
+          "t": 1240.64,
+          "speaker": "adam",
+          "text": "Um, the, go ahead. What both tried to yield. I spend all day on calls and now I'm getting better at it. Uh, anyway, so I don't know. It just happens to me all day now. Cause I'm constantly like, I have a thing to say, but it's not helpful for the conversation. So I'll let someone else speak."
+        },
+        {
+          "t": 1240.64,
+          "speaker": "tbj",
+          "text": "Well, you-- sorry, go ahead. That's never happened before in 100 episodes. I don't think we've ever done what we just did. But yeah, seriously, I don't think that's ever happened before. Weird. Did that not strike you as weird? [LAUGHTER]"
+        },
+        {
+          "t": 1270.64,
+          "speaker": "adam",
+          "text": "Uh, I was going to say, so, you know, so that, that should exist at the same time. Um, no, I lost it. What were you going to say? Do you remember? It's okay."
+        },
+        {
+          "t": 1270.64,
+          "speaker": "tbj",
+          "text": "I never have that thought either. [LAUGHTER] We might have killed both of them. Oh, I was going to say, oh, you're touching on another-- let me start that over."
+        }
+      ]
+    },
+    {
+      "cut": 3,
+      "mix": [
+        1533.516,
+        1536.647
+      ],
+      "seconds": 3.131,
+      "at": "25:33",
+      "kind": "internal",
+      "note": null,
+      "lines": []
+    },
+    {
+      "cut": 4,
+      "mix": [
+        1537.095,
+        1538.091
+      ],
+      "seconds": 0.996,
+      "at": "25:37",
+      "kind": "internal",
+      "note": null,
+      "lines": []
+    },
+    {
+      "cut": 5,
+      "mix": [
+        2628.513,
+        2659.027
+      ],
+      "seconds": 30.514,
+      "at": "43:48",
+      "kind": "internal",
+      "note": null,
+      "lines": [
+        {
+          "t": 2628.51,
+          "speaker": "adam",
+          "text": "Ultimately-- oh, I think my audio just dropped. Let me double check that I'm still-- check, check. Yeah, let me double check that I'm on the right input. I can't do that without-- check, check. Is that thumpy for you? OK, I think we're good."
+        },
+        {
+          "t": 2628.51,
+          "speaker": "tbj",
+          "text": "Your video dropped. Your audio looks like it's still there. Check, check, check, check. Yeah."
+        }
+      ]
+    },
+    {
+      "cut": 6,
+      "mix": [
+        2684.739,
+        2689.412
+      ],
+      "seconds": 4.673,
+      "at": "44:44",
+      "kind": "internal",
+      "note": null,
+      "lines": [
+        {
+          "t": 2684.74,
+          "speaker": "adam",
+          "text": "Uh, yeah."
+        }
+      ]
+    }
+  ]
+}
