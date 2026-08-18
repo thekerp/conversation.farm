@@ -9,3 +9,5 @@ __pycache__/
 # proved the published master is the render of the archived .sesx. The real §6.4 risk
 # here is the opposite of bloat: 260 of 265 MB of production archive is gitignored
 # audio that exists in exactly one place.
+.vercel
+.env*
