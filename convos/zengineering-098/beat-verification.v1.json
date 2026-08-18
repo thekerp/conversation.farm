@@ -1,0 +1,161 @@
+{
+  "convo": "zengineering-098",
+  "stage": "3b",
+  "checks": "structural only — says nothing about whether a claim is fair to the conversation, which needs the adversarial semantic walk",
+  "sources": [
+    "beats.v1.json",
+    "segments.v1.jsonl",
+    "cut-material.v1.md"
+  ],
+  "beats_checked": 9,
+  "counts": {
+    "HIGH": 14,
+    "MED": 10
+  },
+  "findings": [
+    {
+      "beat": "b2",
+      "severity": "HIGH",
+      "category": "quote-uncited-segment",
+      "detail": "context: lives in ['s0071'], not in segment_ids: \"the value of buying software is like entirely artificial.\""
+    },
+    {
+      "beat": "b3",
+      "severity": "HIGH",
+      "category": "quote-uncited-segment",
+      "detail": "context: lives in ['s0115'], not in segment_ids: \"actually are really bad. They hold back innovation\""
+    },
+    {
+      "beat": "b3",
+      "severity": "HIGH",
+      "category": "quote-uncited-segment",
+      "detail": "context: lives in ['s0150'], not in segment_ids: \"I think it's time for Apple to probably rethink its App Store dy\""
+    },
+    {
+      "beat": "b4",
+      "severity": "HIGH",
+      "category": "window-uncited",
+      "detail": "t_end=1647.79 runs 2.77s past last cited segment (s0172 ends 1645.02)"
+    },
+    {
+      "beat": "b4",
+      "severity": "HIGH",
+      "category": "mid-segment-cut",
+      "detail": "t_end=1647.79 falls inside s0173 (tbj, 1645.08-1648.29), not in segment_ids"
+    },
+    {
+      "beat": "b4",
+      "severity": "HIGH",
+      "category": "quote-not-found",
+      "detail": "claim: \"The encryption protocols that run the internet work because they\""
+    },
+    {
+      "beat": "b4",
+      "severity": "HIGH",
+      "category": "quote-not-found",
+      "detail": "claim: \"the 36 hours banks spent thinking they were just completely fuck\""
+    },
+    {
+      "beat": "b4",
+      "severity": "HIGH",
+      "category": "quote-uncited-segment",
+      "detail": "context: lives in ['s0173'], not in segment_ids: \"There's no hyperbole in those comments.\""
+    },
+    {
+      "beat": "b5",
+      "severity": "HIGH",
+      "category": "window-uncited",
+      "detail": "t_end=1796.3 runs 0.07s past last cited segment (s0189 ends 1796.23)"
+    },
+    {
+      "beat": "b6",
+      "severity": "HIGH",
+      "category": "quote-uncited-segment",
+      "detail": "claim: lives in ['s0203'], not in segment_ids: \"if you look at numbers, it kind of scales similarly.\""
+    },
+    {
+      "beat": "b8",
+      "severity": "HIGH",
+      "category": "quote-not-found",
+      "detail": "claim: \"and there's an open source version. Like Photoshop, yep, open so\""
+    },
+    {
+      "beat": "b9",
+      "severity": "HIGH",
+      "category": "mid-segment-cut",
+      "detail": "t_end=3453.54 falls inside s0377 (tbj, 3451.45-3454.21), not in segment_ids"
+    },
+    {
+      "beat": "b9",
+      "severity": "HIGH",
+      "category": "quote-uncited-segment",
+      "detail": "context: lives in ['s0381', 's0383'], not in segment_ids: \"it's easy to be excited about this stuff when you're involved in\""
+    },
+    {
+      "beat": "b9",
+      "severity": "HIGH",
+      "category": "quote-uncited-segment",
+      "detail": "context: lives in ['s0380'], not in segment_ids: \"It's still gonna take people to tend it.\""
+    },
+    {
+      "beat": "b2",
+      "severity": "MED",
+      "category": "quote-truncated",
+      "detail": "claim: closed with a full stop but the source sentence continues: \"giving away software is to give away the entire value.\""
+    },
+    {
+      "beat": "b2",
+      "severity": "MED",
+      "category": "quote-truncated",
+      "detail": "context: closed with a full stop but the source sentence continues: \"the value of buying software is like entirely artificial.\""
+    },
+    {
+      "beat": "b3",
+      "severity": "MED",
+      "category": "quote-truncated",
+      "detail": "context: closed with a full stop but the source sentence continues: \"I think it's time for Apple to probably rethink its App Store dy\""
+    },
+    {
+      "beat": "b5",
+      "severity": "MED",
+      "category": "intended-bound",
+      "detail": "t_end_intended 1796.23 is BEFORE snapped t_end 1796.3; the snap ran forward, but snapping is documented as trimming back to a word end"
+    },
+    {
+      "beat": "b5",
+      "severity": "MED",
+      "category": "quote-truncated",
+      "detail": "claim: closed with a full stop but the source sentence continues: \"what really ends up winning is popularity again, even in softwar\""
+    },
+    {
+      "beat": "b6",
+      "severity": "MED",
+      "category": "intended-bound",
+      "detail": "t_end_intended 1905.5 is BEFORE snapped t_end 1907.37; the snap ran forward, but snapping is documented as trimming back to a word end"
+    },
+    {
+      "beat": "b7",
+      "severity": "MED",
+      "category": "quote-truncated",
+      "detail": "claim: closed with a full stop but the source sentence continues: \"we need to roll out in some capacity to every other version of l\""
+    },
+    {
+      "beat": "b8",
+      "severity": "MED",
+      "category": "quote-truncated",
+      "detail": "context: closed with a full stop but the source sentence continues: \"that have large communities.\""
+    },
+    {
+      "beat": "b9",
+      "severity": "MED",
+      "category": "window",
+      "detail": "t=3428.52 precedes first cited segment start 3428.57"
+    },
+    {
+      "beat": "b9",
+      "severity": "MED",
+      "category": "quote-truncated",
+      "detail": "context: closed with a full stop but the source sentence continues: \"It's still gonna take people to tend it.\""
+    }
+  ]
+}

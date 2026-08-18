@@ -16,7 +16,7 @@ stands.
 | 2 Transcribe | done | `transcript.v1.md`, `segments.v1.jsonl` — 451 turns, `confirmed` attribution |
 | 2b Cut material | done | `cut-material.v1.md` — 99 s the edit removed, off the isolated tracks |
 | 2c Speaker arbitration | done | `speaker-arbitration.v1.json` — 5 turns corrected against the audio |
-| 3 Segment into beats | **done, unverified** | `beats.v1.json` — 9 beats, repaired after all three passes failed |
+| 3 Segment into beats | **done, structurally FAILED** | `beats.v1.json` — 9 beats; `beat-verification.v1.json` has 14 HIGH, 1 blocking |
 | 4 Research pass | not started | needs the beat re-verification first |
 | 5 Assemble `convo.json` | not started | |
 | 6 Review gate | not started | needs `docs/slack-protocol.md` out of draft |
@@ -29,8 +29,22 @@ stands.
 
 ## Next three things, in order
 
-**1. Re-verify `beats.v1.json`.** It was repaired after 39 findings and has not been walked again.
-Nothing downstream should start until it has. This is the cheapest high-value step left.
+**1. Repair `beats.v1.json` against `beat-verification.v1.json`, then walk it semantically.**
+The structural half of re-verification now runs as a stage — `skill/stages/stage3b_verify_beats.py`,
+deterministic, no model calls, exits non-zero on HIGH. It returns 14 HIGH and 10 MED. One is
+blocking:
+
+- **b9's window ends at 3453.54, but its context quotes material from 3458.52 to 3479.82** — every
+  quote in it, including the "That's true" the last repair round was built around. The repair note
+  claims that line is "inside the beat window"; it is 23.6 s outside. `t_end_intended` (3480.0)
+  would have covered it, so the prose was rewritten and the window never moved.
+- **b4** ends 2.77 s past its last cited segment, inside `s0173`, cutting Brian mid-sentence — and
+  quotes `s0173` without citing it.
+- **b6** quotes `s0203` from inside its window without citing it, while citing `s0206` from outside.
+
+b4 and b6 are the same defect the last structural pass claims to have cleared for b5 and b7, so
+that pass was incomplete. The semantic walk still has not happened and is still required after the
+repair — the stage checks structure, never whether a claim is fair to the conversation.
 
 **2. Decide the source-timeline question.** Beats carry master-timeline `t`/`t_end` only. E098's b1
 is the strongest beat in the episode and its claim lives in cut material that the master timeline
@@ -61,7 +75,10 @@ Each of these is waiting on a human, not on work.
 - **`docs/slack-protocol.md` is a draft with 22 blocking holes.** Full list in
   `docs/slack-protocol-audit.json`, summary in its §12. The heaviest cluster is the stitcher
   hand-off. Do not build against it as written.
-- **`beats.v1.json` is unverified after repair.** See above.
+- **`beats.v1.json` fails structural verification.** 14 HIGH, 1 blocking. See above.
+- **Three segments in `segments.v1.jsonl` have degenerate durations** — `s0061` is 0.00 s
+  (`start == end == 555.34`), `s0202` is 0.01 s, `s0376` is 0.03 s. A stage 2 artifact, harmless to
+  read but it will divide by zero in anything that computes a rate per segment.
 - **`segments.v0.jsonl` has a 600-second duplicated block**, indices 850–1035. It is retained
   deliberately as the cross-ASR diff reference — Scribe's `logprob` finds none of the entity errors
   and diffing against v0 finds all of them — but any reader must drop that range.
