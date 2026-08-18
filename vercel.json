@@ -3,6 +3,14 @@
   "outputDirectory": "site",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.conversation.farm" }],
+      "destination": "https://conversation.farm/$1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
