@@ -1,0 +1,9 @@
+# Only site/ is served. Everything else is source material the deploy never needs.
+convos/
+docs/
+people/
+renderers/
+schemas/
+skill/
+*.md
+.DS_Store
