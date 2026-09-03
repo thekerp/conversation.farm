@@ -17,12 +17,9 @@
       ],
       "claim": "Two hosts who had recorded 97 episodes together both started a sentence at once, both yielded, and both lost the thought — and Adam's cause is that a year of video calls trained him to defer: \"I have a thing to say, but it's not helpful for the conversation.\"",
       "context": "Brian: \"That's never happened before. In 100 episodes, I don't think we've ever done what we just did.\" Only 12.1 s shipped. The remaining 44.8 s was cut and survives only on the isolated tracks, where Adam gives the cause and Brian answers \"I never have that thought either\" — said into a laugh, so read it as a joke at his own expense, not a rebuttal. Brian's \"let me start that over\" in that cut material is exactly where the master resumes at 20:53, so the seam is invisible only because he narrated the restart out loud in the part that was then deleted.",
-      "source_timeline_note": "Master 0.000–12.084 is the shipped fragment. The moment continues in cut-material.v1.md, Cut 2, at SESSION time 1253.765–1297.5 — not addressable on the master timeline, so print no master timestamp for those quotes. The cold open itself is session 1241.681–1253.765.",
+      "source_t": 1241.681,
+      "source_t_end": 1297.5,
       "research_potential": "`verify`: \"in 100 episodes\" is a claim of fact about the show's own history, made in an episode Adam numbers on tape as 98 (s0008). Check against the published feed; expect `off` if numbering diverges from count. `since`: the deference Adam describes became a measured phenomenon after 2020 — chase post-recording work on videoconference latency and turn-taking collapse. A `since` must cite something published after 2020-08-22.",
-      "clip_window": [
-        0.0,
-        12.084
-      ],
       "t_end_intended": 12.084
     },
     {
@@ -177,7 +174,7 @@
       "All t_end values snapped to real word ends from the word-level ASR, keeping 0.25 s clear of the next word start so stage 7's mandated pad cannot pull the next voice into the clip. Beats whose window is a sub-range of one long turn (b2, b8) end mid-turn by design. Original intended bounds kept as t_end_intended."
     ],
     "known_remaining": [
-      "b1 is the only beat whose material is not fully addressable on the master timeline. Until beats carry a source-timeline field, its cut-material quotes cannot be linked to audio on the page."
+      "b1 is the only beat whose material is not fully addressable on the master timeline. Its window on the mix/raw-track timeline is carried in source_t/source_t_end (decision of 2026-09-02); the master↔mix relation is source.json → edit_map."
     ]
   }
 }

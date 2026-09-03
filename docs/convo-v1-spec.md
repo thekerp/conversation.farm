@@ -141,6 +141,15 @@ one of us happens to remember at the right moment.
 anchors in the transcript, however unanimous, are `inferred` — they establish which id is which
 person, not that the model drew the turn boundaries correctly.
 
+**Source-timeline windows.** `t`/`t_end` are always on the master (published) timeline. A beat may
+also carry `source_t`/`source_t_end`: the same moment's window on the mix/raw-track timeline, in
+seconds, both fields or neither. They are **required** whenever the beat quotes material that exists
+only in cut material — the published master cannot address it, and a quote with no addressable audio
+is a fabrication risk. The master↔mix relation is `source.json → edit_map`; no single constant
+offset relates the two timelines, so never derive one field from the other by arithmetic outside
+that map. (Decided 2026-09-02: without this, 87.1 s of real conversation was permanently
+unquotable.)
+
 **Why `provenance` is not optional.** We're publishing a block that says where we were wrong. That
 only works if the reader can see how the machine reached that conclusion, and where it's shaky.
 Publish the confidence, publish the method, publish the fact that speaker labels are guesses.

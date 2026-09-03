@@ -189,6 +189,12 @@ for b in beats:
         add(bid, "HIGH", "pad-collision",
             f"{nxt['id']} starts {nxt['start']-b['t_end']:.3f}s after t_end; {PAD}s pad pulls in "
             f"'{nxt['speaker']}'")
+    st, ste = b.get("source_t"), b.get("source_t_end")
+    if (st is None) != (ste is None):
+        add(bid, "HIGH", "source-window", "source_t and source_t_end must both be present or both absent")
+    elif st is not None and ste <= st:
+        add(bid, "HIGH", "source-window", f"source_t_end {ste} <= source_t {st}")
+
     tei = b.get("t_end_intended")
     if tei is not None and tei < b["t_end"] - 0.001:
         add(bid, "MED", "intended-bound",
@@ -207,8 +213,9 @@ for b in beats:
             if mid:
                 add(bid, "MED", "quote-truncated",
                     f'{field}: closed with a full stop but the source sentence continues: "{short}"')
-            if where == "cut" and "source_timeline_note" not in b:
-                add(bid, "HIGH", "quote-from-cut", f'{field}: from cut material, no note: "{short}"')
+            if where == "cut" and not ("source_t" in b and "source_t_end" in b):
+                add(bid, "HIGH", "quote-from-cut",
+                    f'{field}: from cut material, beat has no source_t/source_t_end: "{short}"')
             if where == "master":
                 own = owning_segments(q)
                 if own and not (own & set(sids)):
