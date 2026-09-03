@@ -17,7 +17,8 @@ stands.
 | 2b Cut material | done | `cut-material.v1.md` — 99 s the edit removed, off the isolated tracks |
 | 2c Speaker arbitration | done | `speaker-arbitration.v1.json` — 5 turns corrected against the audio |
 | 3 Segment into beats | done, verified | `beats.v1.json` — 9 beats; stage 3b green (0 HIGH, 0 MED); semantic walk in `beat-semantic-walk.v1.json`, 19 findings, all applied |
-| 4 Research pass | not started | unblocked |
+| 4a Extract queue | done, awaiting Gate 1 | `research-queue.v1.json` — 12 questions, verifier green; **not approved, 4b must not run** |
+| 4b Research | blocked on Gate 1 | one deep-research job per approved question |
 | 5 Assemble `convo.json` | not started | |
 | 6 Review gate | not started | needs `docs/slack-protocol.md` out of draft |
 | 7 Cut clips | not started | 369 s across 9 beats, bounds already snapped to word boundaries |
@@ -29,12 +30,17 @@ stands.
 
 ## Next three things, in order
 
-**1. Run stage 4 on the nine beats.** `docs/research-pass.md` is the most complete doc in the repo
-and has never been executed. Until it runs, there is no evidence the product is a product. One
-standing instruction from the walk: five of its 19 findings were hedge erasure — a quote or
-paraphrase rendered stronger than the speaker's hedged version. Stage 4 must treat an unhedged
-rendering of a hedged statement as a defect, not a style choice, and never queue a check against a
-stronger claim than the one made (`beat-semantic-walk.v1.json → outcome`).
+**1. Approve the research queue, then run 4b.** 4a is done: `research-queue.v1.json` holds 12
+questions (6 `since`, 4 `verify`, 2 `contradict`) covering 8 of 9 beats, and
+`skill/stages/stage4a_verify_queue.py` passes it clean. **Gate 1 is open and 4b costs real money,
+so nothing runs until a human approves.** Reviewing it is the highest-leverage sixty seconds in the
+pipeline (`research-pass.md` §2); the target is under ten minutes.
+
+One standing instruction from the semantic walk: five of its 19 findings were hedge erasure — a
+quote or paraphrase rendered stronger than the speaker's hedged version. 4b must treat an unhedged
+rendering of a hedged statement as a defect, not a style choice, and never check a stronger claim
+than the one made (`beat-semantic-walk.v1.json → outcome`). The queue's `guards` fields carry that
+forward per item; the verifier fails the build if a rule-7 guard is dropped.
 
 **2. Assemble `convo.json` (stage 5).** The schema is unblocked — beats carry
 `source_t`/`source_t_end` now — but stage 5 has no code. It also needs the research pass's output,
