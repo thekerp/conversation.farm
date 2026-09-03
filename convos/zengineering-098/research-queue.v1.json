@@ -1,0 +1,196 @@
+{
+  "convo": "zengineering-098",
+  "stage": "4a",
+  "generated": "2026-09-03",
+  "recorded": "2020-08-22",
+  "timeline": "master seconds, from segments.v1.jsonl; anchors on the source timeline are marked",
+  "gate": "Gate 1 — this queue is unapproved. 4b must not run until a human approves it. See docs/research-pass.md §2.",
+  "note": "Drafted from the nine beats' research_potential fields plus the transcript. 22 candidates reduced to 12 against the §6 budget. Every beat is covered; the four richest carry two items. Expectations are recorded before the research runs so the queue cannot be retro-fitted to whatever comes back.",
+  "budget": {
+    "queue_size": 12,
+    "target": "6-12 per docs/research-pass.md §6",
+    "human_gate_target_minutes": 10
+  },
+  "rule7_forbidden": [
+    "1,000 people in Cupertino",
+    "500,000 contributors",
+    "two for every lawyer",
+    "in 100 episodes",
+    "eight hours"
+  ],
+  "rule7_note": "Speaker-flagged inventions, conversational rounding, and predictions. research-pass.md §3 rule 7 forbids a check on any of these. No verify question may target them; they may become seeds.",
+  "queue": [
+    {
+      "id": "r01",
+      "beat": "b2",
+      "type": "verify",
+      "anchor_t": 555.37,
+      "anchor_label": "09:15",
+      "question": "Tesla \"has open sourced all of their patents\" — true as stated? What did the 2014 action legally do, does it cover all patents, and what conditions attach?",
+      "why": "The episode's cleanest checkable factual claim, and the point Adam builds on it survives even if the fact does not. docs/research-pass.md §5 names this as the model check.",
+      "expected": "off — a unilateral patent pledge is a conditional non-assertion covenant, not a licence grant, and not 'all'.",
+      "guards": "Source the pledge text itself and a patent-law reading of what a non-assertion covenant binds a successor to. A news recap is not a source for the legal question.",
+      "feeds": "check"
+    },
+    {
+      "id": "r02",
+      "beat": "b2",
+      "type": "since",
+      "anchor_t": 555.37,
+      "anchor_label": "09:15",
+      "question": "What has happened to Tesla's patent position since 2020-08-22 — specifically the NACS connector spec and its standardisation?",
+      "why": "The pledge finally mattered, and it mattered only to competing car companies, which is exactly the frame Adam used to dismiss it. The convo's own logic gets tested by events.",
+      "expected": "Substantial. Adam's dismissal is half-vindicated: it did stay useless to an individual and became decisive between manufacturers.",
+      "guards": "At least one source published after 2020-08-22, per §1's since rule.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r03",
+      "beat": "b3",
+      "type": "verify",
+      "anchor_t": 1408.92,
+      "anchor_label": "23:28",
+      "question": "Reconstruct the App Store removal of 2020-08-13: which company was it, and was the removal automatic — 'the thing that the store does when you break that rule'?",
+      "why": "Two defects in one sequence. Adam names the wrong company throughout (Riot; it was Epic), and characterises as automatic a sequence that was staged on both sides.",
+      "expected": "wrong on the named party, with a host_note. off or wrong on 'automatically' — the direct-payment hotfix, the same-day manual removal, and Epic's pre-filed complaint and pre-produced ad were all deliberate.",
+      "guards": "corrections.json flags Riot as a speaker error, not an ASR error — both ASRs hear it clearly, so the slip ships and the check carries it. Research Epic, never Riot.",
+      "feeds": "check"
+    },
+    {
+      "id": "r04",
+      "beat": "b3",
+      "type": "since",
+      "anchor_t": 1408.92,
+      "anchor_label": "23:28",
+      "question": "What has the litigation since 2020 established about whether the App Store 'just does what the store does'? Track the 2021 ruling, the anti-steering injunction, and the later contempt findings.",
+      "why": "The beat's own research_potential calls this the deepest well in the episode: the rulings vindicate 'they broke a rule' while inverting the mechanism claim Adam rests on.",
+      "expected": "Split. His narrow point survives; his general one about the store's neutrality does not.",
+      "guards": "At least one source published after 2020-08-22. Do not collapse the two findings into one verdict — they point opposite ways, which is the interesting part.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r05",
+      "beat": "b4",
+      "type": "verify",
+      "anchor_t": 1626.07,
+      "anchor_label": "27:06",
+      "question": "Which organisation actually maintained the encryption library behind the 2014 Heartbleed disclosure, and what was its funding structure at the time? Is 'a nonprofit who's not allowed to make money off of that thing' accurate?",
+      "why": "The headline claim of the beat, and 'not allowed to make money' is a strong legal characterisation of what is usually a mundane structure.",
+      "expected": "off. Name the actual maintainer and its actual funding model rather than 'a nonprofit'.",
+      "guards": "Do not extract 'heartbeat' as an entity — corrections.json marks it as a self-repair inside the same breath as 'Heartbleed'.",
+      "feeds": "check"
+    },
+    {
+      "id": "r06",
+      "beat": "b4",
+      "type": "since",
+      "anchor_t": 1626.07,
+      "anchor_label": "27:06",
+      "question": "What funding-the-commons apparatus stood up after Heartbleed, and did it work? Test it against the 2024 xz-utils backdoor — a maintainer nobody was paying.",
+      "why": "The same argument with the opposite ending. Adam's example is the failure that created the funding response; xz-utils is the failure that happened anyway.",
+      "expected": "The strongest since in the first half of the episode. Expect a partial, uncomfortable answer.",
+      "guards": "At least one source published after 2020-08-22. xz-utils belongs to this item only — b6 was scoped away from it deliberately, do not fetch it twice.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r07",
+      "beat": "b5",
+      "type": "contradict",
+      "anchor_t": 1746.77,
+      "anchor_label": "29:06",
+      "question": "What is the strongest existing account of why widely-adopted software wins — lock-in, increasing returns, path dependence? Does that literature sharpen Brian's 'it just is the one that got used the most, incidentally' or embarrass it?",
+      "why": "Brian reinvents a named economic result in conversation. The literature either gives him a vocabulary or shows the mechanism is better understood than he assumes.",
+      "expected": "Sharpens. He has described path dependence accurately without the term.",
+      "guards": "Do not research 'popularity' as a term — that returns marketing material. Go to the economics.",
+      "feeds": "tendril"
+    },
+    {
+      "id": "r08",
+      "beat": "b6",
+      "type": "verify",
+      "anchor_t": 1861.91,
+      "anchor_label": "31:01",
+      "question": "Is Linus's Law — 'given enough eyeballs, all bugs are shallow' — supported by empirical evidence?",
+      "why": "The principle underneath the beat. The headcounts Adam gives are self-flagged as invented and are not checkable; the principle is.",
+      "expected": "contested at best. Heartbleed, Shellshock and Log4Shell all sat in widely-read code for years.",
+      "guards": "RULE 7: do not check the headcounts. Adam announces them as made up ('I don't know, 1,000 people'), and the eight-hour bug-squash is illustration, not assertion. Check the principle only.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r09",
+      "beat": "b7",
+      "type": "contradict",
+      "anchor_t": 2292.31,
+      "anchor_label": "38:12",
+      "question": "What is the best good-faith argument against rolling append-only, canonical records out to 'every other version of life' — the domains where forgetting is a right rather than a bug?",
+      "why": "The beat's research_potential calls this the strongest queue item in the episode, and it is the claim that connects the convo to Adam's day job, so it should meet its best opposition.",
+      "expected": "Strong and specific. This should be the tendril that most changes a reader's mind.",
+      "guards": "Good-faith opposition only. Not a listicle of blockchain criticism.",
+      "feeds": "tendril"
+    },
+    {
+      "id": "r10",
+      "beat": "b7",
+      "type": "since",
+      "anchor_t": 2292.31,
+      "anchor_label": "38:12",
+      "question": "How have erasure rights, retention law, and the collision between immutable records and data-protection regimes moved since 2020-08-22?",
+      "why": "Adam proposes the append-only model as a general good the same year the law started pulling hard the other way. Pairs with r09 but produces a different artifact: a dated finding rather than an argument.",
+      "expected": "Substantial movement, and squarely against the general form of his proposal.",
+      "guards": "At least one source published after 2020-08-22. Keep this distinct from r09 — r09 is the argument, r10 is what happened.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r11",
+      "beat": "b8",
+      "type": "since",
+      "anchor_t": 2738.51,
+      "anchor_label": "45:38",
+      "question": "Does 'almost everything has an open source counterpart' still hold in 2026? Track both the run of major projects that moved to source-available licences and the arrival of open-weight AI models.",
+      "why": "docs/research-pass.md §5 names this the money result. In 2020 the trend pointed one way; since then it has been half-inverted and half-vindicated at once, which no show notes page anywhere has.",
+      "expected": "The best single artifact on the page. Half-vindicated, half-inverted.",
+      "guards": "At least one source published after 2020-08-22. Keep Brian's own free-versus-open-source distinction intact — collapsing it destroys the check. Check the specific pairs he names (Photoshop, Microsoft Office); they have aged unevenly.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r12",
+      "beat": "b9",
+      "type": "since",
+      "anchor_t": 3428.57,
+      "anchor_label": "57:08",
+      "question": "Against six years of legal-AI deployment, did the value arrive the way Adam predicted — insiders enumerating drudgery — or from the general-capability models he explicitly said it would not come from?",
+      "why": "The episode's most falsifiable forward claim, made in August 2020, and it is a claim about mechanism rather than capability, which makes it genuinely checkable rather than merely prescient-or-not.",
+      "expected": "Mostly inverted on mechanism. The interesting finding is whether the drudgery-enumeration path also happened, quietly, underneath.",
+      "guards": "At least one source published after 2020-08-22 — the whole item is about what happened afterwards. RULE 7: do not check 'there'll probably be two for every lawyer that used to exist' — that is a prediction and belongs in seeds. Judge the mechanism claim, not the timeline.",
+      "feeds": "check+tendril"
+    }
+  ],
+  "source_timeline_items": {
+    "note": "b1 is the cold open. Its master anchor (0.36) addresses audio from 20:41 that was lifted and MOVED, so any question anchored there would be asked about the wrong moment — docs/research-pass.md §5, and source.json → structure. b1's material is therefore addressed on the source timeline via source_t. No b1 item survived the cut to 12; the candidate below is held for a future pass rather than dropped silently.",
+    "held": [
+      {
+        "beat": "b1",
+        "type": "since",
+        "source_anchor_t": 1240.645,
+        "anchor_label": "source 20:40",
+        "question": "What has been measured since 2020 about videoconference latency and turn-taking collapse — the deference Adam describes?",
+        "held_because": "Real, but the weakest link to the episode's subject, and b1 is the meta-beat. Cut to keep the queue at 12 and the human gate under ten minutes."
+      }
+    ]
+  },
+  "coverage": {
+    "beats_total": 9,
+    "beats_with_items": 8,
+    "beats_without_items": ["b1"],
+    "by_type": {"verify": 4, "since": 6, "contradict": 2, "identify": 0, "enrich": 0},
+    "type_note": "Six of twelve are `since`. docs/research-pass.md §1 calls that the right shape for an old convo and this one is six years old. No `identify` or `enrich` items survived: every candidate for them failed §3 rule 2 — their only justification was that the episode mentioned the thing."
+  },
+  "provenance": {
+    "stage": "4a extract",
+    "model": "claude-fable-5, interactive session",
+    "inputs": ["beats.v1.json", "transcript.v1.md", "source.json", "corrections.json"],
+    "cost_usd": null,
+    "cost_note": "Not separately metered — 4a ran inside an interactive session rather than on the runner. The first runner execution of 4a must record real cost here.",
+    "human_gate": {"decision": null, "by": null, "note": null}
+  }
+}

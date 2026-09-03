@@ -1,0 +1,30 @@
+{
+  "convo": "zengineering-098",
+  "stage": "4a-verify",
+  "checks": "structural only — cannot judge whether a question is a good question, which is what the Gate 1 human review is for",
+  "sources": [
+    "research-queue.v1.json",
+    "beats.v1.json",
+    "source.json",
+    "segments.v1.jsonl"
+  ],
+  "questions_checked": 12,
+  "by_type": {
+    "contradict": 2,
+    "since": 6,
+    "verify": 4
+  },
+  "gate_1": "open",
+  "counts": {
+    "HIGH": 0,
+    "MED": 0
+  },
+  "findings": [
+    {
+      "item": "-",
+      "severity": "LOW",
+      "category": "beat-held",
+      "detail": "b1 has no queue item, held deliberately with a reason recorded"
+    }
+  ]
+}
