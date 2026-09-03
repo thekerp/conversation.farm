@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** 2026-08-13. One convo in flight, stages 1–3 done.
+**Status:** 2026-09-02. One convo in flight, stages 1–3 done and verified — structural pass green, semantic walk run and applied.
 
 v1 is one back-catalogue convo processed end to end and live at a real URL. Everything here is
 ordered against that. `docs/convo-v1-spec.md` §6 is the definition of done; this file is where it
@@ -16,8 +16,8 @@ stands.
 | 2 Transcribe | done | `transcript.v1.md`, `segments.v1.jsonl` — 451 turns, `confirmed` attribution |
 | 2b Cut material | done | `cut-material.v1.md` — 99 s the edit removed, off the isolated tracks |
 | 2c Speaker arbitration | done | `speaker-arbitration.v1.json` — 5 turns corrected against the audio |
-| 3 Segment into beats | **done, structurally FAILED** | `beats.v1.json` — 9 beats; `beat-verification.v1.json` has 14 HIGH, 1 blocking |
-| 4 Research pass | not started | needs the beat re-verification first |
+| 3 Segment into beats | done, verified | `beats.v1.json` — 9 beats; stage 3b green (0 HIGH, 0 MED); semantic walk in `beat-semantic-walk.v1.json`, 19 findings, all applied |
+| 4 Research pass | not started | unblocked |
 | 5 Assemble `convo.json` | not started | |
 | 6 Review gate | not started | needs `docs/slack-protocol.md` out of draft |
 | 7 Cut clips | not started | 369 s across 9 beats, bounds already snapped to word boundaries |
@@ -29,30 +29,20 @@ stands.
 
 ## Next three things, in order
 
-**1. Repair `beats.v1.json` against `beat-verification.v1.json`, then walk it semantically.**
-The structural half of re-verification now runs as a stage — `skill/stages/stage3b_verify_beats.py`,
-deterministic, no model calls, exits non-zero on HIGH. It returns 14 HIGH and 10 MED. One is
-blocking:
+**1. Run stage 4 on the nine beats.** `docs/research-pass.md` is the most complete doc in the repo
+and has never been executed. Until it runs, there is no evidence the product is a product. One
+standing instruction from the walk: five of its 19 findings were hedge erasure — a quote or
+paraphrase rendered stronger than the speaker's hedged version. Stage 4 must treat an unhedged
+rendering of a hedged statement as a defect, not a style choice, and never queue a check against a
+stronger claim than the one made (`beat-semantic-walk.v1.json → outcome`).
 
-- **b9's window ends at 3453.54, but its context quotes material from 3458.52 to 3479.82** — every
-  quote in it, including the "That's true" the last repair round was built around. The repair note
-  claims that line is "inside the beat window"; it is 23.6 s outside. `t_end_intended` (3480.0)
-  would have covered it, so the prose was rewritten and the window never moved.
-- **b4** ends 2.77 s past its last cited segment, inside `s0173`, cutting Brian mid-sentence — and
-  quotes `s0173` without citing it.
-- **b6** quotes `s0203` from inside its window without citing it, while citing `s0206` from outside.
+**2. Assemble `convo.json` (stage 5).** The schema is unblocked — beats carry
+`source_t`/`source_t_end` now — but stage 5 has no code. It also needs the research pass's output,
+so it lands after item 1.
 
-b4 and b6 are the same defect the last structural pass claims to have cleared for b5 and b7, so
-that pass was incomplete. The semantic walk still has not happened and is still required after the
-repair — the stage checks structure, never whether a claim is fair to the conversation.
-
-**2. Decide the source-timeline question.** Beats carry master-timeline `t`/`t_end` only. E098's b1
-is the strongest beat in the episode and its claim lives in cut material that the master timeline
-cannot address at all. Either beats gain a source-timeline field, or 87.1 s of real conversation
-stays permanently unquotable. This blocks the schema, and the schema blocks stage 5.
-
-**3. Run stage 4 on the nine beats.** `docs/research-pass.md` is the most complete doc in the repo
-and has never been executed. Until it runs, there is no evidence the product is a product.
+**3. Build the fallback renderer.** `renderers/fallback/` is empty and stage 8 depends on it.
+Python, no deps, no build step, per the layout contract. Nothing about it waits on stages 4–5;
+it can proceed in parallel if there's a second pair of hands.
 
 ---
 
@@ -62,7 +52,6 @@ Each of these is waiting on a human, not on work.
 
 | Decision | Why it matters | Owner |
 |---|---|---|
-| Source-timeline field on beats | Without it the cut material is unaddressable and b1 cannot be fully sourced | Adam + Brian |
 | Stitcher bare-mode hand-off | `--bare` cannot append an intro or outro; `build_bare_command` takes exactly two inputs. Byte-identity of the conversation through the tool is also unachievable — every path re-encodes. The episode assembly design depends on resolving this | Brian |
 | What gets added on top for RSS | The seam is defined in `docs/slack-protocol.md` §8; the content is deliberately not | Adam |
 | Whether guests are told about the checks block before recording | `convo-v1-spec.md` §10 open question 4. The drop contract already carries `briefed_before_recording` as a required field, so it is recorded either way — but the answer changes the pitch email | Adam |
@@ -75,7 +64,6 @@ Each of these is waiting on a human, not on work.
 - **`docs/slack-protocol.md` is a draft with 22 blocking holes.** Full list in
   `docs/slack-protocol-audit.json`, summary in its §12. The heaviest cluster is the stitcher
   hand-off. Do not build against it as written.
-- **`beats.v1.json` fails structural verification.** 14 HIGH, 1 blocking. See above.
 - **Three segments in `segments.v1.jsonl` have degenerate durations** — `s0061` is 0.00 s
   (`start == end == 555.34`), `s0202` is 0.01 s, `s0376` is 0.03 s. A stage 2 artifact, harmless to
   read but it will divide by zero in anything that computes a rate per segment.
@@ -100,6 +88,10 @@ Each of these is waiting on a human, not on work.
 - **"The podcast ships unchanged" is dead.** The conversation is the core and material gets added
   around it on the way to RSS.
 - **The cold open gets a beat.** Adam, 2026-08-13.
+- **Beats carry optional `source_t`/`source_t_end` in mix/raw-track seconds.** Adam, 2026-09-02.
+  Required when a beat quotes material that exists only in cut material; the master↔mix relation is
+  `source.json → edit_map`, never a constant offset. The prose `source_timeline_note` escape hatch
+  is gone — stage 3b enforces the fields.
 
 ---
 
