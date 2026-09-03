@@ -49,6 +49,8 @@
           "id": { "type": "string" },
           "t": { "type": "number" },
           "t_end": { "type": "number" },
+          "source_t": { "type": "number", "description": "Beat window start on the mix/raw-track timeline (seconds). Required when the beat quotes material that exists only in cut material; master and mix relate via source.json edit_map." },
+          "source_t_end": { "type": "number", "description": "Beat window end on the mix/raw-track timeline (seconds)." },
           "speaker": { "type": "string" },
           "speaker_confidence": { "enum": ["confirmed","inferred"] },
           "claim": { "type": "string", "maxLength": 300 },

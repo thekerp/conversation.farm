@@ -1,0 +1,125 @@
+{
+  "convo": "zengineering-098",
+  "stage": "3c",
+  "date": "2026-09-02",
+  "method": "Three independent adversarial passes run as isolated agents, none seeing the others' output: happy path (does each beat say what was said, read against the window plus 60 s either side), adversary (try to break meaning — trimmed quotes, erased hedges, flattened tone, rule-7 violations in research_potential), consistency (beats vs hook vs seeds vs edit_map vs the verification block). Merged and deduplicated afterward. Structure was machine-verified green (stage 3b, 0 HIGH 0 MED) before the walk began; this pass judges only meaning.",
+  "sources": ["beats.v1.json", "transcript.v1.md", "cut-material.v1.md", "source.json", "docs/research-pass.md"],
+  "counts": {"raw": 31, "merged": 19, "HIGH": 3, "MED": 7, "LOW": 9, "unresolved": 0},
+  "findings": [
+    {
+      "id": "sw01", "beat": "b4", "severity": "HIGH", "category": "hedge-erased-as-doubling-down", "passes": ["happy-path", "adversary"],
+      "detail": "Context asserted 'Brian does not soften it afterward, he doubles down: \"There's no hyperbole in those comments.\"' Brian's next clause on tape is a softening: 'I mean, I'm guessing a little bit that everything' (s0175, 1648.65). The context stated the opposite of the following sentence.",
+      "fix": "Rewrite as backs-then-hedges and quote the hedge.",
+      "resolution": "Applied. Context now reads 'Brian backs it — ... — then hedges in the same breath: \"I'm guessing a little bit\"'. s0175 cited."
+    },
+    {
+      "id": "sw02", "beat": "b7", "severity": "HIGH", "category": "hedge-erased-then-targeted", "passes": ["happy-path", "adversary", "consistency"],
+      "detail": "Claim rendered Adam's thesis as an unhedged 'append-only canonical record'; on tape he says 'And crucially, at least theoretically, a canonical record' (s0266). research_potential then queued a verify against the unhedged form — the page would manufacture a gotcha on a hedge the speaker already made.",
+      "fix": "Restore the hedge in the claim; retarget the verify at the theory/practice gap Adam names and his genuinely unhedged later assertion (~2570 s).",
+      "resolution": "Applied to both claim and research_potential."
+    },
+    {
+      "id": "sw03", "beat": "b5", "severity": "HIGH", "category": "wrong-pivot-attribution", "passes": ["happy-path", "adversary", "consistency"],
+      "detail": "Context's 'He then changes the subject to Git' read as Brian ducking his own point. Adam makes the pivot ('the last thing we gotta talk about is Git and version control', ~1799 s); Brian had finished his point.",
+      "fix": "Name Adam as the one who steers to Git.",
+      "resolution": "Applied: 'Adam then steers the conversation to Git, and the thread is dropped.'"
+    },
+    {
+      "id": "sw04", "beat": "b1", "severity": "MED", "category": "invented-duration", "passes": ["happy-path", "adversary", "consistency"],
+      "detail": "Claim attributed the deference to 'a year of video calls'. Adam states no duration ('I spend all day on calls and now I'm getting better at it', cut material) and says 'calls', not 'video calls'. Recorded 2020-08-22, ~5 months into pandemic remote work, so the invented figure is also implausible.",
+      "fix": "Drop the duration; paraphrase what he said.",
+      "resolution": "Applied: 'days spent entirely on calls trained him to defer'."
+    },
+    {
+      "id": "sw05", "beat": "b1", "severity": "MED", "category": "claim-contradicts-context", "passes": ["happy-path", "adversary", "consistency"],
+      "detail": "Claim said 'both lost the thought'. Only Adam lost his ('no, I lost it'); Brian recovers and restarts his — and b1's own context depends on that restart being the master's resumption seam.",
+      "fix": "Adam's thought died; Brian's was restarted.",
+      "resolution": "Applied to the claim."
+    },
+    {
+      "id": "sw06", "beat": "b9", "severity": "MED", "category": "dialectic-order", "passes": ["adversary"],
+      "detail": "Context had Adam volunteering reassurance and Brian objecting once, after. On tape Brian flags the fear first, in-window ('thinking that's scary and awful, totally agree', s0377, 3451.45), Adam answers with the tend-it line, and Brian presses in personal terms. Second consecutive round in which this exchange's order was wrong.",
+      "fix": "Reorder: Brian objects, Adam answers, Brian presses, Adam concedes.",
+      "resolution": "Applied. s0377 cited; the in-window first objection is now quoted."
+    },
+    {
+      "id": "sw07", "beat": "hook", "severity": "MED", "category": "staged-debate", "passes": ["adversary", "consistency"],
+      "detail": "'Brian's answer: the winner isn't the best code' presented the popularity line as a rebuttal to Adam's Tesla/Apple arguments. It answers a different claim (Adam's 'the optimal solution emerges'), Brian concedes before complicating, and he never says 'isn't the best code'. b5's own context says neither presses the disagreement — hook and beat gave two readings of one exchange.",
+      "fix": "Attach the line to what it answered and render it as a complication, not a negation.",
+      "resolution": "Applied. Hook now includes the emergence claim and 'Brian complicates: what wins is what got used most, incidentally.' (219 chars.)"
+    },
+    {
+      "id": "sw08", "beat": "b4", "severity": "MED", "category": "evidence-rewired", "passes": ["adversary"],
+      "detail": "Claim wired the 36-hours quote as 'the evidence' for the nonprofit-maintenance claim — making Adam offer a near-catastrophic failure of the model as proof the model works, an argument he did not make. On tape it answers Brian's the-world-would-stop line: it evidences dependence, i.e. stakes.",
+      "fix": "Change the connective from evidence to stakes.",
+      "resolution": "Applied: '— and the stakes are ...'."
+    },
+    {
+      "id": "sw09", "beat": "b1", "severity": "MED", "category": "verify-on-rounding", "passes": ["adversary", "consistency"],
+      "detail": "The verify targeted 'in 100 episodes' — hedged conversational rounding — and pre-declared an expected 'off', manufacturing a verdict on a figure of speech (rule-7 adjacent). The claim also asserted '97 episodes' as narrator fact, a count derived from on-tape numbering the same research item expects may be off.",
+      "fix": "Retarget the verify at the checkable assertion ('That's never happened before'); hedge the claim's count.",
+      "resolution": "Applied: claim says 'nearly a hundred episodes in'; verify now targets the prior-double-yield question and explicitly declines to verdict the rounding."
+    },
+    {
+      "id": "sw10", "beat": "seed-3", "severity": "MED", "category": "false-negative-premise", "passes": ["adversary"],
+      "detail": "'Neither ever says who is responsible for that layer' is contradicted two beats up on the same page: b4's headline names a nonprofit maintainer and a funding mechanism for exactly that layer.",
+      "fix": "Narrow the premise to what the page supports.",
+      "resolution": "Applied: seed now notes the one named tender is b4's nonprofit, in the example where the model nearly failed, and asks about the rest of the stack."
+    },
+    {
+      "id": "sw11", "beat": "b2", "severity": "LOW", "category": "dropped-qualifier", "passes": ["adversary"],
+      "detail": "Brian bounds 'entirely artificial' immediately: 'And, and I mean that in like an economic sense' (s0071). Without it the quote reads as a broader value judgment.",
+      "fix": "Append the qualifier.",
+      "resolution": "Applied: '— \"in like an economic sense\", he adds.'"
+    },
+    {
+      "id": "sw12", "beat": "b3", "severity": "LOW", "category": "relapse-unanchored", "passes": ["adversary"],
+      "detail": "The claim's 'then calls Riot again' pointed at a relapse 34 s past t_end with no anchor, so a reader auditing the clip against the claim would not find it.",
+      "fix": "Anchor the relapse quote and timestamp in context.",
+      "resolution": "Applied: 'then relapses just past the clip: \"That's Riot. That's Riot and Apple\" (1502.39).' s0150 already cited."
+    },
+    {
+      "id": "sw13", "beat": "b5", "severity": "LOW", "category": "dropped-hedge", "passes": ["adversary"],
+      "detail": "Adam's line opens 'I would say it allows...'; the quote boundary started after the hedge in a beat billed as their closest disagreement.",
+      "fix": "Extend the quote left to include 'I would say'.",
+      "resolution": "Applied."
+    },
+    {
+      "id": "sw14", "beat": "b6", "severity": "LOW", "category": "dropped-hedge", "passes": ["adversary"],
+      "detail": "Brian's 'scales similarly' line carries a 'probably' just before the quote boundary.",
+      "fix": "Extend the quote left.",
+      "resolution": "Applied: '\"it probably, if you look at numbers, it kind of scales similarly.\"'"
+    },
+    {
+      "id": "sw15", "beat": "b1", "severity": "LOW", "category": "source-window-arithmetic", "passes": ["consistency"],
+      "detail": "Context's '44.8 s was cut' equals the full cut (56.855) minus the shipped fragment (12.084), but source_t 1241.681 excluded the cut's first 1.04 s, making the window's own arithmetic 43.7 s.",
+      "fix": "Set source_t to the cut's start.",
+      "resolution": "Applied: source_t 1240.645; window and prose now agree."
+    },
+    {
+      "id": "sw16", "beat": "b1", "severity": "LOW", "category": "seam-overstated", "passes": ["consistency"],
+      "detail": "'Brian's \"let me start that over\" ... is exactly where the master resumes' overstates by one cut turn — Adam's 'I lost it' sits between the announcement and the restarted delivery the master resumes on.",
+      "fix": "Attribute the seam to the restart, not the announcement.",
+      "resolution": "Applied: 'The restart Brian announces with \"let me start that over\" is where the master resumes at 20:53'."
+    },
+    {
+      "id": "sw17", "beat": "verification", "severity": "LOW", "category": "repair-measurement-mismatch", "passes": ["consistency"],
+      "detail": "The b3 repair note's 'measured 62 s' disagreed with the beat's own numbers (turn start 1339.17 vs beat t 1408.92 = 69.75 s) unless measured to the quoted words, which nothing stated.",
+      "fix": "State what was measured.",
+      "resolution": "Applied: note now says 62 s to the quoted words, turn starts 69.7 s before the beat."
+    },
+    {
+      "id": "sw18", "beat": "b4", "severity": "LOW", "category": "duplicate-research", "passes": ["consistency"],
+      "detail": "b4 and b6 both queued xz-utils for stage 4 under different angles — duplication, not contradiction.",
+      "fix": "Scope xz-utils to b4's funding angle; cross-reference from b6.",
+      "resolution": "Applied in b6's research_potential."
+    },
+    {
+      "id": "sw19", "beat": "seed-1", "severity": "LOW", "category": "timestamp-drift", "passes": ["adversary", "consistency"],
+      "detail": "'Brian asks it at 40:20' cited the start of an 82-second turn; the books question is that turn's final sentence, over a minute later.",
+      "fix": "Anchor to the turn, not the utterance, or re-time the utterance.",
+      "resolution": "Applied: 'at the end of a turn that starts at 40:20'."
+    }
+  ],
+  "outcome": "PASS after repair. All 19 merged findings applied; stage 3b re-run green (0 HIGH, 0 MED) with the semantic fixes in place. The recurring defect class across both verification rounds is hedge erasure — five findings (sw01, sw02, sw09, sw13, sw14) are quotes or paraphrases rendered stronger than the speaker's hedged version, on a page whose premise is self-fact-checking. Stage 4 should treat any unhedged rendering of a hedged statement as a defect, not a style choice."
+}
