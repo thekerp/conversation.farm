@@ -283,3 +283,67 @@ Current codes: `rule2-mention-only`, `rule3-attention-cap`, `rule7-non-assertion
 A note on `self-promotion`: a host's own company is a legitimate *subject* of research and never a
 legitimate tendril. The link a reader cannot audit as editorial is the one that contaminates the
 links around it. If one ever ships, it ships with a disclosure label.
+
+---
+
+## 10. Gleanings — what the harvest left
+
+`harvest` is the verb; a gleaning is what stays in the field after it. These are the places the
+conversation came up to something and did not close on it.
+
+It is its own block because it is none of the others. A check says they were wrong. A tendril goes
+somewhere they didn't. A seed asks a question for a future convo. An entity explains a thing they
+named. A gleaning is an observation about *this* conversation: the thing was in hand and was not
+taken.
+
+| Kind | Means | E098 |
+|---|---|---|
+| `unnamed` | described precisely, never named | Adam defines copyleft whole at 14:12 and never says the word; Brian defines permissive licensing at 19:11; the library behind Heartbleed is never named at all |
+| `dropped` | raised, then abandoned | the popularity/path-dependence thread, left mid-sentence at 29:56 |
+| `implied` | one step from what they said, untaken | — |
+| `cut` | reached in the room, removed by the edit | Adam's *"so that, that should exist at the same time"* — a thought he then loses on tape, in material the edit deleted |
+
+That last row is the one no other pipeline can produce. It exists only because stage 2b transcribes
+what the edit removed.
+
+Rules:
+
+1. **Evidence or it does not ship.** Every gleaning quotes the words that came close, verbatim,
+   checked against the transcript or the cut material.
+2. **The thing must have been in hand.** Described, raised, or one step away. "They failed to
+   mention X" is cheap and infinite — that is criticism, and this is not a criticism block.
+3. **For `unnamed`, the term must NOT appear in the transcript.** The exact inverse of the entity
+   rule in §8, and the verifier enforces both, so no term can be filed as a box and a gleaning at
+   once. A thing they said is orientation; a thing they didn't is a thread to pull.
+4. **Capped at five.** Same scarcity logic as tendrils and seeds.
+5. **Never on a joke or an aside.**
+
+A gleaning may carry `resolved_by` naming the research item that supplies the missing name — and
+may carry `null`, which is its own finding. A lost thought stays lost, and saying so is more honest
+than pretending research can recover it.
+
+---
+
+## 11. The gates run in a UI
+
+`tools/gate/serve.py` — stdlib, no build step, loopback only.
+
+```
+python3 tools/gate/serve.py convos/zengineering-098
+```
+
+**The queue file is the source of truth and the UI edits it.** Not a database, not an export: every
+click writes `research-queue.v1.json` atomically and re-runs the verifier, so the interface cannot
+leave the file in a state the stage would reject without showing you. Approving is blocked while
+the verifier is red — approving past a red verifier is how a bad anchor reaches a paid research
+job.
+
+It renders as a Slack-style thread on purpose. §2's protocol is reactions on a numbered message, so
+the simulation exercises that shape — including the ✍️ add-a-question path, which §2 calls the
+highest-leverage sixty seconds in the pipeline — before anyone builds the real integration. What it
+teaches about the protocol is meant to feed back into `docs/slack-protocol.md`, which is still a
+draft with 22 blocking holes.
+
+Decisions land as a `human` block on each item, mirrored into `decisions.bounced` with reason code
+`gate1-cut`. Nothing is deleted: a cut question stays in the file, stops counting against budget,
+and stops being structurally validated, because its defects are usually why it was cut.

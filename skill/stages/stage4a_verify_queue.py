@@ -64,9 +64,21 @@ if qdoc.get("recorded") != recorded:
     add("-", "HIGH", "recorded-date",
         f"queue says recorded {qdoc.get('recorded')!r}, source.json says {recorded!r}")
 
-if not (QUEUE_MIN <= len(queue) <= QUEUE_MAX):
+# A question cut at a gate stays in the file so nothing is lost, but it will not
+# run, so it does not spend budget and does not count as covering its beat.
+def live(items):
+    return [i for i in items if (i.get("human") or {}).get("decision") != "cut"]
+
+
+touched = any(q.get("human") for q in queue)
+live_queue = live(queue)
+n_cut = len(queue) - len(live_queue)
+
+if not (QUEUE_MIN <= len(live_queue) <= QUEUE_MAX):
     add("-", "HIGH", "budget",
-        f"{len(queue)} questions, budget is {QUEUE_MIN}-{QUEUE_MAX} (research-pass.md §6)")
+        f"{len(live_queue)} live questions"
+        + (f" ({n_cut} cut)" if n_cut else "")
+        + f", budget is {QUEUE_MIN}-{QUEUE_MAX} (research-pass.md §6)")
 
 ids = [q.get("id") for q in queue]
 if len(set(ids)) != len(ids):
@@ -86,7 +98,10 @@ program_start = (source.get("structure") or {}).get("program_start")
 rule7 = [p.lower() for p in qdoc.get("rule7_forbidden", [])]
 
 # ---- per item -------------------------------------------------------------
-for q in queue:
+# Live items only. A cut question is not going to run, and its defects are
+# usually the reason it was cut -- re-reporting them would make every gate
+# decision turn the build red.
+for q in live_queue:
     qid = q.get("id", "?")
     if not re.fullmatch(r"r\d\d", str(qid)):
         add(qid, "MED", "id-format", "id is not rNN")
@@ -171,7 +186,7 @@ for q in queue:
 
 # ---- cross-item -----------------------------------------------------------
 by_beat = {}
-for q in queue:
+for q in live_queue:
     by_beat.setdefault(q.get("beat"), []).append(q)
 
 for bid, items in by_beat.items():
@@ -202,7 +217,7 @@ for bid in sorted(b for b in uncovered if b in held):
         f"{bid} has no queue item, held deliberately with a reason recorded")
 
 by_type = {}
-for q in queue:
+for q in live_queue:
     by_type[q.get("type")] = by_type.get(q.get("type"), 0) + 1
 
 if recorded:
@@ -213,9 +228,11 @@ if recorded:
             "the archive value is the whole reason to start with the back catalogue "
             "(research-pass.md §1)")
 
-# coverage block must not drift from the queue it describes
+# The coverage block is 4a's record of what it proposed. Once a human has
+# decided anything it is history, not a claim about the current queue, so drift
+# is expected and only checked while the extract output is still pristine.
 cov = qdoc.get("coverage") or {}
-if cov:
+if cov and not touched:
     if cov.get("by_type") and cov["by_type"] != {**{t: 0 for t in TYPES}, **by_type}:
         add("-", "MED", "coverage-drift",
             f"coverage.by_type {cov.get('by_type')} != actual {by_type}")
@@ -316,6 +333,93 @@ n_ent = len(ent.get("candidates") or [])
 if cap and n_ent > cap:
     add("-", "LOW", "entity-cap",
         f"{n_ent} candidates proposed against a ship cap of {cap}; the human gate picks")
+
+# ---- gleanings ------------------------------------------------------------
+# What the harvest left in the field. The `unnamed` check is the exact inverse
+# of the entity check above: an entity's term must be spoken, a gleaning's term
+# must not be, so no term can be filed as both.
+GLEAN_KINDS = {"unnamed", "dropped", "implied", "cut"}
+CUT_TEXT = (BASE / "cut-material.v1.md").read_text(encoding="utf-8").lower()
+
+
+def norm(t):
+    t = t.lower().replace("’", "'").replace("‘", "'")
+    t = t.replace("“", '"').replace("”", '"')
+    return re.sub(r"\s+", " ", t)
+
+
+NORM_MASTER, NORM_CUT = norm(MASTER_TEXT), norm(CUT_TEXT)
+
+gl = qdoc.get("gleaning_candidates") or {}
+gcands = gl.get("candidates") or []
+gcap = gl.get("cap")
+if gcap and len(gcands) > gcap:
+    add("-", "MED", "gleaning-cap",
+        f"{len(gcands)} gleanings against a cap of {gcap}; without scarcity this is a junk drawer")
+
+for c in gcands:
+    gid = c.get("id", "?")
+    kind = c.get("kind")
+    if kind not in GLEAN_KINDS:
+        add(gid, "HIGH", "gleaning-kind", f"{kind!r} not one of {sorted(GLEAN_KINDS)}")
+
+    has_t, has_st = c.get("t") is not None, c.get("source_t") is not None
+    if has_t == has_st:
+        add(gid, "HIGH", "gleaning-anchor",
+            "exactly one of t (master) or source_t (mix/raw-track) is required")
+    if has_t:
+        if not any(s["start"] - 0.05 <= c["t"] <= s["end"] + 0.05 for s in segs):
+            add(gid, "MED", "gleaning-anchor", f"t={c['t']} lands inside no segment")
+        lbl = c.get("label")
+        if lbl and not lbl.startswith("source ") and lbl != mmss(c["t"]):
+            add(gid, "HIGH", "gleaning-label",
+                f"label {lbl!r} does not match t {c['t']} ({mmss(c['t'])})")
+    if has_st and kind != "cut":
+        add(gid, "MED", "gleaning-anchor",
+            f"source_t is for material the master cannot address; kind is {kind!r}, not 'cut'")
+
+    # Evidence, or it is the model editorialising about a conversation.
+    quote = c.get("quote") or ""
+    if not quote.strip():
+        add(gid, "HIGH", "gleaning-quote", "no quote; a gleaning without evidence is an opinion")
+    else:
+        hay = NORM_CUT if has_st else NORM_MASTER
+        frags = [f for f in (x.strip() for x in norm(quote).split("...")) if f]
+        if not all(f in hay for f in frags):
+            add(gid, "HIGH", "gleaning-quote-not-found",
+                f'not verbatim in {"cut material" if has_st else "the transcript"}: '
+                f'"{quote[:60]}"')
+
+    if kind == "unnamed":
+        term = (c.get("term") or "").strip()
+        if not term:
+            add(gid, "HIGH", "gleaning-term", "kind `unnamed` requires the term they never said")
+        elif re.search(r"\b" + re.escape(term.lower()), NORM_MASTER):
+            add(gid, "HIGH", "gleaning-actually-named",
+                f"{term!r} DOES appear in the transcript, so it was named; that is an entity "
+                "box, not an unnamed gleaning")
+
+    if not (c.get("note") or "").strip():
+        add(gid, "MED", "gleaning-note", "no note saying what was in hand and not taken")
+    elif (c.get("note") or "").strip().endswith("?"):
+        add(gid, "MED", "gleaning-reads-as-seed",
+            "note is phrased as a question; a question for a future convo is a seed")
+
+    rb = c.get("resolved_by")
+    if rb is not None and rb not in queue_ids:
+        add(gid, "HIGH", "gleaning-resolved-by",
+            f"resolved_by {rb!r} is not a live queue id")
+
+    gb = c.get("beat")
+    if gb is not None and gb not in beats:
+        add(gid, "HIGH", "gleaning-beat", f"beat {gb!r} is not in beats.v1.json")
+
+# A term cannot be both a box and an unnamed gleaning.
+glean_terms = {(c.get("term") or "").lower() for c in gcands if c.get("kind") == "unnamed"}
+for c in (ent.get("candidates") or []):
+    if (c.get("term") or "").lower() in glean_terms:
+        add(c.get("id", "?"), "HIGH", "entity-gleaning-collision",
+            f"{c.get('term')!r} is filed as both an entity box and an unnamed gleaning")
 
 rank = {"HIGH": 0, "MED": 1, "LOW": 2}
 findings.sort(key=lambda f: (rank[f[1]], str(f[0])))

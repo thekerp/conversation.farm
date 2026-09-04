@@ -194,6 +194,52 @@
       {"id": "e12", "term": "Wikipedia", "said_as": ["Wikipedia"], "first_t": 3112.5, "first_label": "51:52", "beat": null, "why": "Cited by Adam as a working example of the commons. Self-referential given the box it would appear in, which is either a problem or a joke."}
     ]
   },
+  "gleaning_candidates": {
+    "concept": "What the harvest left in the field. Places the conversation came up to something and did not close on it — described a concept and never named it, raised a thread and dropped it, stood one step from a conclusion and did not take it, or reached it in the room and lost it to the edit. Not a check (nobody was wrong), not a tendril (this is about the conversation, not somewhere else), not a seed (a seed is a question for a future convo; a gleaning is an observation about this one), not an entity (an entity must be SAID; the strongest gleanings are the things that never were).",
+    "rules": [
+      "Evidence or it does not ship. Every gleaning quotes the words that came close, verbatim, checked against the transcript or the cut material.",
+      "The thing must have been IN HAND — described, raised, or one step away. 'They failed to mention X' is cheap and infinite; that is criticism, not a gleaning.",
+      "For kind `unnamed`, the term must NOT appear in the transcript. This is the exact inverse of the entity rule, and the verifier enforces both, so no term can be filed as a box and a gleaning at once.",
+      "Capped at 5 per convo. Same scarcity logic as tendrils and seeds — without a cap this becomes a junk drawer of everything the hosts did not say.",
+      "Never a criticism, and never on a joke or an aside."
+    ],
+    "cap": 5,
+    "candidates": [
+      {
+        "id": "g01", "kind": "unnamed", "beat": "b2", "t": 852.6, "label": "14:12",
+        "term": "copyleft",
+        "quote": "we're gonna come up with a license where no one's allowed to use this who doesn't also agree to allow the next person to use it for free too",
+        "note": "A textbook definition of copyleft, delivered whole, without the word. The mechanism is exactly right and the name never arrives.",
+        "resolved_by": "r13"
+      },
+      {
+        "id": "g02", "kind": "unnamed", "beat": null, "t": 1151.72, "label": "19:11",
+        "term": "permissive",
+        "quote": "a lot of open source software is allowed to be shared freely, but also you're allowed to go, like, use it to build a product and build a business around",
+        "note": "Brian defines permissive licensing five minutes after Adam defines copyleft. Between them they lay out the field's central distinction and neither half is ever named.",
+        "resolved_by": "r13"
+      },
+      {
+        "id": "g03", "kind": "unnamed", "beat": "b4", "t": 1626.07, "label": "27:06",
+        "term": "OpenSSL",
+        "quote": "The encryption protocols that run the internet work because they're maintained by a nonprofit who's not allowed to make money",
+        "note": "The library at the centre of the episode's strongest argument is never named, and neither is its maintainer — the claim rests entirely on the phrase 'a nonprofit'.",
+        "resolved_by": "r05"
+      },
+      {
+        "id": "g04", "kind": "dropped", "beat": "b5", "t": 1796.29, "label": "29:56",
+        "quote": "it just is the one that got used the most, uh, incidentally",
+        "note": "Brian reaches path dependence and stops. Three seconds later Adam moves to Git and neither returns to it. The episode's closest thing to a disagreement about mechanism, abandoned mid-sentence.",
+        "resolved_by": "r07"
+      },
+      {
+        "id": "g05", "kind": "cut", "beat": "b1", "source_t": 1276.0, "label": "source 21:10",
+        "quote": "so that, that should exist at the same time",
+        "note": "Adam starts a thought, loses it on tape — 'no, I lost it. What were you going to say?' — and the whole exchange was then cut. A thread that died in the room and was edited out, so no listener knows it existed. Nothing can recover it; that is the point of recording it.",
+        "resolved_by": null
+      }
+    ]
+  },
   "decisions": {
     "note": "Every candidate considered, and the rule that decided it. Fates: queued, folded, held, rejected, bounced. `bounced` is reserved for a human decision at a gate and is empty until Gate 1 runs. Reason codes are enumerable on purpose — prose does not aggregate, and docs/research-pass.md §4 wants this as a training set.",
     "reason_codes": [

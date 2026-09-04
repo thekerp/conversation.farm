@@ -121,6 +121,28 @@
         }
       }
     },
+    "gleanings": {
+      "type": "array", "maxItems": 5,
+      "description": "What the harvest left in the field: places the conversation came up to something and did not close on it. Distinct from every other block — a check says they were wrong, a tendril goes somewhere they didn't, a seed asks a question for a future convo, an entity explains a thing they named. A gleaning is an observation about THIS conversation: the thing was in hand and was not taken. Requires evidence, never criticism.",
+      "items": {
+        "type": "object",
+        "required": ["id","kind","quote","note"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": {
+            "enum": ["unnamed","dropped","implied","cut"],
+            "description": "unnamed: described precisely, never named. dropped: raised and abandoned. implied: one step from what they said, untaken. cut: reached in the room and removed by the edit."
+          },
+          "beat": { "type": ["string","null"] },
+          "t": { "type": "number", "description": "Master-timeline seconds. Exactly one of t or source_t." },
+          "source_t": { "type": "number", "description": "Mix/raw-track seconds, for kind `cut`." },
+          "term": { "type": "string", "description": "For kind `unnamed`: the name they never said. Must NOT appear in the transcript." },
+          "quote": { "type": "string", "description": "The words that came close. Verbatim, or the gleaning is editorialising." },
+          "note": { "type": "string", "maxLength": 400, "description": "What was in hand and not taken." },
+          "resolved_by": { "type": ["string","null"], "description": "Research item that names it, or null when nothing can — a lost thought stays lost." }
+        }
+      }
+    },
     "seeds": {
       "type": "array", "maxItems": 3,
       "items": {

@@ -1,0 +1,343 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gate 1 review</title>
+<style>
+  :root {
+    --bg: #f7f6f3; --panel: #fff; --ink: #1b1a17; --muted: #6b675f;
+    --line: #e2ded6; --accent: #2f6f4e; --warn: #9a3412; --chip: #efece6;
+    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14150f; --panel: #1c1e17; --ink: #ece9df; --muted: #9a968a;
+      --line: #2e3126; --accent: #7fb894; --warn: #e08c5a; --chip: #262920;
+      --shadow: 0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .86em; }
+  header {
+    position: sticky; top: 0; z-index: 10; background: var(--panel);
+    border-bottom: 1px solid var(--line); padding: 10px 20px;
+    display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+  }
+  header h1 { font-size: 15px; margin: 0; font-weight: 650; }
+  .sp { flex: 1; }
+  .pill {
+    font-size: 12px; padding: 3px 9px; border-radius: 99px;
+    background: var(--chip); color: var(--muted); white-space: nowrap;
+  }
+  .pill.ok { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+  .pill.bad { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+  main { max-width: 900px; margin: 0 auto; padding: 22px 20px 120px; }
+  .msg {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px; margin: 0 0 18px; box-shadow: var(--shadow);
+  }
+  .msg > h2 { font-size: 14px; margin: 0 0 4px; }
+  .msg .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+  .who { display: flex; gap: 9px; align-items: baseline; margin-bottom: 10px; }
+  .who b { font-size: 13px; }
+  .who .bot {
+    font-size: 10px; letter-spacing: .04em; text-transform: uppercase;
+    background: var(--chip); color: var(--muted); padding: 1px 5px; border-radius: 3px;
+  }
+  .who time { color: var(--muted); font-size: 12px; }
+  .row {
+    border-top: 1px solid var(--line); padding: 13px 0 11px;
+    display: grid; grid-template-columns: 26px 1fr; gap: 10px;
+  }
+  .row:last-child { padding-bottom: 2px; }
+  .num { color: var(--muted); font-size: 12px; padding-top: 2px; }
+  .q { margin: 0 0 7px; }
+  .meta { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-bottom: 7px; }
+  .tag {
+    font-size: 11px; padding: 2px 7px; border-radius: 4px;
+    background: var(--chip); color: var(--muted);
+  }
+  .tag.type { color: var(--ink); font-weight: 600; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 12.5px; }
+  details .body { padding: 8px 0 2px; color: var(--muted); font-size: 13.5px; }
+  details .body p { margin: 0 0 6px; }
+  details .body b { color: var(--ink); font-weight: 600; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  button.chip {
+    font: inherit; font-size: 13px; cursor: pointer; padding: 3px 10px;
+    border: 1px solid var(--line); background: transparent; color: var(--muted);
+    border-radius: 99px; transition: .12s;
+  }
+  button.chip:hover { border-color: var(--muted); color: var(--ink); }
+  button.chip.on { background: color-mix(in srgb, var(--accent) 20%, transparent);
+                   border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  button.chip.on.cut { background: color-mix(in srgb, var(--warn) 18%, transparent);
+                       border-color: var(--warn); color: var(--warn); }
+  .row.cut .q, .row.cut .meta { opacity: .42; text-decoration: line-through; }
+  .row.cut .q { text-decoration-thickness: 1px; }
+  .note {
+    margin-top: 8px; font-size: 13px; color: var(--muted);
+    border-left: 2px solid var(--line); padding-left: 9px;
+  }
+  textarea, input, select {
+    font: inherit; width: 100%; padding: 7px 9px; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  }
+  textarea { min-height: 62px; resize: vertical; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 9px; }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: 10px 11px; }
+  .card.cut { opacity: .45; }
+  .card h3 { margin: 0 0 3px; font-size: 13.5px; }
+  .card p { margin: 0 0 7px; font-size: 12.5px; color: var(--muted); }
+  .ledger td { padding: 6px 10px 6px 0; vertical-align: top; font-size: 13px; border-top: 1px solid var(--line); }
+  .ledger td:first-child { white-space: nowrap; color: var(--muted); }
+  footer {
+    position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel);
+    border-top: 1px solid var(--line); padding: 11px 20px;
+    display: flex; gap: 12px; align-items: center; justify-content: center;
+  }
+  button.go {
+    font: inherit; font-weight: 600; cursor: pointer; padding: 8px 18px; border-radius: 7px;
+    border: 1px solid var(--accent); background: var(--accent); color: var(--panel);
+  }
+  button.go[disabled] { opacity: .4; cursor: not-allowed; }
+  button.ghost {
+    font: inherit; cursor: pointer; padding: 8px 14px; border-radius: 7px;
+    border: 1px solid var(--line); background: transparent; color: var(--ink);
+  }
+  .err { color: var(--warn); font-size: 13px; }
+  pre.vout {
+    white-space: pre-wrap; font-size: 12px; color: var(--muted);
+    background: var(--bg); border-radius: 6px; padding: 10px; margin: 8px 0 0;
+    max-height: 200px; overflow: auto;
+  }
+</style>
+
+<header>
+  <h1 id="title">Gate 1 review</h1>
+  <span class="pill" id="progress">—</span>
+  <span class="pill" id="verify">—</span>
+  <span class="sp"></span>
+  <span class="pill" id="gate">—</span>
+</header>
+
+<main id="app"></main>
+
+<footer>
+  <span class="err" id="err"></span>
+  <button class="ghost" id="changes">Request changes</button>
+  <button class="go" id="approve">Approve queue &amp; open 4b</button>
+</footer>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+let S = null;
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const dec = it => (it.human || {}).decision || 'pending';
+
+async function api(path, body) {
+  const r = await fetch(path, body ? {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  } : {});
+  const j = await r.json();
+  if (!r.ok) { $('#err').textContent = j.error || 'error'; return null; }
+  $('#err').textContent = '';
+  return j;
+}
+
+async function act(kind, id, patch) {
+  const s = await api('/api/decision', { kind, id, ...patch });
+  if (s) { S = s; render(); }
+}
+
+function chips(kind, it, extra = '') {
+  const d = dec(it), pri = (it.human || {}).priority;
+  return `<div class="chips">
+    <button class="chip ${d === 'approved' ? 'on' : ''}" data-a="approved" data-k="${kind}" data-i="${it.id}">✅ approve</button>
+    <button class="chip cut ${d === 'cut' ? 'on cut' : ''}" data-a="cut" data-k="${kind}" data-i="${it.id}">✂️ cut</button>
+    ${extra}
+    <button class="chip ${pri ? 'on' : ''}" data-a="pri" data-k="${kind}" data-i="${it.id}">🔝 first</button>
+    <button class="chip" data-a="note" data-k="${kind}" data-i="${it.id}">✍️ note</button>
+  </div>
+  ${(it.human || {}).note ? `<div class="note">${esc(it.human.note)}</div>` : ''}`;
+}
+
+function who(name, sub) {
+  return `<div class="who"><b>${esc(name)}</b><span class="bot">app</span>
+    <time>${esc(sub)}</time></div>`;
+}
+
+function render() {
+  const d = S.doc, q = d.queue || [];
+  const ents = (d.entity_candidates || {}).candidates || [];
+  const gleans = (d.gleaning_candidates || {}).candidates || [];
+  const pending = q.filter(i => dec(i) === 'pending').length;
+  const live = q.filter(i => dec(i) !== 'cut').length;
+
+  $('#title').textContent = `Gate 1 — ${d.convo}`;
+  $('#progress').textContent = `${q.length - pending}/${q.length} decided · ${live} would run`;
+  const v = S.verify;
+  $('#verify').className = 'pill ' + (v.exit === 0 ? 'ok' : 'bad');
+  $('#verify').textContent = v.exit === 0 ? 'verifier green' : 'verifier FAILING';
+  const g = (d.provenance || {}).human_gate || {};
+  $('#gate').className = 'pill ' + (g.decision === 'approved' ? 'ok' : '');
+  $('#gate').textContent = g.decision ? `gate: ${g.decision} · ${g.by}` : 'gate: open';
+  $('#approve').disabled = pending > 0;
+  $('#approve').textContent = pending > 0
+    ? `${pending} still pending` : `Approve ${live} questions & open 4b`;
+
+  $('#app').innerHTML = `
+  <div class="msg">
+    ${who('convo-farm', '#convo-farm · thread · Slack-style preview, not connected')}
+    <h2>${esc(d.convo)} — research queue</h2>
+    <p class="sub">${q.length} questions, budget ${esc((d.budget || {}).target || '')}.
+      Recorded ${esc(d.recorded)}. React per row; cuts are recorded in the ledger with a reason.</p>
+    ${q.map((it, n) => `
+      <div class="row ${dec(it) === 'cut' ? 'cut' : ''}">
+        <div class="num">${n + 1}</div>
+        <div>
+          <div class="meta">
+            <span class="tag type">${esc(it.type)}</span>
+            <span class="tag mono">${esc(it.beat)}</span>
+            <span class="tag mono">${esc(it.anchor_label || '')}</span>
+            ${it.anchor_outside_window ? '<span class="tag">outside clip</span>' : ''}
+            ${(it.human || {}).added_at_gate ? '<span class="tag">added by hand</span>' : ''}
+            ${(it.human || {}).edited ? '<span class="tag">edited</span>' : ''}
+            <span class="tag mono">${esc(it.id)}</span>
+          </div>
+          <p class="q">${esc(it.question)}</p>
+          <details><summary>why · expected · guards</summary><div class="body">
+            <p><b>Why.</b> ${esc(it.why)}</p>
+            <p><b>Expected.</b> ${esc(it.expected)}</p>
+            ${it.guards ? `<p><b>Guards.</b> ${esc(it.guards)}</p>` : ''}
+            ${it.anchor_reason ? `<p><b>Anchor.</b> ${esc(it.anchor_reason)}</p>` : ''}
+          </div></details>
+          ${chips('queue', it, `<button class="chip" data-a="edit" data-k="queue" data-i="${it.id}">✍️ reword</button>`)}
+        </div>
+      </div>`).join('')}
+  </div>
+
+  <div class="msg">
+    ${who('convo-farm', 'entity boxes · orientation, not tendrils')}
+    <h2>Reference boxes — pick up to ${(d.entity_candidates || {}).proposed_cap || 6}</h2>
+    <p class="sub">Named on tape, so they get a stored summary and a link instead of a research job.
+      Exempt from the three-per-beat and one-domain rules. Approved: ${ents.filter(e => dec(e) === 'approved').length}.</p>
+    <div class="grid">${ents.map(e => `
+      <div class="card ${dec(e) === 'cut' ? 'cut' : ''}">
+        <h3>${esc(e.term)}</h3>
+        <p><span class="mono">${esc(e.first_label)}</span> · ${esc(e.why)}</p>
+        ${chips('entity', e)}
+      </div>`).join('')}</div>
+  </div>
+
+  <div class="msg">
+    ${who('convo-farm', 'gleanings · threads to pull')}
+    <h2>What the harvest left</h2>
+    <p class="sub">Places the conversation came up to something and did not close on it.
+      Capped at ${(d.gleaning_candidates || {}).cap || 5}. Every one quotes the words that came close.</p>
+    ${gleans.map(g => `
+      <div class="row ${dec(g) === 'cut' ? 'cut' : ''}">
+        <div class="num">${esc(g.kind[0].toUpperCase())}</div>
+        <div>
+          <div class="meta">
+            <span class="tag type">${esc(g.kind)}</span>
+            ${g.term ? `<span class="tag">never says “${esc(g.term)}”</span>` : ''}
+            <span class="tag mono">${esc(g.label || '')}</span>
+            ${g.resolved_by ? `<span class="tag mono">→ ${esc(g.resolved_by)}</span>`
+                            : '<span class="tag">unrecoverable</span>'}
+          </div>
+          <p class="q">“${esc(g.quote)}”</p>
+          <details><summary>what was in hand</summary>
+            <div class="body"><p>${esc(g.note)}</p></div></details>
+          ${chips('gleaning', g)}
+        </div>
+      </div>`).join('')}
+  </div>
+
+  <div class="msg">
+    ${who('convo-farm', 'add the question the machine would not ask')}
+    <h2>Add a question</h2>
+    <p class="sub">research-pass.md §2 calls this the highest-leverage sixty seconds in the pipeline.</p>
+    <div class="meta" style="gap:9px">
+      <select id="nbeat" style="width:auto">${(S.beats || []).map(b =>
+        `<option value="${b}">${b}</option>`).join('')}</select>
+      <select id="ntype" style="width:auto">
+        ${['since', 'verify', 'contradict', 'identify', 'enrich'].map(t =>
+          `<option>${t}</option>`).join('')}
+      </select>
+      <input id="nt" placeholder="anchor seconds (blank = beat start)" style="width:230px">
+    </div>
+    <textarea id="nq" placeholder="The question…"></textarea>
+    <div class="chips"><button class="chip" id="addq">＋ add to queue</button></div>
+  </div>
+
+  <div class="msg">
+    ${who('convo-farm', 'ledger · what 4a already cut, and why')}
+    <h2>Rejected before you saw it</h2>
+    <p class="sub">The machine's half of the funnel. Open it if you want to reinstate something.</p>
+    <details><summary>${((d.decisions || {}).entries || []).length} candidates</summary>
+      <table class="ledger" style="width:100%;border-collapse:collapse;margin-top:8px">
+        ${((d.decisions || {}).entries || []).map(e => `<tr>
+          <td class="mono">${esc(e.fate)}<br><span style="opacity:.7">${esc(e.reason_code)}</span></td>
+          <td><b>${esc(e.candidate)}</b><br><span style="color:var(--muted)">${esc(e.reason)}</span></td>
+        </tr>`).join('')}
+      </table>
+    </details>
+    ${v.exit !== 0 ? `<pre class="vout">${esc(v.out)}</pre>` : ''}
+  </div>`;
+}
+
+document.addEventListener('click', async ev => {
+  const b = ev.target.closest('button[data-a]');
+  if (b) {
+    const { a, k, i } = b.dataset;
+    if (a === 'approved' || a === 'cut') return act(k, i, { decision: a });
+    if (a === 'pri') {
+      const items = k === 'queue' ? S.doc.queue
+        : k === 'entity' ? S.doc.entity_candidates.candidates
+        : S.doc.gleaning_candidates.candidates;
+      const cur = (items.find(x => x.id === i).human || {}).priority;
+      return act(k, i, { priority: !cur });
+    }
+    if (a === 'note') {
+      const n = prompt('Note (recorded in the ledger if this is cut):');
+      if (n !== null) return act(k, i, { note: n });
+    }
+    if (a === 'edit') {
+      const it = S.doc.queue.find(x => x.id === i);
+      const n = prompt('Reword the question. The original is kept in the ledger.', it.question);
+      if (n !== null && n.trim()) return act(k, i, { question: n });
+    }
+  }
+  if (ev.target.id === 'addq') {
+    const s = await api('/api/add', {
+      beat: $('#nbeat').value, type: $('#ntype').value,
+      anchor_t: $('#nt').value.trim() || null, question: $('#nq').value
+    });
+    if (s) { S = s; render(); }
+  }
+  if (ev.target.id === 'approve' || ev.target.id === 'changes') {
+    const approved = ev.target.id === 'approve';
+    const note = prompt(approved
+      ? 'Approving. Anything to record? (optional)'
+      : 'What needs to change?');
+    if (note === null) return;
+    const s = await api('/api/gate', {
+      decision: approved ? 'approved' : 'changes_requested', note
+    });
+    if (s) { S = s; render(); }
+  }
+});
+
+(async () => {
+  S = await api('/api/state');
+  render();
+})();
+</script>
