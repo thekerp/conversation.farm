@@ -185,6 +185,9 @@
   .foot-grid p{margin:0;color:var(--ink-soft);max-width:30rem}
   .colophon{margin-top:2.6rem;padding-top:1rem;border-top:1px solid var(--rule);
     display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;color:var(--ink-soft)}
+  /* Two people sign in here, so it sits in the colophon rather than the masthead. */
+  .gate-link{color:var(--ink-soft);text-decoration-color:var(--rule)}
+  .gate-link:hover{color:var(--rust);text-decoration-color:currentColor}
 
   /* ---------- responsive ---------- */
   @media (max-width:900px){
@@ -367,6 +370,7 @@
     <div class="colophon">
       <span class="mono">conversation.farm · Sown by Adam Kerpelman &amp; T. Brian Jones</span>
       <span class="mono">Research preview. Expect mud.</span>
+      <a class="mono gate-link" href="https://gate.conversation.farm" rel="nofollow">Farmhands · the gate ↗</a>
     </div>
   </footer>
 
