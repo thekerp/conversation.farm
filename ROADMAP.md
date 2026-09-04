@@ -18,7 +18,8 @@ stands.
 | 2c Speaker arbitration | done | `speaker-arbitration.v1.json` — 5 turns corrected against the audio |
 | 3 Segment into beats | done, verified | `beats.v1.json` — 9 beats; stage 3b green (0 HIGH, 0 MED); semantic walk in `beat-semantic-walk.v1.json`, 19 findings, all applied |
 | 4a Extract queue | done, awaiting Gate 1 | `research-queue.v1.json` — 12 questions, verifier green; **not approved, 4b must not run** |
-| 4b Research | blocked on Gate 1 | one deep-research job per approved question |
+| 4b Research | blocked on Gate 1 + a design fork | one deep-research job per approved question; how it calls a model is undecided, see Open decisions |
+| — Gate UI | live | `apps/gate` at <https://gate.conversation.farm>, GitHub sign-in, commits to the convo branch and opens a PR. `tools/gate/serve.py` is the offline equivalent and the reference implementation of the decision rules |
 | 5 Assemble `convo.json` | not started | |
 | 6 Review gate | not started | needs `docs/slack-protocol.md` out of draft |
 | 7 Cut clips | not started | 369 s across 9 beats, bounds already snapped to word boundaries |
@@ -31,10 +32,14 @@ stands.
 ## Next three things, in order
 
 **1. Approve the research queue, then run 4b.** 4a is done: `research-queue.v1.json` holds 12
-questions (6 `since`, 4 `verify`, 2 `contradict`) covering 8 of 9 beats, and
+questions (5 `since`, 4 `verify`, 2 `contradict`, 1 `identify`) covering 8 of 9 beats, and
 `skill/stages/stage4a_verify_queue.py` passes it clean. **Gate 1 is open and 4b costs real money,
 so nothing runs until a human approves.** Reviewing it is the highest-leverage sixty seconds in the
 pipeline (`research-pass.md` §2); the target is under ten minutes.
+
+Review it at **<https://gate.conversation.farm>** — sign in with GitHub, decide, and the app commits
+to `convo/zengineering-098-stage4` and updates PR #5. Offline equivalent, no auth, edits the working
+tree: `python3 tools/gate/serve.py convos/zengineering-098`.
 
 One standing instruction from the semantic walk: five of its 19 findings were hedge erasure — a
 quote or paraphrase rendered stronger than the speaker's hedged version. 4b must treat an unhedged
@@ -56,6 +61,7 @@ it can proceed in parallel if there's a second pair of hands.
 
 Each of these is waiting on a human, not on work.
 
+| How 4b calls a model | The repo is stdlib-only and has no model-calling code. Either 4b is a stage that calls an API directly (a dependency plus an API key on the runner, which is what `research-pass.md` §7 describes), or it emits one job spec per approved question for an agent to execute and write back (keeps the repo stdlib-only, matches how stages 2–4a already work). Blocks 4b, which blocks 5 | Adam + Brian |
 | Decision | Why it matters | Owner |
 |---|---|---|
 | Stitcher bare-mode hand-off | `--bare` cannot append an intro or outro; `build_bare_command` takes exactly two inputs. Byte-identity of the conversation through the tool is also unachievable — every path re-encodes. The episode assembly design depends on resolving this | Brian |
