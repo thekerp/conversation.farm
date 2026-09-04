@@ -94,6 +94,15 @@ These are build-breaking, not guidelines.
 1. **Every tendril URL is fetched at build time and must return 200.** A dead link fails the build.
 2. **No tendril whose only justification is "they mentioned it."** That's a show note. A tendril earns
    its place by taking the reader somewhere the episode didn't.
+
+   **This is a test on each item, not a ban on a question type.** The rule kills a link whose *only*
+   justification is the mention. The strong `identify` is the exact inverse: the hosts describe
+   something at length and never name it, so the reader cannot look it up at all. E098's hosts
+   define copyleft and permissive licensing precisely, and never say GPL, MIT, BSD, Apache or
+   copyleft; they discuss Heartbleed without once saying OpenSSL. Naming those is discovery, not a
+   show note. Applying rule 2 at the type level instead of the item level cut all of them from the
+   first E098 queue, and nothing in the artifact recorded that it had happened — which is why §9
+   exists.
 3. **Maximum three tendrils per beat.** Scarcity is the quality signal. Twelve links is a search
    results page.
 4. **At least one tendril per beat must be non-obvious** — not the Wikipedia article, not the first
@@ -201,3 +210,76 @@ that's the thing to fix — not the reviewer's patience.
 - Publishing happens on merge to `main`, in CI, not on the runner
 
 The runner can never publish. That's the whole security model, and it's one sentence.
+
+---
+
+## 8. Entity boxes
+
+The named things — Heartbleed, Git, Torvalds, the App Store, Tesla — are the wrong shape for a
+tendril and the right shape for a box. An `identify` on a thing they *said* produces a Wikipedia
+link, which is the four-link baseline this project exists to beat, and rule 5 would cap a dozen of
+them at one anyway. So they stop being tendrils and become their own class: a stored summary, a
+link out, and no research budget spent.
+
+**What they are:** orientation. A reader who doesn't know what Heartbleed was needs one sentence,
+not a research finding. **What they are not:** discovery. That is what tendrils are for.
+
+| | Tendril | Entity box |
+|---|---|---|
+| Job | take the reader somewhere the episode didn't | let the reader follow the episode at all |
+| Earned by | a research job | being said on tape |
+| Rule 3 cap (3/beat) | counts | exempt |
+| Rule 5 one-domain | counts | exempt |
+| Produced in | 4b | fetched after Gate 1, stored |
+
+Rules:
+
+1. **The term must be SAID on tape**, verbatim, and the record carries `said_as` proving it. A thing
+   described but never named is an `identify` question — see rule 2 above. This is the line that
+   keeps the box from swallowing the interesting half of the work, and `stage4a_verify_queue.py`
+   enforces it against the transcript.
+2. **Fetched and stored at production time.** Non-negotiable 1. A box that calls an API to render
+   is a broken box.
+3. **Every URL returns 200 at build time**, same as a tendril.
+4. **Attribution and licence ship with the extract.** Wikipedia text is CC BY-SA; the credit line
+   and the link back are not the renderer's option.
+5. **A human picks which ship.** 4a proposes; proposing twelve is not shipping twelve. The cost is
+   reader clutter, not bytes — default cap is six.
+
+---
+
+## 9. The decision ledger
+
+A queue that lists only its survivors cannot be audited. The first E098 queue shipped twelve
+questions and one prose sentence asserting that every `identify` and `enrich` candidate had failed
+rule 2. The sentence was wrong, and there was no way to discover that except by asking the model to
+re-derive its own reasoning from scratch.
+
+So every candidate gets a fate, and the fate is data.
+
+| Fate | Means |
+|---|---|
+| `queued` | in the queue |
+| `folded` | absorbed into another item's scope or guards; `into` names it |
+| `held` | deliberately parked with a reason, expected to return |
+| `rejected` | cut by 4a, with the rule that cut it |
+| `bounced` | cut by a **human** at a gate, with the stage that cut it |
+
+`bounced` is the one that matters most and is the one §4's `human` block already half-captures.
+§4 calls that block a training set: after ten convos we learn which question types we keep and
+which we always cut. But the human's cuts are the smaller half of the funnel. Most candidates die
+inside 4a, before anyone sees them. A training set blind to that half learns the wrong lesson.
+
+**Reason codes are an enum, not prose.** Prose does not aggregate, and these decisions are meant to
+flow to a review UI, where the whole point is filtering and counting: how often does
+`rule3-attention-cap` fire, which beats keep losing candidates to `budget`, does
+`promoted-to-entity` correlate with boxes nobody clicks. Prose reasons ride alongside for the human
+reading one row; the code is what the interface sorts on.
+
+Current codes: `rule2-mention-only`, `rule3-attention-cap`, `rule7-non-assertion`, `budget`,
+`covered-by`, `promoted-to-entity`, `self-promotion`, `out-of-scope-stage`,
+`timeline-unaddressable`, `gate1-cut`, `gate2-cut`.
+
+A note on `self-promotion`: a host's own company is a legitimate *subject* of research and never a
+legitimate tendril. The link a reader cannot audit as editorial is the one that contaminates the
+links around it. If one ever ships, it ships with a disclosure label.

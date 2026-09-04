@@ -11,7 +11,8 @@
   "questions_checked": 12,
   "by_type": {
     "contradict": 2,
-    "since": 6,
+    "identify": 1,
+    "since": 5,
     "verify": 4
   },
   "gate_1": "open",
@@ -25,6 +26,12 @@
       "severity": "LOW",
       "category": "beat-held",
       "detail": "b1 has no queue item, held deliberately with a reason recorded"
+    },
+    {
+      "item": "-",
+      "severity": "LOW",
+      "category": "entity-cap",
+      "detail": "12 candidates proposed against a ship cap of 6; the human gate picks"
     }
   ]
 }

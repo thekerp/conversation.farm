@@ -121,9 +121,24 @@ for q in queue:
                     f"anchor_t={t} is before program_start {program_start}; that audio was "
                     "MOVED from elsewhere, so the question would be asked about the wrong "
                     "moment. Anchor it on the source timeline instead")
+        # The window is the clip; the anchor is evidence. A research anchor may sit
+        # outside the beat's window -- beats already cite segments outside theirs --
+        # but it has to say so, and say why.
         if not (b["t"] - 0.001 <= t <= b["t_end"] + 0.001):
-            add(qid, "HIGH", "anchor-outside-beat",
-                f"anchor_t={t} is outside {bid}'s window [{b['t']}, {b['t_end']}]")
+            if not q.get("anchor_outside_window"):
+                add(qid, "HIGH", "anchor-outside-beat",
+                    f"anchor_t={t} is outside {bid}'s window [{b['t']}, {b['t_end']}] and "
+                    "does not declare anchor_outside_window")
+            elif not (q.get("anchor_reason") or "").strip():
+                add(qid, "HIGH", "anchor-undeclared",
+                    "anchor_outside_window is set but anchor_reason is empty")
+        elif q.get("anchor_outside_window"):
+            add(qid, "MED", "anchor-declared-inside",
+                f"anchor_outside_window is set but anchor_t={t} is inside {bid}'s window")
+
+    for extra in (q.get("also_at") or []):
+        if not any(s["start"] - 0.05 <= extra <= s["end"] + 0.05 for s in segs):
+            add(qid, "MED", "also-at-no-segment", f"also_at {extra} lands inside no segment")
         if not any(s["start"] - 0.05 <= t <= s["end"] + 0.05 for s in segs):
             add(qid, "MED", "anchor-no-segment", f"anchor_t={t} lands inside no segment")
         label = q.get("anchor_label")
@@ -212,6 +227,95 @@ if cov:
         add("-", "MED", "coverage-drift",
             f"coverage.beats_without_items {cov['beats_without_items']} != actual "
             f"{sorted(uncovered)}")
+
+# ---- decision ledger ------------------------------------------------------
+# A queue that only lists survivors cannot be audited. Every candidate gets a
+# fate and an enumerable reason code -- prose does not aggregate, and §4 wants
+# this as a training set.
+FATES = {"queued", "folded", "held", "rejected", "bounced"}
+dec = qdoc.get("decisions") or {}
+codes = set(dec.get("reason_codes") or [])
+queue_ids = {q.get("id") for q in queue}
+
+if not dec.get("entries"):
+    add("-", "MED", "ledger-missing",
+        "no decisions.entries; rejected candidates leave no trace and cannot be audited")
+
+for i, e in enumerate(dec.get("entries") or []):
+    tag = e.get("was") or e.get("candidate", f"entry{i}")[:34]
+    fate = e.get("fate")
+    if fate not in FATES:
+        add(tag, "HIGH", "ledger-fate", f"{fate!r} not one of {sorted(FATES)}")
+    if fate == "queued":
+        add(tag, "MED", "ledger-fate",
+            "queued items belong in `queue`, not the ledger")
+    code = e.get("reason_code")
+    if code not in codes:
+        add(tag, "HIGH", "ledger-reason-code",
+            f"{code!r} is not in decisions.reason_codes {sorted(codes)}")
+    if not (e.get("reason") or "").strip():
+        add(tag, "MED", "ledger-reason-empty", "no reason prose")
+    into = e.get("into")
+    if into and into not in queue_ids:
+        add(tag, "HIGH", "ledger-into",
+            f"folded into {into!r}, which is not a live queue id")
+    if code == "covered-by" and not into:
+        add(tag, "MED", "ledger-into",
+            "reason_code covered-by but no `into` naming what covers it")
+    was = e.get("was")
+    if was and was in queue_ids:
+        add(tag, "HIGH", "ledger-contradiction",
+            f"ledger says {was} was removed, but {was} is still in the queue")
+
+for e in (dec.get("bounced") or []):
+    if e.get("stage") not in ("gate1", "gate2"):
+        add(e.get("was", "bounced"), "MED", "ledger-bounced",
+            "bounced entries record a human decision and must carry stage gate1 or gate2")
+
+# ---- entity candidates ----------------------------------------------------
+# Entities are not tendrils: they are orientation, exempt from the per-beat cap
+# and the one-domain rule. The price of that exemption is that the term must
+# actually be SAID on tape -- a thing described but never named is an
+# `identify` question, not a glossary box.
+ent = qdoc.get("entity_candidates") or {}
+MASTER_TEXT = " ".join(s["text"] for s in segs).lower()
+seen_terms = set()
+for c in (ent.get("candidates") or []):
+    eid = c.get("id", "?")
+    term = c.get("term", "")
+    if term.lower() in seen_terms:
+        add(eid, "MED", "entity-duplicate", f"{term!r} listed twice")
+    seen_terms.add(term.lower())
+
+    said = c.get("said_as") or []
+    if not said:
+        add(eid, "HIGH", "entity-said-as", f"{term!r} has no said_as")
+    elif not any(re.search(r"\b" + re.escape(s), MASTER_TEXT) for s in
+                 (x.lower() for x in said)):
+        add(eid, "HIGH", "entity-not-spoken",
+            f"none of said_as {said} appears in the transcript; a thing described but "
+            "never named is an `identify` question, not an entity box")
+
+    ft = c.get("first_t")
+    if ft is None:
+        add(eid, "MED", "entity-anchor", "no first_t")
+    else:
+        if not any(s["start"] - 0.05 <= ft <= s["end"] + 0.05 for s in segs):
+            add(eid, "MED", "entity-anchor", f"first_t={ft} lands inside no segment")
+        lbl = c.get("first_label")
+        if lbl and lbl != mmss(ft):
+            add(eid, "HIGH", "entity-label",
+                f"first_label {lbl!r} does not match first_t {ft} ({mmss(ft)})")
+
+    eb = c.get("beat")
+    if eb is not None and eb not in beats:
+        add(eid, "HIGH", "entity-beat", f"beat {eb!r} is not in beats.v1.json")
+
+cap = ent.get("proposed_cap")
+n_ent = len(ent.get("candidates") or [])
+if cap and n_ent > cap:
+    add("-", "LOW", "entity-cap",
+        f"{n_ent} candidates proposed against a ship cap of {cap}; the human gate picks")
 
 rank = {"HIGH": 0, "MED": 1, "LOW": 2}
 findings.sort(key=lambda f: (rank[f[1]], str(f[0])))
