@@ -1,4 +1,7 @@
-# Only site/ is served. Everything else is source material the deploy never needs.
+# Only site/ is served by THIS project. The gate app is a separate Vercel project
+# with root directory apps/gate, deliberately: the published convo pages stay
+# static, uncached-by-nobody, and inside the 2 MB budget, and never carry auth JS.
+apps/
 convos/
 docs/
 people/

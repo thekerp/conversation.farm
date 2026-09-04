@@ -1,0 +1,21 @@
+{
+  "name": "gate",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Review gates for conversation.farm. Edits the queue file in git; holds no deploy key.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "16.3.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.6.0"
+  }
+}

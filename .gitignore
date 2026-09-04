@@ -11,3 +11,9 @@ __pycache__/
 # audio that exists in exactly one place.
 .vercel
 .env*
+
+# The gate app builds locally; nothing generated is committed.
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
