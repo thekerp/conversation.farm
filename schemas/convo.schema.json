@@ -80,6 +80,30 @@
         }
       }
     },
+    "entities": {
+      "type": "array",
+      "description": "Named things said on tape, rendered as compact reference boxes. NOT tendrils: they are orientation rather than discovery, so they are exempt from the three-per-beat cap and the one-domain-per-convo rule. A thing the hosts describe without ever naming is an `identify` question instead. Summaries are fetched and stored at production time; nothing here is generated at read time.",
+      "items": {
+        "type": "object",
+        "required": ["id","term","said_as","url","extract","attribution","license","retrieved","http_status"],
+        "properties": {
+          "id": { "type": "string" },
+          "term": { "type": "string", "description": "Canonical title of the referenced entry." },
+          "said_as": {
+            "type": "array", "minItems": 1, "items": { "type": "string" },
+            "description": "How it is actually said on tape. At least one must appear verbatim in the transcript."
+          },
+          "beat": { "type": ["string","null"], "description": "Beat it anchors to, or null for a page-level term." },
+          "t": { "type": "number", "description": "First mention, master-timeline seconds." },
+          "url": { "type": "string", "format": "uri" },
+          "extract": { "type": "string", "maxLength": 700 },
+          "attribution": { "type": "string", "description": "Required credit line for the extract's source." },
+          "license": { "type": "string", "description": "Licence of the stored extract, e.g. CC BY-SA 4.0." },
+          "retrieved": { "type": "string", "format": "date" },
+          "http_status": { "const": 200 }
+        }
+      }
+    },
     "checks": {
       "type": "array",
       "items": {
@@ -94,6 +118,28 @@
           "sources": { "type": "array", "minItems": 1, "items": { "type": "string" } },
           "confidence": { "enum": ["high","medium","low"] },
           "host_note": { "type": ["string","null"] }
+        }
+      }
+    },
+    "gleanings": {
+      "type": "array", "maxItems": 5,
+      "description": "What the harvest left in the field: places the conversation came up to something and did not close on it. Distinct from every other block — a check says they were wrong, a tendril goes somewhere they didn't, a seed asks a question for a future convo, an entity explains a thing they named. A gleaning is an observation about THIS conversation: the thing was in hand and was not taken. Requires evidence, never criticism.",
+      "items": {
+        "type": "object",
+        "required": ["id","kind","quote","note"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": {
+            "enum": ["unnamed","dropped","implied","cut"],
+            "description": "unnamed: described precisely, never named. dropped: raised and abandoned. implied: one step from what they said, untaken. cut: reached in the room and removed by the edit."
+          },
+          "beat": { "type": ["string","null"] },
+          "t": { "type": "number", "description": "Master-timeline seconds. Exactly one of t or source_t." },
+          "source_t": { "type": "number", "description": "Mix/raw-track seconds, for kind `cut`." },
+          "term": { "type": "string", "description": "For kind `unnamed`: the name they never said. Must NOT appear in the transcript." },
+          "quote": { "type": "string", "description": "The words that came close. Verbatim, or the gleaning is editorialising." },
+          "note": { "type": "string", "maxLength": 400, "description": "What was in hand and not taken." },
+          "resolved_by": { "type": ["string","null"], "description": "Research item that names it, or null when nothing can — a lost thought stays lost." }
         }
       }
     },

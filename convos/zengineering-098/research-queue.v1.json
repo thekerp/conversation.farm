@@ -1,0 +1,308 @@
+{
+  "convo": "zengineering-098",
+  "stage": "4a",
+  "generated": "2026-09-04",
+  "recorded": "2020-08-22",
+  "timeline": "master seconds, from segments.v1.jsonl; anchors on the source timeline are marked",
+  "gate": "Gate 1 — this queue is unapproved. 4b must not run until a human approves it. See docs/research-pass.md §2.",
+  "note": "Drafted from the nine beats' research_potential fields plus the transcript. Every candidate considered is recorded in `decisions` with the rule that decided it — a queue that only lists survivors cannot be audited, which is how the licence `identify` was cut in the first pass without anyone noticing.",
+  "budget": {
+    "queue_size": 12,
+    "target": "6-12 per docs/research-pass.md §6",
+    "human_gate_target_minutes": 10
+  },
+  "rule7_forbidden": [
+    "1,000 people in Cupertino",
+    "500,000 contributors",
+    "two for every lawyer",
+    "in 100 episodes",
+    "eight hours"
+  ],
+  "rule7_note": "Speaker-flagged inventions, conversational rounding, and predictions. research-pass.md §3 rule 7 forbids a check on any of these. No verify question may target them; they may become seeds.",
+  "queue": [
+    {
+      "id": "r01",
+      "beat": "b2",
+      "type": "verify",
+      "anchor_t": 555.37,
+      "anchor_label": "09:15",
+      "question": "Tesla \"has open sourced all of their patents\" — true as stated? What did the 2014 action legally do, does it cover all patents, and what conditions attach?",
+      "why": "The episode's cleanest checkable factual claim, and the point Adam builds on it survives even if the fact does not. docs/research-pass.md §5 names this as the model check.",
+      "expected": "off — a unilateral patent pledge is a conditional non-assertion covenant, not a licence grant, and not 'all'.",
+      "guards": "Source the pledge text itself and a patent-law reading of what a non-assertion covenant binds a successor to. A news recap is not a source for the legal question.",
+      "feeds": "check"
+    },
+    {
+      "id": "r13",
+      "beat": "b2",
+      "type": "identify",
+      "anchor_t": 852.6,
+      "anchor_label": "14:12",
+      "anchor_outside_window": true,
+      "anchor_reason": "The licensing thread continues b2's argument about what protects software, but sits past b2's clip. The window is the clip; the anchor is evidence — the same rule beats already follow, where b3 rests on s0115 and s0150 from outside its window.",
+      "also_at": [1151.72],
+      "question": "Name the two licence families both hosts describe without ever naming. At 14:12 Adam defines copyleft exactly — \"a license where no one's allowed to use this who doesn't also agree to allow the next person to use it for free too\" — and at 19:11 Brian defines permissive licensing. Which are they, how do they actually differ, and is either description wrong?",
+      "why": "The central distinction in open source licensing, described accurately at length by both hosts, and neither ever says GPL, MIT, BSD, Apache or copyleft. This is the strong form of `identify`: not a thing they mentioned, a thing they conspicuously did not, so a reader cannot look it up. A page about this episode that leaves it out has a hole where the subject should be.",
+      "expected": "Both descriptions substantially correct. Adam's copyleft definition is close to textbook; check whether 'no one's allowed to use this' overstates what copyleft actually restricts, which is distribution, not use.",
+      "guards": "Rule 2 does not apply — its test is whether the only justification is that they mentioned it, and here the justification is the opposite. Do not return a licence-chooser tool or a listicle; return the two families and the actual mechanism of the difference.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r03",
+      "beat": "b3",
+      "type": "verify",
+      "anchor_t": 1408.92,
+      "anchor_label": "23:28",
+      "question": "Reconstruct the App Store removal of 2020-08-13: which company was it, and was the removal automatic — 'the thing that the store does when you break that rule'?",
+      "why": "Two defects in one sequence. Adam names the wrong company throughout (Riot; it was Epic), and characterises as automatic a sequence that was staged on both sides.",
+      "expected": "wrong on the named party, with a host_note. off or wrong on 'automatically' — the direct-payment hotfix, the same-day manual removal, and Epic's pre-filed complaint and pre-produced ad were all deliberate.",
+      "guards": "corrections.json flags Riot as a speaker error, not an ASR error — both ASRs hear it clearly, so the slip ships and the check carries it. Research Epic, never Riot.",
+      "feeds": "check"
+    },
+    {
+      "id": "r04",
+      "beat": "b3",
+      "type": "since",
+      "anchor_t": 1408.92,
+      "anchor_label": "23:28",
+      "question": "What has the litigation since 2020 established about whether the App Store 'just does what the store does'? Track the 2021 ruling, the anti-steering injunction, and the later contempt findings.",
+      "why": "The beat's own research_potential calls this the deepest well in the episode: the rulings vindicate 'they broke a rule' while inverting the mechanism claim Adam rests on.",
+      "expected": "Split. His narrow point survives; his general one about the store's neutrality does not.",
+      "guards": "At least one source published after 2020-08-22. Do not collapse the two findings into one verdict — they point opposite ways, which is the interesting part.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r05",
+      "beat": "b4",
+      "type": "verify",
+      "anchor_t": 1626.07,
+      "anchor_label": "27:06",
+      "question": "Which organisation actually maintained the encryption library behind the 2014 Heartbleed disclosure, and what was its funding structure at the time? Is 'a nonprofit who's not allowed to make money off of that thing' accurate?",
+      "why": "The headline claim of the beat, and 'not allowed to make money' is a strong legal characterisation of what is usually a mundane structure. It doubles as an `identify`: the library is never named on tape, so naming it is itself the finding.",
+      "expected": "off. Name the actual maintainer and its actual funding model rather than 'a nonprofit'.",
+      "guards": "Do not extract 'heartbeat' as an entity — corrections.json marks it as a self-repair inside the same breath as 'Heartbleed'.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r06",
+      "beat": "b4",
+      "type": "since",
+      "anchor_t": 1626.07,
+      "anchor_label": "27:06",
+      "question": "What funding-the-commons apparatus stood up after Heartbleed, and did it work? Test it against the 2024 xz-utils backdoor — a maintainer nobody was paying.",
+      "why": "The same argument with the opposite ending. Adam's example is the failure that created the funding response; xz-utils is the failure that happened anyway.",
+      "expected": "The strongest since in the first half of the episode. Expect a partial, uncomfortable answer.",
+      "guards": "At least one source published after 2020-08-22. xz-utils belongs to this item only — b6 was scoped away from it deliberately, do not fetch it twice.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r07",
+      "beat": "b5",
+      "type": "contradict",
+      "anchor_t": 1746.77,
+      "anchor_label": "29:06",
+      "question": "What is the strongest existing account of why widely-adopted software wins — lock-in, increasing returns, path dependence? Does that literature sharpen Brian's 'it just is the one that got used the most, incidentally' or embarrass it?",
+      "why": "Brian reinvents a named economic result in conversation. The literature either gives him a vocabulary or shows the mechanism is better understood than he assumes.",
+      "expected": "Sharpens. He has described path dependence accurately without the term.",
+      "guards": "Do not research 'popularity' as a term — that returns marketing material. Go to the economics.",
+      "feeds": "tendril"
+    },
+    {
+      "id": "r08",
+      "beat": "b6",
+      "type": "verify",
+      "anchor_t": 1861.91,
+      "anchor_label": "31:01",
+      "question": "Is Linus's Law — 'given enough eyeballs, all bugs are shallow' — supported by empirical evidence?",
+      "why": "The principle underneath the beat. The headcounts Adam gives are self-flagged as invented and are not checkable; the principle is.",
+      "expected": "contested at best. Heartbleed, Shellshock and Log4Shell all sat in widely-read code for years.",
+      "guards": "RULE 7: do not check the headcounts. Adam announces them as made up ('I don't know, 1,000 people'), and the eight-hour bug-squash is illustration, not assertion. Check the principle only.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r09",
+      "beat": "b7",
+      "type": "contradict",
+      "anchor_t": 2292.31,
+      "anchor_label": "38:12",
+      "question": "What is the best good-faith argument against rolling append-only, canonical records out to 'every other version of life' — the domains where forgetting is a right rather than a bug?",
+      "why": "The beat's research_potential calls this the strongest queue item in the episode, and it is the claim that connects the convo to Adam's day job, so it should meet its best opposition.",
+      "expected": "Strong and specific. This should be the tendril that most changes a reader's mind.",
+      "guards": "Good-faith opposition only. Not a listicle of blockchain criticism.",
+      "feeds": "tendril"
+    },
+    {
+      "id": "r10",
+      "beat": "b7",
+      "type": "since",
+      "anchor_t": 2292.31,
+      "anchor_label": "38:12",
+      "question": "How have erasure rights, retention law, and the collision between immutable records and data-protection regimes moved since 2020-08-22?",
+      "why": "Adam proposes the append-only model as a general good the same year the law started pulling hard the other way. Pairs with r09 but produces a different artifact: a dated finding rather than an argument.",
+      "expected": "Substantial movement, and squarely against the general form of his proposal.",
+      "guards": "At least one source published after 2020-08-22. Keep this distinct from r09 — r09 is the argument, r10 is what happened.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r11",
+      "beat": "b8",
+      "type": "since",
+      "anchor_t": 2738.51,
+      "anchor_label": "45:38",
+      "question": "Does 'almost everything has an open source counterpart' still hold in 2026? Track both the run of major projects that moved to source-available licences and the arrival of open-weight AI models.",
+      "why": "docs/research-pass.md §5 names this the money result. In 2020 the trend pointed one way; since then it has been half-inverted and half-vindicated at once, which no show notes page anywhere has.",
+      "expected": "The best single artifact on the page. Half-vindicated, half-inverted.",
+      "guards": "At least one source published after 2020-08-22. Keep Brian's own free-versus-open-source distinction intact — collapsing it destroys the check. Name the counterparts he gestures at without naming: he says 'Photoshop, yep, open source version' and 'Microsoft Office, all of them have open source versions' and never says which.",
+      "feeds": "check+tendril"
+    },
+    {
+      "id": "r12",
+      "beat": "b9",
+      "type": "since",
+      "anchor_t": 3428.57,
+      "anchor_label": "57:08",
+      "question": "Against six years of legal-AI deployment, did the value arrive the way Adam predicted — insiders enumerating drudgery — or from the general-capability models he explicitly said it would not come from? Test it against Juris, the company he names inside this beat as where he acted on the prediction.",
+      "why": "The episode's most falsifiable forward claim, and it is a claim about mechanism rather than capability, which makes it checkable rather than merely prescient-or-not. The strongest version tests the prediction against the predictor's own bet.",
+      "expected": "Mostly inverted on mechanism. The interesting finding is whether the drudgery-enumeration path also happened, quietly, underneath.",
+      "guards": "RULE 7: do not check 'there'll probably be two for every lawyer that used to exist' — that is a prediction and belongs in seeds. At least one source published after 2020-08-22. Juris is the host's own company: it is a legitimate subject of research and NOT a legitimate tendril. Any link to it ships with a disclosure label, never as a quiet entry among the researched links.",
+      "feeds": "check"
+    }
+  ],
+  "entity_candidates": {
+    "concept": "Named things the hosts say out loud. These are the wrong shape for a tendril — a Wikipedia link is exactly the four-link baseline this project exists to beat, and rule 5 caps one link per domain per convo, which a dozen Wikipedia links would blow instantly. They are the right shape for a compact box: a stored summary, a link out, and no research budget spent. Orientation for a reader who does not know what Heartbleed was, without consuming one of a beat's three tendril slots.",
+    "rules": [
+      "Not tendrils. They do not count against rule 3's three-per-beat cap and they are exempt from rule 5's one-domain-per-convo rule, which exists to force source diversity in discovery, not in a glossary.",
+      "A term qualifies only if it is SAID on tape. A thing the hosts describe without naming is an `identify` question, not an entity box — that distinction is the whole reason r13 exists.",
+      "Summaries are fetched and stored at production time and rendered from storage. Non-negotiable 1: nothing is generated at read time.",
+      "Every URL is fetched and must return 200 at build time, same as a tendril.",
+      "Wikipedia text is CC BY-SA. Attribution and a link back ship with every box; that constraint is on the renderer, not optional.",
+      "Human picks which candidates ship at Gate 1. Proposing twelve does not mean shipping twelve — the cost is reader clutter, not bytes."
+    ],
+    "proposed_cap": 6,
+    "candidates": [
+      {"id": "e01", "term": "Heartbleed", "said_as": ["Heartbleed"], "first_t": 1623.7, "first_label": "27:03", "beat": "b4", "why": "Adam's whole argument for why the unpaid layer matters rests on it, and he never explains what it was."},
+      {"id": "e02", "term": "Git", "said_as": ["Git"], "first_t": 1799.97, "first_label": "29:59", "beat": "b7", "why": "The subject of the episode's last third."},
+      {"id": "e03", "term": "Linus Torvalds", "said_as": ["Torvalds", "Linus"], "first_t": 2084.67, "first_label": "34:44", "beat": "b7", "why": "Named once, by Brian, as the author of both Linux and Git — the one piece of trivia the episode does state."},
+      {"id": "e04", "term": "App Store", "said_as": ["App Store"], "first_t": 1408.92, "first_label": "23:28", "beat": "b3", "why": "The venue for the episode's most-litigated claim."},
+      {"id": "e05", "term": "Epic Games v. Apple", "said_as": ["Epic", "Fortnite"], "first_t": 1430.97, "first_label": "23:50", "beat": "b3", "why": "The actual event Adam is describing while calling it Riot. The box is where a reader resolves the confusion the check documents."},
+      {"id": "e06", "term": "Tesla patent pledge", "said_as": ["Tesla"], "first_t": 555.37, "first_label": "09:15", "beat": "b2", "why": "The subject of r01. The box carries the orientation so the check can carry the finding."},
+      {"id": "e07", "term": "Linux", "said_as": ["Linux"], "first_t": 1351.6, "first_label": "22:31", "beat": "b3", "why": "Referenced as the counterexample to Apple's closed model."},
+      {"id": "e08", "term": "Android", "said_as": ["Android"], "first_t": 1253.66, "first_label": "20:53", "beat": "b3", "why": "The open/closed contrast the App Store discussion rests on."},
+      {"id": "e09", "term": "Blockchain", "said_as": ["blockchain"], "first_t": 2292.31, "first_label": "38:12", "beat": "b7", "why": "Adam reaches for it as the generalisation of Git's append-only record."},
+      {"id": "e10", "term": "Adobe Photoshop", "said_as": ["Photoshop"], "first_t": 2738.51, "first_label": "45:38", "beat": "b8", "why": "Brian's first example of a thing with an unnamed open source counterpart."},
+      {"id": "e11", "term": "Microsoft Office", "said_as": ["Microsoft", "Office"], "first_t": 2570.21, "first_label": "42:50", "beat": "b8", "why": "His second."},
+      {"id": "e12", "term": "Wikipedia", "said_as": ["Wikipedia"], "first_t": 3112.5, "first_label": "51:52", "beat": null, "why": "Cited by Adam as a working example of the commons. Self-referential given the box it would appear in, which is either a problem or a joke."}
+    ]
+  },
+  "gleaning_candidates": {
+    "concept": "What the harvest left in the field. Places the conversation came up to something and did not close on it — described a concept and never named it, raised a thread and dropped it, stood one step from a conclusion and did not take it, or reached it in the room and lost it to the edit. Not a check (nobody was wrong), not a tendril (this is about the conversation, not somewhere else), not a seed (a seed is a question for a future convo; a gleaning is an observation about this one), not an entity (an entity must be SAID; the strongest gleanings are the things that never were).",
+    "rules": [
+      "Evidence or it does not ship. Every gleaning quotes the words that came close, verbatim, checked against the transcript or the cut material.",
+      "The thing must have been IN HAND — described, raised, or one step away. 'They failed to mention X' is cheap and infinite; that is criticism, not a gleaning.",
+      "For kind `unnamed`, the term must NOT appear in the transcript. This is the exact inverse of the entity rule, and the verifier enforces both, so no term can be filed as a box and a gleaning at once.",
+      "Capped at 5 per convo. Same scarcity logic as tendrils and seeds — without a cap this becomes a junk drawer of everything the hosts did not say.",
+      "Never a criticism, and never on a joke or an aside."
+    ],
+    "cap": 5,
+    "candidates": [
+      {
+        "id": "g01", "kind": "unnamed", "beat": "b2", "t": 852.6, "label": "14:12",
+        "term": "copyleft",
+        "quote": "we're gonna come up with a license where no one's allowed to use this who doesn't also agree to allow the next person to use it for free too",
+        "note": "A textbook definition of copyleft, delivered whole, without the word. The mechanism is exactly right and the name never arrives.",
+        "resolved_by": "r13"
+      },
+      {
+        "id": "g02", "kind": "unnamed", "beat": null, "t": 1151.72, "label": "19:11",
+        "term": "permissive",
+        "quote": "a lot of open source software is allowed to be shared freely, but also you're allowed to go, like, use it to build a product and build a business around",
+        "note": "Brian defines permissive licensing five minutes after Adam defines copyleft. Between them they lay out the field's central distinction and neither half is ever named.",
+        "resolved_by": "r13"
+      },
+      {
+        "id": "g03", "kind": "unnamed", "beat": "b4", "t": 1626.07, "label": "27:06",
+        "term": "OpenSSL",
+        "quote": "The encryption protocols that run the internet work because they're maintained by a nonprofit who's not allowed to make money",
+        "note": "The library at the centre of the episode's strongest argument is never named, and neither is its maintainer — the claim rests entirely on the phrase 'a nonprofit'.",
+        "resolved_by": "r05"
+      },
+      {
+        "id": "g04", "kind": "dropped", "beat": "b5", "t": 1796.29, "label": "29:56",
+        "quote": "it just is the one that got used the most, uh, incidentally",
+        "note": "Brian reaches path dependence and stops. Three seconds later Adam moves to Git and neither returns to it. The episode's closest thing to a disagreement about mechanism, abandoned mid-sentence.",
+        "resolved_by": "r07"
+      },
+      {
+        "id": "g05", "kind": "cut", "beat": "b1", "source_t": 1276.0, "label": "source 21:10",
+        "quote": "so that, that should exist at the same time",
+        "note": "Adam starts a thought, loses it on tape — 'no, I lost it. What were you going to say?' — and the whole exchange was then cut. A thread that died in the room and was edited out, so no listener knows it existed. Nothing can recover it; that is the point of recording it.",
+        "resolved_by": null
+      }
+    ]
+  },
+  "decisions": {
+    "note": "Every candidate considered, and the rule that decided it. Fates: queued, folded, held, rejected, bounced. `bounced` is reserved for a human decision at a gate and is empty until Gate 1 runs. Reason codes are enumerable on purpose — prose does not aggregate, and docs/research-pass.md §4 wants this as a training set.",
+    "reason_codes": [
+      "rule2-mention-only", "rule3-attention-cap", "rule7-non-assertion", "budget",
+      "covered-by", "promoted-to-entity", "self-promotion", "out-of-scope-stage",
+      "timeline-unaddressable", "gate1-cut", "gate2-cut"
+    ],
+    "entries": [
+      {"candidate": "b2 since — Tesla NACS connector and SAE standardisation", "type": "since", "beat": "b2", "fate": "rejected", "stage": "4a", "reason_code": "budget", "reason": "Swapped out for r13 to stay inside the 6-12 budget. About cars, attached to an analogy, on a beat that already carries the queue's strongest verify. First to reinstate if the budget rises.", "was": "r02"},
+      {"candidate": "b2 contradict — open-hardware case that the digital/physical line is a 2020 artifact", "type": "contradict", "beat": "b2", "fate": "rejected", "stage": "4a", "reason_code": "budget", "reason": "Real but lower-yield than the twelve that shipped."},
+      {"candidate": "b1 since — videoconference latency and turn-taking collapse", "type": "since", "beat": "b1", "fate": "held", "stage": "4a", "reason_code": "timeline-unaddressable", "reason": "b1's master anchor addresses audio moved from 20:41, so the question belongs on the source timeline. Parked with its source anchor in source_timeline_items.held rather than dropped."},
+      {"candidate": "b1 verify — 'that's never happened before' against the published feed", "type": "verify", "beat": "b1", "fate": "held", "stage": "4a", "reason_code": "timeline-unaddressable", "reason": "Same anchor problem as the b1 since. Checkable, and worth reinstating once source-timeline queue items are supported end to end."},
+      {"candidate": "b3 verify — the named party, Riot versus Epic", "type": "verify", "beat": "b3", "fate": "folded", "stage": "4a", "reason_code": "covered-by", "reason": "Merged into r03, which asks for the whole 2020-08-13 sequence. One defensible artifact instead of two overlapping ones.", "into": "r03"},
+      {"candidate": "b4 verify — the 36 hours as stated", "type": "verify", "beat": "b4", "fate": "folded", "stage": "4a", "reason_code": "covered-by", "reason": "Same event and sourcing as r05; a separate deep-research job would refetch the same material for a figure that is colour, not load-bearing.", "into": "r05"},
+      {"candidate": "b5 verify — one component that won on adoption against one that won on merit", "type": "verify", "beat": "b5", "fate": "rejected", "stage": "4a", "reason_code": "covered-by", "reason": "r07's contradict covers the mechanism; the paired-example version invites cherry-picking.", "into": "r07"},
+      {"candidate": "b6 contradict — contributor count is the wrong variable, maintainer attention is the right one", "type": "contradict", "beat": "b6", "fate": "rejected", "stage": "4a", "reason_code": "covered-by", "reason": "r08's verify on Linus's Law reaches the same finding through evidence rather than argument.", "into": "r08"},
+      {"candidate": "b7 verify — is Git's record canonical in practice, given rewriting, force pushes and rebases", "type": "verify", "beat": "b7", "fate": "rejected", "stage": "4a", "reason_code": "rule3-attention-cap", "reason": "b7 already carries r09 and r10. A third question on one beat spends reader attention faster than it earns it. Strongest reinstatement candidate after the Tesla since."},
+      {"candidate": "b8 verify — the specific Photoshop and Office counterparts", "type": "verify", "beat": "b8", "fate": "folded", "stage": "4a", "reason_code": "covered-by", "reason": "Carried into r11's guards, which now also flags that Brian never names either counterpart.", "into": "r11"},
+      {"candidate": "identify — Heartbleed, Git, Torvalds, Apple, Linux, Android, Tesla, blockchain, Photoshop, Office, Wikipedia", "type": "identify", "beat": null, "fate": "rejected", "stage": "4a", "reason_code": "promoted-to-entity", "reason": "All named on tape, so an `identify` on any of them produces a Wikipedia link, which is the baseline this project exists to beat and which rule 5 would cap at one anyway. Moved to entity_candidates, where a stored summary serves the same reader without spending a tendril slot."},
+      {"candidate": "identify — OpenSSL, the library never named behind Heartbleed", "type": "identify", "beat": "b4", "fate": "folded", "stage": "4a", "reason_code": "covered-by", "reason": "Genuinely unnamed and therefore a legitimate identify, but r05 already has to name the maintainer to answer its own question. Folded rather than duplicated, and r05's feeds widened to check+tendril to carry it.", "into": "r05"},
+      {"candidate": "identify — the unnamed open source counterparts to Photoshop and Office", "type": "identify", "beat": "b8", "fate": "folded", "stage": "4a", "reason_code": "covered-by", "reason": "Same shape as the OpenSSL case: unnamed on tape, but r11 cannot answer without naming them.", "into": "r11"},
+      {"candidate": "identify — Juris, the host's own company", "type": "identify", "beat": "b9", "fate": "rejected", "stage": "4a", "reason_code": "self-promotion", "reason": "A tendril whose only justification is that the host named his own company is an ad sitting inside a research block, and it is the one link a reader cannot audit as editorial. The legitimate question in the vicinity — did the person who made the prediction act on it, and did his mechanism hold — is folded into r12 instead.", "into": "r12"},
+      {"candidate": "identify — the hosts' own prior episodes on routing protocols", "type": "identify", "beat": null, "fate": "rejected", "stage": "4a", "reason_code": "out-of-scope-stage", "reason": "A real internal link, but prior_episode tendrils are compost's job, not the research pass's."},
+      {"candidate": "enrich — the best account of why Git was written, beyond the Torvalds trivia", "type": "enrich", "beat": "b7", "fate": "rejected", "stage": "4a", "reason_code": "rule3-attention-cap", "reason": "The one defensible enrich in the episode, and it still loses: b7 already carries r09 and r10, and this delivers background the episode's argument does not depend on."},
+      {"candidate": "enrich — the best account of Heartbleed", "type": "enrich", "beat": "b4", "fate": "rejected", "stage": "4a", "reason_code": "covered-by", "reason": "r05 and r06 must source the event to answer at all.", "into": "r05"},
+      {"candidate": "enrich — reading on the economics of open source", "type": "enrich", "beat": "b5", "fate": "rejected", "stage": "4a", "reason_code": "covered-by", "reason": "r07 goes to the same literature with a sharper question.", "into": "r07"}
+    ],
+    "bounced": []
+  },
+  "source_timeline_items": {
+    "note": "b1 is the cold open. Its master anchor (0.36) addresses audio from 20:41 that was lifted and MOVED, so any question anchored there would be asked about the wrong moment — docs/research-pass.md §5, and source.json → structure. b1's material is therefore addressed on the source timeline via source_t.",
+    "held": [
+      {
+        "beat": "b1",
+        "type": "since",
+        "source_anchor_t": 1240.645,
+        "anchor_label": "source 20:40",
+        "question": "What has been measured since 2020 about videoconference latency and turn-taking collapse — the deference Adam describes?",
+        "held_because": "Real, but the weakest link to the episode's subject, and b1 is the meta-beat. Cut to keep the queue at 12 and the human gate under ten minutes."
+      },
+      {
+        "beat": "b1",
+        "type": "verify",
+        "source_anchor_t": 1240.645,
+        "anchor_label": "source 20:40",
+        "question": "Has a double-yield opener happened before in the published feed? Brian's checkable assertion is 'That's never happened before'.",
+        "held_because": "Checkable and cheap, but it needs the source timeline end to end. Reinstate when source-timeline queue items are supported."
+      }
+    ]
+  },
+  "coverage": {
+    "beats_total": 9,
+    "beats_with_items": 8,
+    "beats_without_items": ["b1"],
+    "by_type": {"verify": 4, "since": 5, "contradict": 2, "identify": 1, "enrich": 0},
+    "type_note": "Five of twelve are `since`, the right shape for a six-year-old convo per §1. One `identify` — the strong form, aimed at what the hosts described without naming. Zero `enrich`: every candidate either duplicated a queued question or delivered background the argument does not rest on. See `decisions` for each."
+  },
+  "provenance": {
+    "stage": "4a extract",
+    "model": "claude-opus-5, interactive session",
+    "inputs": ["beats.v1.json", "transcript.v1.md", "segments.v1.jsonl", "source.json", "corrections.json"],
+    "cost_usd": null,
+    "cost_note": "Not separately metered — 4a ran inside an interactive session rather than on the runner. The first runner execution of 4a must record real cost here.",
+    "human_gate": {"decision": null, "by": null, "note": null}
+  }
+}

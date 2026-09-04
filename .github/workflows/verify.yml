@@ -1,0 +1,66 @@
+name: verify
+
+# The gate app commits decisions but cannot run the stages — it is JS on Vercel
+# and the verifiers are Python. So the guarantee moves here: a gate decision
+# cannot land a queue the stage itself rejects, because this fails the PR.
+on:
+  pull_request:
+    paths:
+      - 'convos/**'
+      - 'schemas/**'
+      - 'skill/stages/**'
+      - '.github/workflows/verify.yml'
+  push:
+    branches: [main]
+
+jobs:
+  stages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Structural verification of beats
+        run: |
+          for d in convos/*/; do
+            [ -f "$d/beats.v1.json" ] || continue
+            echo "== $d"
+            python3 skill/stages/stage3b_verify_beats.py "$d"
+          done
+
+      - name: Research queue verification
+        run: |
+          for d in convos/*/; do
+            [ -f "$d/research-queue.v1.json" ] || continue
+            echo "== $d"
+            python3 skill/stages/stage4a_verify_queue.py "$d"
+          done
+
+      - name: Schemas and artifacts are valid JSON
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+          bad = []
+          for p in list(pathlib.Path('.').rglob('*.json')):
+              if 'node_modules' in p.parts or '.next' in p.parts:
+                  continue
+              try:
+                  json.loads(p.read_text(encoding='utf-8'))
+              except Exception as e:
+                  bad.append(f"{p}: {e}")
+          if bad:
+              print("\n".join(bad)); sys.exit(1)
+          print("all JSON parses")
+          PY
+
+      - name: Stages are idempotent
+        run: |
+          for d in convos/*/; do
+            [ -f "$d/beats.v1.json" ] || continue
+            python3 skill/stages/stage3b_verify_beats.py "$d" --json /tmp/a.json >/dev/null || true
+            python3 skill/stages/stage3b_verify_beats.py "$d" --json /tmp/b.json >/dev/null || true
+            cmp -s /tmp/a.json /tmp/b.json || { echo "stage3b not idempotent in $d"; exit 1; }
+          done
+          echo "idempotent"
