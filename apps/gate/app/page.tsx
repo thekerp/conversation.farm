@@ -1,4 +1,4 @@
-import { readSession } from '@/lib/session'
+import { NO_ACCESS_MESSAGE, requireReviewer } from '@/lib/auth'
 import { BRANCH, CONVO, REPO } from '@/lib/github'
 import Review from './review'
 
@@ -10,10 +10,13 @@ export default async function Page({
 }: {
   searchParams: Promise<{ error?: string }>
 }) {
-  const s = await readSession()
-  const { error } = await searchParams
+  // Server components cannot set cookies, so a stale session is not cleared
+  // here — it is cleared by the first API call, which also 403s.
+  const auth = await requireReviewer()
+  const { error: qsError } = await searchParams
+  const error = auth.ok || auth.reason === 'no-session' ? qsError : NO_ACCESS_MESSAGE
 
-  if (!s) {
+  if (!auth.ok) {
     return (
       <div className="signin">
         <h1>Gate review</h1>

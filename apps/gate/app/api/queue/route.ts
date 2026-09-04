@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server'
-import { readSession } from '@/lib/session'
+import { NO_ACCESS_MESSAGE, requireReviewer } from '@/lib/auth'
 import { BRANCH, CONVO, REPO, getQueue, branchExists } from '@/lib/github'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: Request) {
-  const s = await readSession()
-  if (!s) return NextResponse.json({ error: 'not signed in' }, { status: 401 })
+  const auth = await requireReviewer({ clearOnFail: true })
+  if (!auth.ok) {
+    return auth.reason === 'no-access'
+      ? NextResponse.json({ error: NO_ACCESS_MESSAGE }, { status: 403 })
+      : NextResponse.json({ error: 'not signed in' }, { status: 401 })
+  }
+  const s = auth.session
 
   const url = new URL(req.url)
   const convo = url.searchParams.get('convo') ?? CONVO

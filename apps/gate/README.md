@@ -24,6 +24,33 @@ history a reader or a future stage can inspect.
 - **Identity is GitHub, authorisation is push access.** No user table, no invite
   flow. Commits are attributed to the human who made the decision, so the ledger's
   `by:` is verifiable rather than a config default. Scope is `public_repo` only.
+- **Push access is re-checked on every request**, not just at login — see
+  `lib/auth.ts`. A session cookie proves who you are, not that you still have
+  write access. So removing a collaborator, or that person revoking the OAuth
+  grant, takes effect on their next click rather than whenever the 12-hour
+  cookie expires. A failed check 403s and clears the session.
+
+## Who can sign in
+
+Whoever has **push access to the repo**. That is the entire access control
+surface — there is no separate reviewer role, deliberately, because anyone with
+push could already commit to the branch from a terminal. The app is a nicer
+interface to a permission they hold, never an escalation path.
+
+```
+gh api repos/thekerp/conversation.farm/collaborators \
+  --jq '.[] | "\(.login)\t\(.role_name)"'                      # who can sign in
+gh api -X PUT    repos/OWNER/REPO/collaborators/USER -f permission=push   # grant
+gh api -X DELETE repos/OWNER/REPO/collaborators/USER                      # revoke
+```
+
+Anyone can reach the sign-in button and authorise the OAuth app — that is
+inherent to public OAuth — but the callback rejects them before a session
+exists. The repo being public grants read, not login.
+
+This model runs out at guests: `convo-v1-spec.md` §3 rule 5 gives them right of
+reply, and a guest must never get commit rights. That is the point where a real
+auth provider earns its place.
 
 ## Setup
 

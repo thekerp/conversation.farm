@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { readSession } from '@/lib/session'
+import { NO_ACCESS_MESSAGE, requireReviewer } from '@/lib/auth'
 import { BASE, BRANCH, CONVO, findOrCreatePR, getQueue, putQueue } from '@/lib/github'
 import { applyPatch, closeGate, commitMessage, liveQueue, type Patch } from '@/lib/apply'
 
@@ -7,8 +7,15 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
-  const s = await readSession()
-  if (!s) return NextResponse.json({ error: 'not signed in' }, { status: 401 })
+  // Re-checked here as well as on read: a write is the thing that actually
+  // matters, and access can be pulled between loading the queue and submitting.
+  const auth = await requireReviewer({ clearOnFail: true })
+  if (!auth.ok) {
+    return auth.reason === 'no-access'
+      ? NextResponse.json({ error: NO_ACCESS_MESSAGE }, { status: 403 })
+      : NextResponse.json({ error: 'not signed in' }, { status: 401 })
+  }
+  const s = auth.session
 
   const body = await req.json().catch(() => null)
   if (!body) return NextResponse.json({ error: 'bad json' }, { status: 400 })
